@@ -6,49 +6,113 @@
     <title>PadelCompare CIS</title>
     <meta
       name="description"
-      content="Подбор и сравнение падел-ракеток для русскоязычного рынка."
+      content="Investor-ready MVP demo for a Russian-language padel racket comparison product."
     />
     <link rel="stylesheet" href="./src/styles.css" />
   </head>
   <body>
     <div class="page-shell">
-      <header class="hero">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <span class="brand-mark">PC</span>
+          <div>
+            <strong>PadelCompare CIS</strong>
+            <p>Decision platform for padel gear</p>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="#thesis">Почему сейчас</a>
+          <a href="#catalog">Продукт</a>
+          <a href="#roadmap">Roadmap</a>
+        </nav>
+      </header>
+
+      <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">PadelCompare CIS</p>
-          <h1>Выбор падел-ракетки без мусорных обзоров</h1>
+          <p class="eyebrow">MVP demo</p>
+          <h1>Русскоязычный decision layer для рынка падел-ракеток</h1>
           <p class="hero-text">
-            Каталог, нормализованные характеристики, сравнение 2-4 моделей и быстрый
-            переход к покупке или запросу подбора.
+            Не очередной обзорник, а интерфейс выбора: каталог, нормализованные
+            характеристики, сравнение 2-4 моделей, lead capture и коммерческий переход в магазин.
           </p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#catalog">Открыть каталог</a>
-            <button class="button button-secondary" id="scroll-to-compare" type="button">
-              Сравнить модели
-            </button>
+            <a class="button button-primary" href="#catalog">Открыть live demo</a>
+            <a class="button button-secondary" href="https://github.com/Chnurok/padelcompare-cis" target="_blank" rel="noreferrer">
+              GitHub repo
+            </a>
           </div>
         </div>
         <div class="hero-panel">
           <div class="stat-card">
-            <span class="stat-label">MVP seed</span>
-            <strong>8 моделей</strong>
+            <span class="stat-label">Use case</span>
+            <strong>Selection before purchase</strong>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Сравнение</span>
-            <strong>2-4 ракетки</strong>
+            <span class="stat-label">Business model</span>
+            <strong>Affiliate + leads + dealers</strong>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Основной CTA</span>
-            <strong>Где купить</strong>
+            <span class="stat-label">Moat</span>
+            <strong>Normalized specs layer</strong>
           </div>
         </div>
-      </header>
+      </section>
 
       <main>
+        <section class="section thesis-grid" id="thesis">
+          <article class="section-card pitch-card">
+            <p class="eyebrow">Problem</p>
+            <h2>Покупатель видит шум, а не выбор</h2>
+            <p>
+              У брендов разные термины, у магазинов кривые спеки, у обзорников длинный контент
+              без понятного next step. В итоге пользователь не понимает, что реально подходит именно ему.
+            </p>
+          </article>
+          <article class="section-card pitch-card">
+            <p class="eyebrow">Solution</p>
+            <h2>Собственная модель данных поверх рынка</h2>
+            <p>
+              PadelCompare CIS собирает official specs, нормализует их в единую шкалу и превращает выбор
+              ракетки в короткий коммерческий сценарий: найти, сравнить, перейти, оставить запрос.
+            </p>
+          </article>
+        </section>
+
+        <section class="section signals-grid">
+          <article class="signal-card">
+            <span>1</span>
+            <h3>Catalog as intent capture</h3>
+            <p>Трафик приходит не читать обзор, а принимать решение.</p>
+          </article>
+          <article class="signal-card">
+            <span>2</span>
+            <h3>Comparison as monetization trigger</h3>
+            <p>Сравнение моделей повышает CTR в offer и lead request.</p>
+          </article>
+          <article class="signal-card">
+            <span>3</span>
+            <h3>Data layer as defensibility</h3>
+            <p>Ценность не в карточке, а в нормализации и повторяемом импорте.</p>
+          </article>
+        </section>
+
+        <section class="section section-card market-strip">
+          <div>
+            <p class="eyebrow">Go-to-market</p>
+            <h2>Контент SEO + comparison SEO + affiliate intent pages</h2>
+          </div>
+          <div class="market-metrics">
+            <div><strong>SEO pages</strong><span>best for beginner / X vs Y / under budget</span></div>
+            <div><strong>Supply side</strong><span>brands + dealers + partner shops</span></div>
+            <div><strong>North star</strong><span>CTR to compare, CTR to shop, lead conversion</span></div>
+          </div>
+        </section>
+
         <section class="section filters-section" id="catalog">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Каталог</p>
-              <h2>Подобрать по стилю, жесткости и бюджету</h2>
+              <p class="eyebrow">Live product</p>
+              <h2>Интерактивный каталог и compare flow</h2>
             </div>
             <div class="catalog-meta">
               <span id="results-count">0 моделей</span>
@@ -58,6 +122,10 @@
 
           <div class="workspace-grid">
             <aside class="filters-card">
+              <div class="filters-intro">
+                <strong>Как это выглядит для пользователя</strong>
+                <p>Сужает выбор по 5-6 критериям, собирает shortlist и уходит в compare.</p>
+              </div>
               <label>
                 Поиск
                 <input id="search-input" type="search" placeholder="Bullpadel Vertex..." />
@@ -92,7 +160,7 @@
             <div class="catalog-column">
               <section class="compare-strip section-card" id="compare">
                 <div>
-                  <p class="eyebrow">Сравнение</p>
+                  <p class="eyebrow">Comparison engine</p>
                   <h3>Собери shortlist</h3>
                   <p id="compare-summary">Выбрано 0 из 4 моделей</p>
                 </div>
@@ -114,8 +182,8 @@
         <section class="section compare-table-section">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Таблица отличий</p>
-              <h2>Что реально меняется между моделями</h2>
+              <p class="eyebrow">Why this matters</p>
+              <h2>Таблица отличий превращает контент в решение</h2>
             </div>
           </div>
           <div class="table-wrap section-card">
@@ -129,18 +197,36 @@
         <section class="section detail-section">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Карточка</p>
-              <h2>Детали выбранной модели</h2>
+              <p class="eyebrow">Product record</p>
+              <h2>Нормализованная карточка модели</h2>
             </div>
           </div>
           <article class="detail-card section-card" id="detail-card"></article>
         </section>
 
+        <section class="section roadmap-grid" id="roadmap">
+          <article class="section-card roadmap-card">
+            <p class="eyebrow">Phase 1</p>
+            <h3>Seed dataset</h3>
+            <p>100-150 моделей, ручная нормализация, первые partner offers и lead funnel.</p>
+          </article>
+          <article class="section-card roadmap-card">
+            <p class="eyebrow">Phase 2</p>
+            <h3>Importer layer</h3>
+            <p>Brand-specific parsers, PDF imports, moderation queue for спорные поля.</p>
+          </article>
+          <article class="section-card roadmap-card">
+            <p class="eyebrow">Phase 3</p>
+            <h3>Commercial scale</h3>
+            <p>Price refresh, dealer network, SEO clusters, higher intent routing into dealers.</p>
+          </article>
+        </section>
+
         <section class="section lead-section">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Коммерция</p>
-              <h2>Лид-форма для MVP</h2>
+              <p class="eyebrow">Lead capture</p>
+              <h2>Мини-форма для коммерческого сценария</h2>
             </div>
           </div>
           <form class="lead-form section-card" id="lead-form">

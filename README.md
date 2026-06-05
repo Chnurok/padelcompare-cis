@@ -1,26 +1,29 @@
 # PadelCompare CIS
 
-Mini MVP for a Russian-language padel racket comparison product.
+Investor-facing MVP demo for a Russian-language padel racket comparison product.
 
-## What is inside
+## Demo
 
-- landing section with product framing
+- Product repo: <https://github.com/Chnurok/padelcompare-cis>
+- Intended live URL after Pages publish: <https://chnurok.github.io/padelcompare-cis/>
+
+## What this demo shows
+
+- product thesis above the fold, not just a raw prototype
 - searchable/filterable racket catalog
-- comparison mode for 2-4 models
-- single-racket detail panel
-- shareable compare URL via query params
-- seed dataset with normalized fields
+- compare flow for 2-4 rackets with shareable URL
+- normalized product detail view
+- simple lead capture form
+- early roadmap and monetization framing
 
-## Run locally
+## Why this matters
 
-Because this is a static app, any file server is enough.
+The core idea is not "another review site". The value is a normalized data layer that turns fragmented specs, pricing, and buyer confusion into a decision tool with commercial intent.
+
+## Local run
 
 ```bash
 python3 -m http.server 8080
 ```
 
-Then open <http://localhost:8080> from the repo root.
-
-## MVP scope
-
-This implementation is intentionally small. It demonstrates product structure and interaction design, not production data pipelines, SEO routing, or admin imports.
+Then open <http://localhost:8080>.
