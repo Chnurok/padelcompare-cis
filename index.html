@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PadelCompare CIS</title>
+    <meta
+      name="description"
+      content="Подбор и сравнение падел-ракеток для русскоязычного рынка."
+    />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">PadelCompare CIS</p>
+          <h1>Выбор падел-ракетки без мусорных обзоров</h1>
+          <p class="hero-text">
+            Каталог, нормализованные характеристики, сравнение 2-4 моделей и быстрый
+            переход к покупке или запросу подбора.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#catalog">Открыть каталог</a>
+            <button class="button button-secondary" id="scroll-to-compare" type="button">
+              Сравнить модели
+            </button>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <div class="stat-card">
+            <span class="stat-label">MVP seed</span>
+            <strong>8 моделей</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Сравнение</span>
+            <strong>2-4 ракетки</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Основной CTA</span>
+            <strong>Где купить</strong>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="section filters-section" id="catalog">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Каталог</p>
+              <h2>Подобрать по стилю, жесткости и бюджету</h2>
+            </div>
+            <div class="catalog-meta">
+              <span id="results-count">0 моделей</span>
+              <button class="ghost-button" id="reset-filters" type="button">Сбросить фильтры</button>
+            </div>
+          </div>
+
+          <div class="workspace-grid">
+            <aside class="filters-card">
+              <label>
+                Поиск
+                <input id="search-input" type="search" placeholder="Bullpadel Vertex..." />
+              </label>
+              <label>
+                Бренд
+                <select id="brand-filter"></select>
+              </label>
+              <label>
+                Форма
+                <select id="shape-filter"></select>
+              </label>
+              <label>
+                Уровень
+                <select id="skill-filter"></select>
+              </label>
+              <label>
+                Профиль
+                <select id="style-filter"></select>
+              </label>
+              <label>
+                Жесткость
+                <select id="hardness-filter"></select>
+              </label>
+              <label>
+                Бюджет до
+                <input id="price-filter" type="range" min="150" max="450" step="10" value="450" />
+                <span id="price-filter-value">€450</span>
+              </label>
+            </aside>
+
+            <div class="catalog-column">
+              <section class="compare-strip section-card" id="compare">
+                <div>
+                  <p class="eyebrow">Сравнение</p>
+                  <h3>Собери shortlist</h3>
+                  <p id="compare-summary">Выбрано 0 из 4 моделей</p>
+                </div>
+                <div class="compare-actions">
+                  <button class="button button-primary" id="copy-compare-link" type="button">
+                    Скопировать ссылку
+                  </button>
+                  <button class="button button-secondary" id="clear-compare" type="button">
+                    Очистить
+                  </button>
+                </div>
+              </section>
+
+              <section class="catalog-grid" id="catalog-grid"></section>
+            </div>
+          </div>
+        </section>
+
+        <section class="section compare-table-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Таблица отличий</p>
+              <h2>Что реально меняется между моделями</h2>
+            </div>
+          </div>
+          <div class="table-wrap section-card">
+            <table id="compare-table">
+              <thead></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section detail-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Карточка</p>
+              <h2>Детали выбранной модели</h2>
+            </div>
+          </div>
+          <article class="detail-card section-card" id="detail-card"></article>
+        </section>
+
+        <section class="section lead-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Коммерция</p>
+              <h2>Лид-форма для MVP</h2>
+            </div>
+          </div>
+          <form class="lead-form section-card" id="lead-form">
+            <label>
+              Имя
+              <input name="name" type="text" placeholder="Михаил" required />
+            </label>
+            <label>
+              Контакт
+              <input name="contact" type="text" placeholder="@telegram или email" required />
+            </label>
+            <label>
+              Что нужно
+              <select name="intent">
+                <option value="подбор">Помогите подобрать</option>
+                <option value="цена">Запросить цену / наличие</option>
+              </select>
+            </label>
+            <label>
+              Комментарий
+              <textarea
+                name="notes"
+                rows="4"
+                placeholder="Ищу комфортную ракетку для beginner/intermediate"
+              ></textarea>
+            </label>
+            <button class="button button-primary" type="submit">Отправить запрос</button>
+            <p class="form-note" id="lead-form-result"></p>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
