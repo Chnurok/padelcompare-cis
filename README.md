@@ -23,7 +23,14 @@ The core idea is not "another review site". The value is a normalized data layer
 ## Local run
 
 ```bash
-python3 -m http.server 8080
+npm install
+npm run dev
 ```
 
-Then open <http://localhost:8080>.
+Then open the local Next.js URL, usually <http://localhost:3000>.
+
+## Build check
+
+```bash
+npm run build
+```
