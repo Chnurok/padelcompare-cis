@@ -126,7 +126,7 @@ function bindEvents() {
     }
   });
 
-  document.querySelector("#scroll-to-compare").addEventListener("click", () => {
+  document.querySelector("#scroll-to-compare")?.addEventListener("click", () => {
     document.querySelector("#compare").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
