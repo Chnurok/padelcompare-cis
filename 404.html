@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PadelCompare CIS Redirect</title>
+    <meta
+      http-equiv="refresh"
+      content="0; url=http://185.205.246.169:8087/"
+    />
+    <script>
+      (function redirectNotFoundRoute() {
+        var target = new URL("http://185.205.246.169:8087/");
+        var path = window.location.pathname.replace(/^\/padelcompare-cis/, "") || "/";
+        target.pathname = path;
+        target.search = window.location.search;
+        target.hash = window.location.hash;
+        window.location.replace(target.toString());
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
