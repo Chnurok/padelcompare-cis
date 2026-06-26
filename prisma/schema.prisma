@@ -92,3 +92,13 @@ model Lead {
   compareIds String?
   createdAt  DateTime @default(now())
 }
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  type       String
+  page       String?
+  racketId   String?
+  compareIds String?
+  meta       String?
+  createdAt  DateTime @default(now())
+}

@@ -14,8 +14,16 @@ Investor-facing MVP demo for a Russian-language padel racket comparison product.
 - searchable/filterable racket catalog
 - compare flow for 2-4 rackets with shareable URL
 - normalized product detail view
+- collection pages for major buyer intents
 - simple lead capture form
+- basic analytics events for compare, offer clicks, and lead submits
 - early roadmap and monetization framing
+
+## Current snapshot
+
+- 20 curated rackets in the demo catalog
+- collection routes for `beginner`, `control`, `power`, and `under-300`
+- Prisma-backed event collection for compare opens, offer clicks, and lead submits
 
 ## Why this matters
 

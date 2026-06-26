@@ -49,6 +49,12 @@ export type CatalogStats = {
   total: number;
 };
 
+export type AnalyticsSummary = {
+  compareOpens: number;
+  offerClicks: number;
+  leadSubmits: number;
+};
+
 function makeImageMark(brand: string, model: string) {
   const token = `${brand} ${model}`
     .split(" ")
@@ -155,6 +161,28 @@ export async function getCatalogStatsFromDb(): Promise<CatalogStats> {
     minPrice: prices.length ? Math.min(...prices) : 0,
     maxPrice: prices.length ? Math.max(...prices) : 0,
     total: rackets.length
+  };
+}
+
+export async function getAnalyticsSummaryFromDb(): Promise<AnalyticsSummary> {
+  const grouped = await prisma.analyticsEvent.groupBy({
+    by: ["type"],
+    _count: {
+      _all: true
+    },
+    where: {
+      type: {
+        in: ["compare_open", "offer_click", "lead_submit"]
+      }
+    }
+  });
+
+  const map = new Map(grouped.map((item) => [item.type, item._count._all]));
+
+  return {
+    compareOpens: map.get("compare_open") ?? 0,
+    offerClicks: map.get("offer_click") ?? 0,
+    leadSubmits: map.get("lead_submit") ?? 0
   };
 }
 

@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AnalyticsPageView } from "@/components/analytics-page-view";
 import { RacketDetailCompare } from "@/components/racket-detail-compare";
+import { TrackedOutboundLink } from "@/components/tracked-outbound-link";
 import { getRacketBySlugFromDb, getRelatedRacketsFromDb } from "@/lib/catalog/catalog-db";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
 
@@ -79,6 +81,7 @@ export default async function RacketDetailPage({ params }: PageProps) {
 
   return (
     <main className="page-shell">
+      <AnalyticsPageView page="detail" racketId={racket.id} />
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Rackets</Link>
         <span>/</span>
@@ -102,9 +105,16 @@ export default async function RacketDetailPage({ params }: PageProps) {
           </div>
 
           <div className="racket-detail-actions">
-            <a href={racket.shopUrl} target="_blank" rel="noreferrer" className="button button-primary">
+            <TrackedOutboundLink
+              href={racket.shopUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="button button-primary"
+              page="detail"
+              racketId={racket.id}
+            >
               Смотреть оффер за €{racket.currentPrice}
-            </a>
+            </TrackedOutboundLink>
             {starterCompareHref ? (
               <Link href={starterCompareHref} className="button">
                 Сравнить с {relatedRackets[0].brand}

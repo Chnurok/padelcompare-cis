@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { AnalyticsPageView } from "@/components/analytics-page-view";
+import { TrackedOutboundLink } from "@/components/tracked-outbound-link";
 import { getCompareSetFromDb } from "@/lib/catalog/catalog-db";
 import type { CatalogRacket } from "@/lib/catalog/catalog-db";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
@@ -204,6 +206,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
 
   return (
     <main className="page-shell">
+      <AnalyticsPageView page="compare" type="compare_open" compareIds={ids} />
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Rackets</Link>
         <span>/</span>
@@ -290,9 +293,17 @@ export default async function ComparePage({ searchParams }: PageProps) {
                         <Link href={`/rackets/${racket.id}`} className="button">
                           Детали
                         </Link>
-                        <a href={racket.shopUrl} target="_blank" rel="noreferrer" className="button button-primary">
+                        <TrackedOutboundLink
+                          href={racket.shopUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="button button-primary"
+                          page="compare"
+                          racketId={racket.id}
+                          compareIds={ids}
+                        >
                           Смотреть оффер
-                        </a>
+                        </TrackedOutboundLink>
                       </div>
                     </div>
                   </article>

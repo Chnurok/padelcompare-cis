@@ -12,6 +12,7 @@ function slugify(input: string) {
 }
 
 async function main() {
+  await prisma.analyticsEvent.deleteMany();
   await prisma.offer.deleteMany();
   await prisma.racketPro.deleteMany();
   await prisma.racketCon.deleteMany();

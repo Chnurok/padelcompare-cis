@@ -3,12 +3,24 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import type { CatalogRacket, CatalogStats } from "@/lib/catalog/catalog-db";
+import { trackEvent } from "@/lib/analytics";
+import type {
+  AnalyticsSummary,
+  CatalogRacket,
+  CatalogStats
+} from "@/lib/catalog/catalog-db";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
+
+type CollectionLink = {
+  slug: string;
+  title: string;
+};
 
 type Props = {
   rackets: CatalogRacket[];
   stats: CatalogStats;
+  analytics: AnalyticsSummary;
+  collections: CollectionLink[];
 };
 
 const MAX_COMPARE = 4;
@@ -39,7 +51,7 @@ const ROADMAP_STEPS = [
   "Собирать shortlist и заявки как готовый qualified lead для shops, coaches и clubs."
 ];
 
-export function CatalogExperience({ rackets, stats }: Props) {
+export function CatalogExperience({ rackets, stats, analytics, collections }: Props) {
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("all");
   const [shape, setShape] = useState("all");
@@ -128,6 +140,11 @@ export function CatalogExperience({ rackets, stats }: Props) {
     try {
       await navigator.clipboard.writeText(url);
       setCompareState("copied");
+      await trackEvent({
+        type: "compare_link_copy",
+        page: "home",
+        compareIds
+      });
     } catch {
       setCompareState("error");
     }
@@ -162,6 +179,16 @@ export function CatalogExperience({ rackets, stats }: Props) {
       });
 
       setLeadState(response.ok ? "sent" : "error");
+
+      if (response.ok) {
+        await trackEvent({
+          type: "lead_submit",
+          page: "home",
+          racketId: featuredRacket?.id,
+          compareIds
+        });
+      }
+
       return response.ok;
     } catch {
       setLeadState("error");
@@ -247,6 +274,40 @@ export function CatalogExperience({ rackets, stats }: Props) {
             <p>{point.text}</p>
           </article>
         ))}
+      </section>
+
+      <section className="investor-grid">
+        <article className="investor-panel">
+          <p className="eyebrow">Collections</p>
+          <h2>Готовые входы в каталог</h2>
+          <p>Сайт уже умеет вести пользователя не только в общий каталог, но и в подборки под конкретный intent.</p>
+          <div className="hero-actions">
+            {collections.map((collection) => (
+              <Link key={collection.slug} href={`/collections/${collection.slug}`} className="button">
+                {collection.title}
+              </Link>
+            ))}
+          </div>
+        </article>
+        <article className="investor-panel">
+          <p className="eyebrow">Signals</p>
+          <h2>Первые продуктовые сигналы</h2>
+          <p>Теперь сайт может копить не только контент и каталог, но и базовую продуктовую аналитику.</p>
+          <div className="bullet-grid">
+            <div>
+              <strong>{analytics.compareOpens}</strong>
+              <span>compare opens</span>
+            </div>
+            <div>
+              <strong>{analytics.offerClicks}</strong>
+              <span>offer clicks</span>
+            </div>
+            <div>
+              <strong>{analytics.leadSubmits}</strong>
+              <span>lead submits</span>
+            </div>
+          </div>
+        </article>
       </section>
 
       <section className="workspace-grid">
@@ -368,12 +429,20 @@ export function CatalogExperience({ rackets, stats }: Props) {
               </div>
             </div>
             <div className="compare-banner-actions">
-              <Link
-                href={isCompareReady ? `/compare?ids=${compareIds.join(",")}` : "#"}
-                className={`button button-primary${isCompareReady ? "" : " is-disabled"}`}
-              >
-                {isCompareReady ? "Открыть сравнение" : "Нужно 2 модели"}
-              </Link>
+            <Link
+              href={isCompareReady ? `/compare?ids=${compareIds.join(",")}` : "#"}
+              className={`button button-primary${isCompareReady ? "" : " is-disabled"}`}
+              onClick={() => {
+                if (!isCompareReady) return;
+                void trackEvent({
+                  type: "compare_cta_click",
+                  page: "home",
+                  compareIds
+                });
+              }}
+            >
+              {isCompareReady ? "Открыть сравнение" : "Нужно 2 модели"}
+            </Link>
               <button type="button" className="button" onClick={copyCompareLink} disabled={!isCompareReady}>
                 Скопировать ссылку
               </button>
