@@ -1,0 +1,19 @@
+<svg width="640" height="900" viewBox="0 0 640 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="900" rx="48" fill="#F4EFE8"/>
+  <ellipse cx="320" cy="270" rx="170" ry="220" fill="#1F232C"/>
+  <ellipse cx="320" cy="270" rx="144" ry="192" fill="#2E323D"/>
+  <path d="M256 485H384L418 612L366 666L344 598H296L274 666L222 612L256 485Z" fill="#262B34"/>
+  <rect x="299" y="656" width="42" height="148" rx="20" fill="#B6403C"/>
+  <rect x="286" y="791" width="68" height="56" rx="16" fill="#B6403C"/>
+  <path d="M206 153C262 104 377 104 434 153" stroke="#D4B596" stroke-width="16" stroke-linecap="round"/>
+  <path d="M231 226L409 130" stroke="#D4B596" stroke-width="14" stroke-linecap="round"/>
+  <path d="M214 303L427 188" stroke="#D4B596" stroke-width="14" stroke-linecap="round"/>
+  <path d="M236 357L404 266" stroke="#D4B596" stroke-width="14" stroke-linecap="round"/>
+  <g fill="#F4EEE8">
+    <circle cx="258" cy="196" r="10"/><circle cx="316" cy="182" r="10"/><circle cx="376" cy="196" r="10"/>
+    <circle cx="240" cy="252" r="10"/><circle cx="298" cy="238" r="10"/><circle cx="342" cy="238" r="10"/><circle cx="400" cy="252" r="10"/>
+    <circle cx="258" cy="308" r="10"/><circle cx="316" cy="294" r="10"/><circle cx="376" cy="308" r="10"/>
+  </g>
+  <text x="320" y="92" text-anchor="middle" fill="#1F232C" font-family="Arial, sans-serif" font-size="34" font-weight="700">Nox AT10 Genius 18K</text>
+  <text x="320" y="130" text-anchor="middle" fill="#7B6E60" font-family="Arial, sans-serif" font-size="20">2025</text>
+</svg>

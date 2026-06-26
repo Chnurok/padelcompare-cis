@@ -1,0 +1,214 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import { RacketDetailCompare } from "@/components/racket-detail-compare";
+import { getRacketBySlugFromDb, getRelatedRacketsFromDb } from "@/lib/catalog/catalog-db";
+import { getRacketImageAlt } from "@/lib/catalog/racket-media";
+
+type PageProps = {
+  params: {
+    slug: string;
+  };
+};
+
+function formatTitleCase(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function buildProfile(racket: Awaited<ReturnType<typeof getRacketBySlugFromDb>>) {
+  if (!racket) return [];
+
+  return [
+    { label: "Shape", value: formatTitleCase(racket.shape) },
+    { label: "Style", value: formatTitleCase(racket.playStyle) },
+    { label: "Level", value: formatTitleCase(racket.skillLevel) },
+    { label: "Balance", value: formatTitleCase(racket.balance) }
+  ];
+}
+
+function buildSpecs(racket: Awaited<ReturnType<typeof getRacketBySlugFromDb>>) {
+  if (!racket) return [];
+
+  return [
+    { label: "Season", value: String(racket.season) },
+    { label: "Weight", value: `${racket.weight} g` },
+    { label: "Hardness", value: formatTitleCase(racket.hardness) },
+    { label: "Sweet spot", value: formatTitleCase(racket.sweetSpot) },
+    { label: "Face", value: racket.faceMaterial },
+    { label: "Frame", value: racket.frameMaterial },
+    { label: "Core", value: racket.coreMaterial }
+  ];
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const racket = await getRacketBySlugFromDb(params.slug);
+
+  if (!racket) {
+    return {
+      title: "Ракетка не найдена"
+    };
+  }
+
+  return {
+    title: racket.fullName,
+    description: `${racket.verdict} ${racket.whoItFits}`,
+    openGraph: {
+      title: `${racket.fullName} | PadelCompare CIS`,
+      description: racket.verdict,
+      images: [{ url: racket.imageUrl }]
+    }
+  };
+}
+
+export default async function RacketDetailPage({ params }: PageProps) {
+  const [racket, relatedRackets] = await Promise.all([
+    getRacketBySlugFromDb(params.slug),
+    getRelatedRacketsFromDb(params.slug, 3)
+  ]);
+
+  if (!racket) {
+    notFound();
+  }
+
+  const profile = buildProfile(racket);
+  const specs = buildSpecs(racket);
+  const starterCompareHref = relatedRackets[0]
+    ? (`/compare?ids=${racket.id},${relatedRackets[0].id}` as const)
+    : null;
+
+  return (
+    <main className="page-shell">
+      <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
+        <Link href="/">Rackets</Link>
+        <span>/</span>
+        <span>{racket.brand}</span>
+        <span>/</span>
+        <span>{racket.model}</span>
+      </nav>
+
+      <section className="hero-card racket-detail-hero">
+        <div className="racket-detail-copy">
+          <p className="eyebrow">Racket profile</p>
+          <h1>{racket.fullName}</h1>
+          <p className="hero-text">{racket.verdict}</p>
+
+          <div className="racket-detail-pills">
+            {profile.map((item) => (
+              <span key={item.label}>
+                <strong>{item.label}:</strong> {item.value}
+              </span>
+            ))}
+          </div>
+
+          <div className="racket-detail-actions">
+            <a href={racket.shopUrl} target="_blank" rel="noreferrer" className="button button-primary">
+              Смотреть оффер за €{racket.currentPrice}
+            </a>
+            {starterCompareHref ? (
+              <Link href={starterCompareHref} className="button">
+                Сравнить с {relatedRackets[0].brand}
+              </Link>
+            ) : (
+              <a href="#compare-builder" className="button">
+                Собрать compare
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div className="racket-detail-visual">
+          <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+        </div>
+      </section>
+
+      <section className="racket-detail-grid">
+        <article className="card detail-card">
+          <p className="eyebrow">Best for</p>
+          <h2>Кому подойдет</h2>
+          <p>{racket.whoItFits}</p>
+        </article>
+
+        <article className="card detail-card">
+          <p className="eyebrow">Offer</p>
+          <h2>Где покупать</h2>
+          <p>Сейчас лучшая цена у {racket.shopName}. Это можно потом расширить до нескольких магазинов.</p>
+        </article>
+      </section>
+
+      <section className="racket-detail-grid detail-split">
+        <article className="card detail-list-card">
+          <p className="eyebrow">Upsides</p>
+          <h2>Что хорошо</h2>
+          <ul className="detail-list">
+            {racket.pros.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="card detail-list-card">
+          <p className="eyebrow">Trade-offs</p>
+          <h2>Что учитывать</h2>
+          <ul className="detail-list">
+            {racket.cons.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </article>
+      </section>
+
+      <section className="card detail-specs-card">
+        <p className="eyebrow">Specs</p>
+        <h2>Характеристики</h2>
+        <div className="detail-specs-grid">
+          {specs.map((item) => (
+            <div key={item.label} className="detail-spec">
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div id="compare-builder">
+        <RacketDetailCompare current={racket} candidates={relatedRackets} />
+      </div>
+
+      <section className="card detail-related-card">
+        <div className="detail-related-head">
+          <div>
+            <p className="eyebrow">Related rackets</p>
+            <h2>Похожие варианты</h2>
+            <p className="panel-text">
+              Подобрал ближайшие модели по shape, style, level, hardness и ценовому коридору.
+            </p>
+          </div>
+        </div>
+
+        <div className="detail-related-grid">
+          {relatedRackets.map((item) => (
+            <article key={item.id} className="detail-related-item">
+              <div className="detail-related-media">
+                <img src={item.imageUrl} alt={getRacketImageAlt(item.fullName)} />
+              </div>
+              <div className="detail-related-copy">
+                <p>{item.brand}</p>
+                <h3>
+                  <Link href={`/rackets/${item.id}`}>{item.model}</Link>
+                </h3>
+                <span>{item.shape} · {item.playStyle} · €{item.currentPrice}</span>
+              </div>
+              <div className="detail-related-actions">
+                <Link href={`/rackets/${item.id}`} className="button">Детали</Link>
+                <Link href={`/compare?ids=${racket.id},${item.id}`} className="button button-primary">
+                  Сравнить
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}

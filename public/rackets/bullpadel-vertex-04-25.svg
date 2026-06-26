@@ -1,0 +1,19 @@
+<svg width="640" height="900" viewBox="0 0 640 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="900" rx="48" fill="#F4EFE8"/>
+  <ellipse cx="320" cy="270" rx="170" ry="220" fill="#191919"/>
+  <ellipse cx="320" cy="270" rx="142" ry="190" fill="#2A2A2A"/>
+  <path d="M256 485H384L418 612L366 666L344 598H296L274 666L222 612L256 485Z" fill="#202020"/>
+  <rect x="299" y="656" width="42" height="148" rx="20" fill="#EF4C31"/>
+  <rect x="286" y="791" width="68" height="56" rx="16" fill="#EF4C31"/>
+  <path d="M224 134C274 92 367 86 425 138" stroke="#F04F3B" stroke-width="18" stroke-linecap="round"/>
+  <path d="M205 251H435" stroke="#F04F3B" stroke-width="14" stroke-linecap="round"/>
+  <path d="M232 358L408 178" stroke="#F04F3B" stroke-width="14" stroke-linecap="round"/>
+  <path d="M232 178L408 358" stroke="#F04F3B" stroke-width="14" stroke-linecap="round"/>
+  <g fill="#F8F3EC">
+    <circle cx="262" cy="200" r="10"/><circle cx="320" cy="186" r="10"/><circle cx="378" cy="200" r="10"/>
+    <circle cx="244" cy="258" r="10"/><circle cx="302" cy="244" r="10"/><circle cx="338" cy="244" r="10"/><circle cx="396" cy="258" r="10"/>
+    <circle cx="262" cy="316" r="10"/><circle cx="320" cy="302" r="10"/><circle cx="378" cy="316" r="10"/>
+  </g>
+  <text x="320" y="92" text-anchor="middle" fill="#191919" font-family="Arial, sans-serif" font-size="34" font-weight="700">Bullpadel Vertex 04</text>
+  <text x="320" y="130" text-anchor="middle" fill="#7B6E60" font-family="Arial, sans-serif" font-size="20">2025</text>
+</svg>
