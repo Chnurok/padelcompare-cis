@@ -2,7 +2,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { rackets } from "@/data/rackets.js";
-import { getPresetRecommendations, RECOMMENDATION_PRESETS } from "@/lib/catalog/recommendation";
+import {
+  getPresetRecommendations,
+  getQuizRecommendations,
+  RECOMMENDATION_PRESETS
+} from "@/lib/catalog/recommendation";
 import type { CatalogRacket } from "@/lib/catalog/catalog-db";
 
 const catalog = rackets.map((racket) => ({
@@ -35,4 +39,20 @@ test("power finisher recommendations prioritize power-style rackets", () => {
   const results = getPresetRecommendations(catalog, preset, 3);
 
   assert.ok(results.every((item) => item.playStyle === "power"));
+});
+
+test("quiz recommendations respect control-oriented intermediate profile", () => {
+  const results = getQuizRecommendations(
+    catalog,
+    {
+      budget: "under_330",
+      priority: "control",
+      level: "intermediate",
+      feel: "medium"
+    },
+    3
+  );
+
+  assert.equal(results.length, 3);
+  assert.ok(results.some((item) => item.playStyle === "control" || item.shape === "round"));
 });

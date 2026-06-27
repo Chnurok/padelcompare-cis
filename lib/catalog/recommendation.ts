@@ -22,6 +22,13 @@ export type RecommendationPreset = {
   maxPrice?: number;
 };
 
+export type QuizProfile = {
+  budget: "under_280" | "under_330" | "premium";
+  priority: "control" | "power" | "comfort" | "balanced";
+  level: "intermediate" | "advanced";
+  feel: "soft" | "medium" | "hard";
+};
+
 export const RECOMMENDATION_PRESETS: RecommendationPreset[] = [
   {
     slug: "beginner-step-up",
@@ -195,6 +202,48 @@ export function getPresetRecommendations(
 ) {
   return [...rackets]
     .sort((left, right) => getPresetScore(right, preset) - getPresetScore(left, preset))
+    .slice(0, limit);
+}
+
+export function getQuizRecommendationScore(racket: CatalogRacket, profile: QuizProfile) {
+  let score = getAverageScore(racket);
+
+  if (profile.level === racket.skillLevel) score += 6;
+  if (profile.feel === racket.hardness) score += 5;
+
+  if (profile.priority === "control") score += getMetricScore(racket, "control") * 0.18;
+  if (profile.priority === "power") score += getMetricScore(racket, "power") * 0.18;
+  if (profile.priority === "comfort") score += getMetricScore(racket, "comfort") * 0.18;
+  if (profile.priority === "balanced") {
+    score +=
+      (getMetricScore(racket, "control") +
+        getMetricScore(racket, "power") +
+        getMetricScore(racket, "comfort")) *
+      0.06;
+  }
+
+  if (profile.budget === "under_280") {
+    score += racket.currentPrice <= 280 ? 8 : -Math.min(12, Math.round((racket.currentPrice - 280) / 12));
+  }
+
+  if (profile.budget === "under_330") {
+    score += racket.currentPrice <= 330 ? 5 : -Math.min(8, Math.round((racket.currentPrice - 330) / 15));
+  }
+
+  if (profile.budget === "premium") {
+    score += racket.currentPrice >= 300 ? 4 : 0;
+  }
+
+  return Math.round(score);
+}
+
+export function getQuizRecommendations(
+  rackets: CatalogRacket[],
+  profile: QuizProfile,
+  limit = 3
+) {
+  return [...rackets]
+    .sort((left, right) => getQuizRecommendationScore(right, profile) - getQuizRecommendationScore(left, profile))
     .slice(0, limit);
 }
 

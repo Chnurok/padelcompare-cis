@@ -10,7 +10,12 @@ import type {
   CatalogStats
 } from "@/lib/catalog/catalog-db";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
-import { getAverageScore, scoreLabel } from "@/lib/catalog/recommendation";
+import {
+  getAverageScore,
+  getQuizRecommendations,
+  scoreLabel,
+  type QuizProfile
+} from "@/lib/catalog/recommendation";
 
 type CollectionLink = {
   slug: string;
@@ -92,6 +97,12 @@ export function CatalogExperience({
     rackets[1]?.id ?? ""
   ].filter(Boolean));
   const [compareState, setCompareState] = useState<"idle" | "copied" | "error">("idle");
+  const [quiz, setQuiz] = useState<QuizProfile>({
+    budget: "under_330",
+    priority: "balanced",
+    level: "intermediate",
+    feel: "medium"
+  });
 
   const featuredRacket = rackets[0];
   const starterCompareIds = STARTER_COMPARE.filter((id) => rackets.some((racket) => racket.id === id));
@@ -123,6 +134,7 @@ export function CatalogExperience({
     () => rackets.filter((racket) => compareIds.includes(racket.id)),
     [compareIds, rackets]
   );
+  const quizResults = useMemo(() => getQuizRecommendations(rackets, quiz, 3), [quiz, rackets]);
 
   const isCompareReady = compareIds.length >= 2;
   const hasFilters =
@@ -142,6 +154,13 @@ export function CatalogExperience({
     setStyle("all");
     setHardness("all");
     setPriceMax(stats.maxPrice);
+  }
+
+  function updateQuiz<Key extends keyof QuizProfile>(key: Key, value: QuizProfile[Key]) {
+    setQuiz((current) => ({
+      ...current,
+      [key]: value
+    }));
   }
 
   function toggleCompare(id: string) {
@@ -330,6 +349,91 @@ export function CatalogExperience({
             <span>Top intent</span>
             <strong>{funnel.topIntent ?? "no data"}</strong>
           </div>
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Quiz intake</p>
+            <h2>Подбор под игрока, а не только общие полки</h2>
+            <p className="panel-text">
+              Этот intake уже собирает базовый player profile и сразу перестраивает top picks под budget, priority, level и feel.
+            </p>
+          </div>
+        </div>
+
+        <div className="detail-related-grid">
+          <article className="detail-list-card">
+            <p className="eyebrow">Player profile</p>
+            <h3>Intake</h3>
+            <div className="grid">
+              <label className="field">
+                <span>Budget</span>
+                <select
+                  value={quiz.budget}
+                  onChange={(event) => {
+                    const value = event.target.value as QuizProfile["budget"];
+                    updateQuiz("budget", value);
+                    void trackEvent({ type: "quiz_change", page: "home", stage: "intake", source: "quiz", intent: value });
+                  }}
+                >
+                  <option value="under_280">Under 280</option>
+                  <option value="under_330">Under 330</option>
+                  <option value="premium">Premium</option>
+                </select>
+              </label>
+              <label className="field">
+                <span>Priority</span>
+                <select
+                  value={quiz.priority}
+                  onChange={(event) => updateQuiz("priority", event.target.value as QuizProfile["priority"])}
+                >
+                  <option value="balanced">Balanced</option>
+                  <option value="control">Control</option>
+                  <option value="power">Power</option>
+                  <option value="comfort">Comfort</option>
+                </select>
+              </label>
+              <label className="field">
+                <span>Level</span>
+                <select
+                  value={quiz.level}
+                  onChange={(event) => updateQuiz("level", event.target.value as QuizProfile["level"])}
+                >
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </select>
+              </label>
+              <label className="field">
+                <span>Feel</span>
+                <select
+                  value={quiz.feel}
+                  onChange={(event) => updateQuiz("feel", event.target.value as QuizProfile["feel"])}
+                >
+                  <option value="soft">Soft</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </label>
+            </div>
+          </article>
+
+          <article className="detail-list-card">
+            <p className="eyebrow">Personal picks</p>
+            <h3>Top 3 right now</h3>
+            <ul className="detail-list">
+              {quizResults.map((racket) => {
+                const score = getAverageScore(racket);
+
+                return (
+                  <li key={`quiz-${racket.id}`}>
+                    <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link> · {scoreLabel(score)} {score} · €{racket.currentPrice}
+                  </li>
+                );
+              })}
+            </ul>
+          </article>
         </div>
       </section>
 
