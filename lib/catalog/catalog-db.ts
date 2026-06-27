@@ -1,5 +1,17 @@
 import { prisma } from "@/lib/db";
 import { getRacketImageUrl } from "@/lib/catalog/racket-media";
+import {
+  getPresetRecommendations,
+  getSimilarityScore,
+  RECOMMENDATION_PRESETS
+} from "@/lib/catalog/recommendation";
+
+export type CatalogOffer = {
+  merchant: string;
+  url: string;
+  currency: string;
+  price: number;
+};
 
 export type CatalogRacket = {
   id: string;
@@ -22,6 +34,7 @@ export type CatalogRacket = {
   whoItFits: string;
   pros: string[];
   cons: string[];
+  offers: CatalogOffer[];
   shopName: string;
   shopUrl: string;
   image: string;
@@ -67,9 +80,17 @@ function makeImageMark(brand: string, model: string) {
 }
 
 function toCatalogRacket(row: Awaited<ReturnType<typeof fetchRackets>>[number]): CatalogRacket {
-  const cheapestOffer = [...row.offers].sort(
+  const offers = [...row.offers]
+    .sort(
     (left, right) => Number(left.priceAmount) - Number(right.priceAmount)
-  )[0];
+    )
+    .map((offer) => ({
+      merchant: offer.merchant.name,
+      url: offer.productUrl,
+      currency: offer.currency,
+      price: Number(offer.priceAmount)
+    }));
+  const cheapestOffer = offers[0];
 
   return {
     id: row.slug,
@@ -87,13 +108,14 @@ function toCatalogRacket(row: Awaited<ReturnType<typeof fetchRackets>>[number]):
     faceMaterial: row.faceMaterial,
     frameMaterial: row.frameMaterial,
     coreMaterial: row.coreMaterial,
-    currentPrice: cheapestOffer ? Number(cheapestOffer.priceAmount) : 0,
+    currentPrice: cheapestOffer?.price ?? 0,
     verdict: row.verdict,
     whoItFits: row.whoItFits,
     pros: row.pros.sort((a, b) => a.position - b.position).map((item) => item.text),
     cons: row.cons.sort((a, b) => a.position - b.position).map((item) => item.text),
-    shopName: cheapestOffer?.merchant.name ?? "No shop yet",
-    shopUrl: cheapestOffer?.productUrl ?? "#",
+    offers,
+    shopName: cheapestOffer?.merchant ?? "No shop yet",
+    shopUrl: cheapestOffer?.url ?? "#",
     image: makeImageMark(row.brand.name, row.model),
     imageUrl: getRacketImageUrl(row.slug)
   };
@@ -211,23 +233,6 @@ export async function getCompareSetFromDb(ids: string[]) {
   return normalized.map((id) => byId.get(id)).filter((racket): racket is CatalogRacket => Boolean(racket));
 }
 
-function getSimilarityScore(base: CatalogRacket, candidate: CatalogRacket) {
-  let score = 0;
-
-  if (base.id === candidate.id) return -1;
-  if (base.shape === candidate.shape) score += 4;
-  if (base.playStyle === candidate.playStyle) score += 4;
-  if (base.skillLevel === candidate.skillLevel) score += 3;
-  if (base.hardness === candidate.hardness) score += 2;
-  if (base.balance === candidate.balance) score += 2;
-  if (base.brand === candidate.brand) score += 1;
-
-  score -= Math.min(4, Math.round(Math.abs(base.currentPrice - candidate.currentPrice) / 35));
-  score -= Math.min(3, Math.round(Math.abs(base.weight - candidate.weight) / 4));
-
-  return score;
-}
-
 export async function getRelatedRacketsFromDb(slug: string, limit = 3) {
   const rows = await fetchRackets();
   const rackets = rows.map(toCatalogRacket);
@@ -241,4 +246,13 @@ export async function getRelatedRacketsFromDb(slug: string, limit = 3) {
     .filter((item) => item.id !== slug)
     .sort((left, right) => getSimilarityScore(base, right) - getSimilarityScore(base, left))
     .slice(0, limit);
+}
+
+export async function getRecommendationRailFromDb() {
+  const rackets = await listRacketsFromDb();
+
+  return RECOMMENDATION_PRESETS.map((preset) => ({
+    ...preset,
+    rackets: getPresetRecommendations(rackets, preset, 3)
+  }));
 }

@@ -10,6 +10,7 @@ import type {
   CatalogStats
 } from "@/lib/catalog/catalog-db";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
+import { getAverageScore, scoreLabel } from "@/lib/catalog/recommendation";
 
 type CollectionLink = {
   slug: string;
@@ -21,6 +22,12 @@ type Props = {
   stats: CatalogStats;
   analytics: AnalyticsSummary;
   collections: CollectionLink[];
+  recommendationRail: Array<{
+    slug: string;
+    title: string;
+    note: string;
+    rackets: CatalogRacket[];
+  }>;
 };
 
 const MAX_COMPARE = 4;
@@ -51,7 +58,13 @@ const ROADMAP_STEPS = [
   "Собирать shortlist и заявки как готовый qualified lead для shops, coaches и clubs."
 ];
 
-export function CatalogExperience({ rackets, stats, analytics, collections }: Props) {
+export function CatalogExperience({
+  rackets,
+  stats,
+  analytics,
+  collections,
+  recommendationRail
+}: Props) {
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("all");
   const [shape, setShape] = useState("all");
@@ -263,6 +276,42 @@ export function CatalogExperience({ rackets, stats, analytics, collections }: Pr
             <span>Moat layer</span>
             <strong>Specs + verdict + route</strong>
           </div>
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Recommendation engine</p>
+            <h2>Smart picks вместо ручных подборок на глаз</h2>
+            <p className="panel-text">
+              Один scoring layer теперь ранжирует модели под разные сценарии, а не просто раскладывает
+              каталог по фильтрам.
+            </p>
+          </div>
+        </div>
+
+        <div className="detail-related-grid">
+          {recommendationRail.map((rail) => (
+            <article key={rail.slug} className="detail-list-card">
+              <p className="eyebrow">{rail.title}</p>
+              <h3>{rail.note}</h3>
+              <ul className="detail-list">
+                {rail.rackets.map((racket) => {
+                  const score = getAverageScore(racket);
+
+                  return (
+                    <li key={`${rail.slug}-${racket.id}`}>
+                      <Link href={`/rackets/${racket.id}`}>
+                        {racket.fullName}
+                      </Link>{" "}
+                      · {scoreLabel(score)} {score} · from €{racket.currentPrice}
+                    </li>
+                  );
+                })}
+              </ul>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -491,7 +540,10 @@ export function CatalogExperience({ rackets, stats, analytics, collections }: Pr
                     </div>
                     <div className="racket-price">
                       <strong>€{racket.currentPrice}</strong>
-                      <span>{racket.shopName}</span>
+                      <span>
+                        {racket.shopName}
+                        {racket.offers.length > 1 ? ` · ${racket.offers.length} offers` : ""}
+                      </span>
                     </div>
                     <div className="racket-actions">
                       <Link href={`/rackets/${racket.id}`} className="button">

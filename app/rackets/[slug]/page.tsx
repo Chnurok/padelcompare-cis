@@ -7,6 +7,7 @@ import { RacketDetailCompare } from "@/components/racket-detail-compare";
 import { TrackedOutboundLink } from "@/components/tracked-outbound-link";
 import { getRacketBySlugFromDb, getRelatedRacketsFromDb } from "@/lib/catalog/catalog-db";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
+import { getAverageScore, getSimilarityScore, scoreLabel } from "@/lib/catalog/recommendation";
 
 type PageProps = {
   params: {
@@ -112,6 +113,9 @@ export default async function RacketDetailPage({ params }: PageProps) {
               className="button button-primary"
               page="detail"
               racketId={racket.id}
+              meta={{
+                merchant: racket.shopName
+              }}
             >
               Смотреть оффер за €{racket.currentPrice}
             </TrackedOutboundLink>
@@ -140,10 +144,35 @@ export default async function RacketDetailPage({ params }: PageProps) {
         </article>
 
         <article className="card detail-card">
-          <p className="eyebrow">Offer</p>
-          <h2>Где покупать</h2>
-          <p>Сейчас лучшая цена у {racket.shopName}. Это можно потом расширить до нескольких магазинов.</p>
+          <p className="eyebrow">Recommendation</p>
+          <h2>{scoreLabel(getAverageScore(racket))} fit score</h2>
+          <p>
+            Общий профиль модели сейчас оценивается в {getAverageScore(racket)}. Это уже идёт из общего
+            scoring engine, который одновременно питает compare и home recommendations.
+          </p>
         </article>
+      </section>
+
+      <section className="card detail-list-card">
+        <p className="eyebrow">Offers</p>
+        <h2>Где покупать</h2>
+        <ul className="detail-list">
+          {racket.offers.map((offer) => (
+            <li key={`${offer.merchant}-${offer.url}`}>
+              <TrackedOutboundLink
+                href={offer.url}
+                target="_blank"
+                rel="noreferrer"
+                page="detail"
+                racketId={racket.id}
+                meta={{ merchant: offer.merchant, price: offer.price }}
+              >
+                {offer.merchant}
+              </TrackedOutboundLink>{" "}
+              · €{offer.price}
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="racket-detail-grid detail-split">
@@ -207,7 +236,9 @@ export default async function RacketDetailPage({ params }: PageProps) {
                 <h3>
                   <Link href={`/rackets/${item.id}`}>{item.model}</Link>
                 </h3>
-                <span>{item.shape} · {item.playStyle} · €{item.currentPrice}</span>
+                <span>
+                  {item.shape} · {item.playStyle} · €{item.currentPrice} · match {getSimilarityScore(racket, item)}
+                </span>
               </div>
               <div className="detail-related-actions">
                 <Link href={`/rackets/${item.id}`} className="button">Детали</Link>

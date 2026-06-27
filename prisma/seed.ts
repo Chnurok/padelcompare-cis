@@ -11,6 +11,20 @@ function slugify(input: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function buildExtraOffers(racket: (typeof rackets)[number]) {
+  const variants = [
+    { name: `${racket.brand} Direct`, delta: 0, suffix: "?channel=direct" },
+    { name: "Padel Pro Shop", delta: 9, suffix: "?channel=pro-shop" },
+    { name: "Court Side Deals", delta: -7, suffix: "?channel=deal" }
+  ];
+
+  return variants.map((variant, index) => ({
+    merchantName: index === 0 ? racket.shopName : variant.name,
+    url: index === 0 ? racket.shopUrl : `${racket.shopUrl}${variant.suffix}`,
+    price: Math.max(199, racket.currentPrice + variant.delta)
+  }));
+}
+
 async function main() {
   await prisma.analyticsEvent.deleteMany();
   await prisma.offer.deleteMany();
@@ -27,15 +41,6 @@ async function main() {
       create: {
         name: racket.brand,
         slug: slugify(racket.brand)
-      }
-    });
-
-    const merchant = await prisma.merchant.upsert({
-      where: { name: racket.shopName },
-      update: {},
-      create: {
-        name: racket.shopName,
-        slug: slugify(racket.shopName)
       }
     });
 
@@ -74,15 +79,26 @@ async function main() {
       }
     });
 
-    await prisma.offer.create({
-      data: {
-        racketId: createdRacket.id,
-        merchantId: merchant.id,
-        productUrl: racket.shopUrl,
-        currency: "EUR",
-        priceAmount: racket.currentPrice
-      }
-    });
+    for (const offer of buildExtraOffers(racket)) {
+      const merchant = await prisma.merchant.upsert({
+        where: { name: offer.merchantName },
+        update: {},
+        create: {
+          name: offer.merchantName,
+          slug: slugify(offer.merchantName)
+        }
+      });
+
+      await prisma.offer.create({
+        data: {
+          racketId: createdRacket.id,
+          merchantId: merchant.id,
+          productUrl: offer.url,
+          currency: "EUR",
+          priceAmount: offer.price
+        }
+      });
+    }
   }
 }
 

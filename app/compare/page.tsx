@@ -6,6 +6,13 @@ import { TrackedOutboundLink } from "@/components/tracked-outbound-link";
 import { getCompareSetFromDb } from "@/lib/catalog/catalog-db";
 import type { CatalogRacket } from "@/lib/catalog/catalog-db";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
+import {
+  getAverageScore,
+  getMetricScore,
+  RATING_ROWS,
+  type RatingKey,
+  scoreLabel
+} from "@/lib/catalog/recommendation";
 
 type PageProps = {
   searchParams: {
@@ -34,114 +41,17 @@ const FIELDS: Array<[string, string]> = [
   ["Цена", "currentPrice"]
 ];
 
-const RATING_ROWS = [
-  { key: "power", label: "Power" },
-  { key: "control", label: "Control" },
-  { key: "comfort", label: "Comfort" },
-  { key: "maneuverability", label: "Maneuverability" },
-  { key: "forgiveness", label: "Forgiveness" },
-  { key: "spin", label: "Spin" }
-] as const;
-
-type RatingKey = (typeof RATING_ROWS)[number]["key"];
-
 type InsightCard = {
   title: string;
   value: string;
   note: string;
 };
 
-function clampScore(value: number) {
-  return Math.max(68, Math.min(96, Math.round(value)));
-}
-
-function scoreLabel(score: number) {
-  if (score >= 92) return "Elite";
-  if (score >= 88) return "Excellent";
-  if (score >= 83) return "Very good";
-  if (score >= 77) return "Good";
-  return "Solid";
-}
-
 function RacketVisual({ racket }: { racket: CatalogRacket }) {
   return (
     <div className="compare-racket-visual">
       <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
     </div>
-  );
-}
-
-function getMetricScore(racket: CatalogRacket, key: RatingKey) {
-  const shape = racket.shape.toLowerCase();
-  const playStyle = racket.playStyle.toLowerCase();
-  const hardness = racket.hardness.toLowerCase();
-  const balance = racket.balance.toLowerCase();
-  const skill = racket.skillLevel.toLowerCase();
-  const sweetSpot = racket.sweetSpot.toLowerCase();
-  const weight = racket.weight;
-
-  const shapeBoost = {
-    diamond: 5,
-    tear: 3,
-    round: 1
-  }[shape] ?? 0;
-
-  const balanceBoost = {
-    high: 4,
-    medium: 2,
-    low: 0
-  }[balance] ?? 0;
-
-  const comfortBase =
-    78 +
-    (hardness === "soft" ? 9 : hardness === "medium" ? 5 : 1) +
-    (sweetSpot === "large" ? 5 : sweetSpot === "medium" ? 3 : 0) -
-    (weight >= 368 ? 4 : weight >= 364 ? 2 : 0);
-
-  const scores: Record<RatingKey, number> = {
-    power:
-      77 +
-      (playStyle === "power" ? 10 : playStyle === "balanced" ? 6 : 2) +
-      shapeBoost +
-      balanceBoost +
-      (hardness === "hard" ? 3 : hardness === "medium" ? 2 : 0),
-    control:
-      78 +
-      (playStyle === "control" ? 11 : playStyle === "balanced" ? 7 : 3) +
-      (shape === "round" ? 6 : shape === "tear" ? 3 : 0) +
-      (balance === "low" ? 4 : balance === "medium" ? 2 : 0) +
-      (sweetSpot === "large" ? 3 : 1),
-    comfort: comfortBase,
-    maneuverability:
-      79 +
-      (weight <= 356 ? 8 : weight <= 361 ? 5 : weight <= 365 ? 2 : -2) +
-      (balance === "low" ? 6 : balance === "medium" ? 3 : 0) +
-      (shape === "round" ? 3 : shape === "tear" ? 2 : 0),
-    forgiveness:
-      77 +
-      (sweetSpot === "large" ? 8 : sweetSpot === "medium" ? 4 : 1) +
-      (hardness === "soft" ? 6 : hardness === "medium" ? 3 : 0) +
-      (skill === "intermediate" ? 4 : 1),
-    spin:
-      78 +
-      (shape === "diamond" ? 6 : shape === "tear" ? 4 : 2) +
-      (playStyle === "power" ? 5 : playStyle === "balanced" ? 3 : 2) +
-      (hardness === "hard" ? 4 : hardness === "medium" ? 2 : 0)
-  };
-
-  return clampScore(scores[key]);
-}
-
-function getRatings(racket: CatalogRacket) {
-  return RATING_ROWS.map((row) => ({
-    ...row,
-    score: getMetricScore(racket, row.key)
-  }));
-}
-
-function getAverageScore(racket: CatalogRacket) {
-  return Math.round(
-    getRatings(racket).reduce((sum, item) => sum + item.score, 0) / RATING_ROWS.length
   );
 }
 
@@ -287,7 +197,10 @@ export default async function ComparePage({ searchParams }: PageProps) {
                     <div className="compare-card-footer">
                       <div className="compare-price-tag">
                         <strong>€{racket.currentPrice}</strong>
-                        <span>{racket.shopName}</span>
+                        <span>
+                          {racket.shopName}
+                          {racket.offers.length > 1 ? ` · ${racket.offers.length} offers` : ""}
+                        </span>
                       </div>
                       <div className="compare-card-actions">
                         <Link href={`/rackets/${racket.id}`} className="button">
@@ -301,6 +214,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
                           page="compare"
                           racketId={racket.id}
                           compareIds={ids}
+                          meta={{ merchant: racket.shopName }}
                         >
                           Смотреть оффер
                         </TrackedOutboundLink>
