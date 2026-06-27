@@ -3,6 +3,7 @@ import { CatalogExperience } from "@/components/catalog-experience";
 import { getFunnelDashboardFromDb } from "@/lib/analytics-dashboard";
 import {
   getAnalyticsSummaryFromDb,
+  getBrandSummariesFromDb,
   getCatalogStatsFromDb,
   getLatestRacketsFromDb,
   getRecommendationRailFromDb,
@@ -13,14 +14,15 @@ import { COLLECTIONS } from "@/lib/catalog/collections";
 import { SEO_CATEGORY_PAGES, SEO_VS_PAGES } from "@/lib/seo/landing-pages";
 
 export default async function HomePage() {
-  const [rackets, stats, analytics, recommendationRail, funnelDashboard, topDeals, latestRackets] = await Promise.all([
+  const [rackets, stats, analytics, recommendationRail, funnelDashboard, topDeals, latestRackets, brands] = await Promise.all([
     listRacketsFromDb(),
     getCatalogStatsFromDb(),
     getAnalyticsSummaryFromDb(),
     getRecommendationRailFromDb(),
     getFunnelDashboardFromDb(),
     getTopDealsFromDb(),
-    getLatestRacketsFromDb()
+    getLatestRacketsFromDb(),
+    getBrandSummariesFromDb()
   ]);
 
   return (
@@ -45,6 +47,7 @@ export default async function HomePage() {
         }}
         topDeals={topDeals}
         latestRackets={latestRackets}
+        brands={brands}
       />
     </main>
   );

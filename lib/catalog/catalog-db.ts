@@ -72,6 +72,15 @@ export type CatalogStats = {
   total: number;
 };
 
+export type BrandSummary = {
+  slug: string;
+  name: string;
+  count: number;
+  latestSeason: number;
+  minPrice: number;
+  maxPrice: number;
+};
+
 export type AnalyticsSummary = {
   compareOpens: number;
   offerClicks: number;
@@ -334,4 +343,33 @@ export async function getLatestRacketsFromDb(limit = 4) {
       return right.currentPrice - left.currentPrice;
     })
     .slice(0, limit);
+}
+
+export async function getBrandSummariesFromDb(): Promise<BrandSummary[]> {
+  const rackets = await listRacketsFromDb();
+  const groups = new Map<string, CatalogRacket[]>();
+
+  for (const racket of rackets) {
+    const current = groups.get(racket.brand) ?? [];
+    current.push(racket);
+    groups.set(racket.brand, current);
+  }
+
+  return [...groups.entries()]
+    .map(([name, items]) => ({
+      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
+      name,
+      count: items.length,
+      latestSeason: Math.max(...items.map((item) => item.season)),
+      minPrice: Math.min(...items.map((item) => item.currentPrice)),
+      maxPrice: Math.max(...items.map((item) => item.currentPrice))
+    }))
+    .sort((left, right) => right.count - left.count || left.name.localeCompare(right.name));
+}
+
+export async function getRacketsByBrandSlugFromDb(slug: string) {
+  const rackets = await listRacketsFromDb();
+  return rackets.filter(
+    (racket) => racket.brand.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === slug
+  );
 }

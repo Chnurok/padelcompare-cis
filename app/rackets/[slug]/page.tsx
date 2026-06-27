@@ -141,6 +141,9 @@ export default async function RacketDetailPage({ params }: PageProps) {
                 Собрать compare
               </a>
             )}
+            <a href={`/similar?to=${racket.id}`} className="button">
+              Найти похожие
+            </a>
           </div>
         </div>
 

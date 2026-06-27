@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import type {
   AnalyticsSummary,
+  BrandSummary,
   DealRailItem,
   CatalogRacket,
   CatalogStats
@@ -48,6 +49,7 @@ type Props = {
   };
   topDeals: DealRailItem[];
   latestRackets: CatalogRacket[];
+  brands: BrandSummary[];
 };
 
 const MAX_COMPARE = 4;
@@ -88,7 +90,8 @@ export function CatalogExperience({
   adminHref,
   funnel,
   topDeals,
-  latestRackets
+  latestRackets,
+  brands
 }: Props) {
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("all");
@@ -476,6 +479,44 @@ export function CatalogExperience({
               {latestRackets.map((racket) => (
                 <li key={`latest-${racket.id}`}>
                   <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link> · {racket.shape} · €{racket.currentPrice}
+                </li>
+              ))}
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Discovery tools</p>
+            <h2>Похожие модели и brand depth</h2>
+            <p className="panel-text">
+              Ещё один важный слой против аналогов: отдельный similar finder и входы в брендовые каталоги.
+            </p>
+          </div>
+        </div>
+
+        <div className="detail-related-grid">
+          <article className="detail-list-card">
+            <p className="eyebrow">Similar finder</p>
+            <h3>Alternative-first entrypoint</h3>
+            <ul className="detail-list">
+              {latestRackets.slice(0, 4).map((racket) => (
+                <li key={`similar-entry-${racket.id}`}>
+                  <a href={`/similar?to=${racket.id}`}>{racket.fullName}</a>
+                </li>
+              ))}
+            </ul>
+          </article>
+
+          <article className="detail-list-card">
+            <p className="eyebrow">Brands</p>
+            <h3>Browse by manufacturer</h3>
+            <ul className="detail-list">
+              {brands.slice(0, 6).map((brand) => (
+                <li key={brand.slug}>
+                  <Link href={`/brands/${brand.slug}`}>{brand.name}</Link> · {brand.count} models
                 </li>
               ))}
             </ul>
