@@ -247,6 +247,44 @@ export function getQuizRecommendations(
     .slice(0, limit);
 }
 
+export function getQuizRecommendationReason(racket: CatalogRacket, profile: QuizProfile) {
+  const reasons: string[] = [];
+
+  if (profile.priority === "control" && (racket.playStyle === "control" || racket.shape === "round")) {
+    reasons.push("control-first profile");
+  }
+
+  if (profile.priority === "power" && (racket.playStyle === "power" || racket.balance === "high")) {
+    reasons.push("attacking bias");
+  }
+
+  if (profile.priority === "comfort" && (racket.hardness === "soft" || racket.sweetSpot === "large")) {
+    reasons.push("more forgiving feel");
+  }
+
+  if (profile.level === racket.skillLevel) {
+    reasons.push(`${racket.skillLevel} fit`);
+  }
+
+  if (profile.feel === racket.hardness) {
+    reasons.push(`${racket.hardness} feel match`);
+  }
+
+  if (profile.budget === "under_280" && racket.currentPrice <= 280) {
+    reasons.push("inside budget");
+  }
+
+  if (profile.budget === "under_330" && racket.currentPrice <= 330) {
+    reasons.push("strong value band");
+  }
+
+  if (profile.budget === "premium" && racket.currentPrice >= 300) {
+    reasons.push("premium tier candidate");
+  }
+
+  return reasons.slice(0, 3).join(" · ") || "balanced match for your profile";
+}
+
 export function getSimilarityScore(base: CatalogRacket, candidate: CatalogRacket) {
   let score = 0;
 

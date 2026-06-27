@@ -78,6 +78,11 @@ export type AnalyticsSummary = {
   leadSubmits: number;
 };
 
+export type DealRailItem = CatalogRacket & {
+  discountAmount: number;
+  discountPercent: number;
+};
+
 function makeImageMark(brand: string, model: string) {
   const token = `${brand} ${model}`
     .split(" ")
@@ -287,4 +292,46 @@ export async function getRecommendationRailFromDb() {
     ...preset,
     rackets: getPresetRecommendations(rackets, preset, 3)
   }));
+}
+
+export async function getTopDealsFromDb(limit = 4): Promise<DealRailItem[]> {
+  const rackets = await listRacketsFromDb();
+
+  return rackets
+    .map((racket) => {
+      const bestOffer = racket.offers[0];
+      const previousPrice = bestOffer?.previousPrice ?? racket.currentPrice;
+      const discountAmount = Math.max(0, previousPrice - racket.currentPrice);
+      const discountPercent =
+        previousPrice > 0 ? Math.round((discountAmount / previousPrice) * 100) : 0;
+
+      return {
+        ...racket,
+        discountAmount,
+        discountPercent
+      };
+    })
+    .filter((racket) => racket.discountAmount > 0)
+    .sort((left, right) => {
+      if (right.discountPercent !== left.discountPercent) {
+        return right.discountPercent - left.discountPercent;
+      }
+
+      return right.discountAmount - left.discountAmount;
+    })
+    .slice(0, limit);
+}
+
+export async function getLatestRacketsFromDb(limit = 4) {
+  const rackets = await listRacketsFromDb();
+
+  return [...rackets]
+    .sort((left, right) => {
+      if (right.season !== left.season) {
+        return right.season - left.season;
+      }
+
+      return right.currentPrice - left.currentPrice;
+    })
+    .slice(0, limit);
 }

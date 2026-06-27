@@ -6,12 +6,14 @@ import { useMemo, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import type {
   AnalyticsSummary,
+  DealRailItem,
   CatalogRacket,
   CatalogStats
 } from "@/lib/catalog/catalog-db";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
 import {
   getAverageScore,
+  getQuizRecommendationReason,
   getQuizRecommendations,
   scoreLabel,
   type QuizProfile
@@ -44,6 +46,8 @@ type Props = {
     topSource?: string;
     topIntent?: string;
   };
+  topDeals: DealRailItem[];
+  latestRackets: CatalogRacket[];
 };
 
 const MAX_COMPARE = 4;
@@ -82,7 +86,9 @@ export function CatalogExperience({
   recommendationRail,
   seoPages,
   adminHref,
-  funnel
+  funnel,
+  topDeals,
+  latestRackets
 }: Props) {
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("all");
@@ -429,9 +435,49 @@ export function CatalogExperience({
                 return (
                   <li key={`quiz-${racket.id}`}>
                     <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link> · {scoreLabel(score)} {score} · €{racket.currentPrice}
+                    <br />
+                    {getQuizRecommendationReason(racket, quiz)}
                   </li>
                 );
               })}
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Market view</p>
+            <h2>Как у сильных price-comparison аналогов</h2>
+            <p className="panel-text">
+              Добавил два самых важных buyer-oriented слоя: заметные deals и быстрый вход в свежие модели сезона.
+            </p>
+          </div>
+        </div>
+
+        <div className="detail-related-grid">
+          <article className="detail-list-card">
+            <p className="eyebrow">Top deals</p>
+            <h3>Где скидка реально заметна</h3>
+            <ul className="detail-list">
+              {topDeals.map((racket) => (
+                <li key={`deal-${racket.id}`}>
+                  <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link> · save €{racket.discountAmount} ({racket.discountPercent}%) · now €{racket.currentPrice}
+                </li>
+              ))}
+            </ul>
+          </article>
+
+          <article className="detail-list-card">
+            <p className="eyebrow">Latest rackets</p>
+            <h3>Быстрый вход в свежие модели</h3>
+            <ul className="detail-list">
+              {latestRackets.map((racket) => (
+                <li key={`latest-${racket.id}`}>
+                  <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link> · {racket.shape} · €{racket.currentPrice}
+                </li>
+              ))}
             </ul>
           </article>
         </div>
