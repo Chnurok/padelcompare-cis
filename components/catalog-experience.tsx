@@ -32,6 +32,7 @@ type Props = {
     categories: Array<{ slug: string; title: string }>;
     versus: Array<{ left: string; right: string; title: string }>;
   };
+  adminHref: string;
 };
 
 const MAX_COMPARE = 4;
@@ -68,7 +69,8 @@ export function CatalogExperience({
   analytics,
   collections,
   recommendationRail,
-  seoPages
+  seoPages,
+  adminHref
 }: Props) {
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("all");
@@ -355,6 +357,21 @@ export function CatalogExperience({
               ))}
             </ul>
           </article>
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Catalog ops</p>
+            <h2>Admin import flow уже подключен</h2>
+            <p className="panel-text">
+              Следующий уровень после demo seed: bulk upsert ракеток и multi-offer пакетов через внутренний экран.
+            </p>
+          </div>
+          <a href={adminHref} className="button button-primary">
+            Открыть import console
+          </a>
         </div>
       </section>
 

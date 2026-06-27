@@ -17,6 +17,7 @@ Investor-facing MVP demo for a Russian-language padel racket comparison product.
 - collection pages for major buyer intents
 - simple lead capture form
 - basic analytics events for compare, offer clicks, and lead submits
+- internal admin import console for bulk catalog upserts
 - early roadmap and monetization framing
 
 ## Current snapshot
@@ -43,6 +44,19 @@ Then open the local Next.js URL, usually <http://localhost:3000>.
 ```bash
 npm run build
 ```
+
+## Tests
+
+```bash
+npm test
+```
+
+## Admin import
+
+- open `/admin/import`
+- paste a JSON array of racket objects with `offers`
+- run `Dry run` first to validate structure
+- run full import to upsert brands, rackets, pros/cons, and offers into Prisma
 
 ## Current publishing model
 

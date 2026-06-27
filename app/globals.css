@@ -95,6 +95,15 @@ h2 {
   flex-wrap: wrap;
 }
 
+.section-head {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
 .grid {
   margin-top: 24px;
 }
@@ -283,9 +292,26 @@ h2 {
   color: var(--ink);
 }
 
+.field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface-strong);
+  color: var(--ink);
+}
+
 .field input[type="range"] {
   padding: 0;
   accent-color: var(--accent);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: 2px solid rgba(185, 80, 27, 0.22);
+  border-color: rgba(185, 80, 27, 0.45);
 }
 
 .panel-note,
@@ -442,6 +468,16 @@ h2 {
   width: 100%;
   display: grid;
   gap: 12px;
+}
+
+.admin-field {
+  margin-top: 0;
+}
+
+.admin-textarea {
+  min-height: 420px;
+  resize: vertical;
+  font: 14px/1.5 "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
 }
 
 .form-state {

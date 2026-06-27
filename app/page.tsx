@@ -28,6 +28,7 @@ export default async function HomePage() {
           categories: SEO_CATEGORY_PAGES.map(({ slug, title }) => ({ slug, title })),
           versus: SEO_VS_PAGES.map(({ left, right, title }) => ({ left, right, title }))
         }}
+        adminHref="/admin/import"
       />
     </main>
   );

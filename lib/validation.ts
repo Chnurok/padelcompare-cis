@@ -34,3 +34,40 @@ export const compareQuerySchema = z.object({
     .min(1)
     .transform((value) => [...new Set(value.split(",").map((item) => item.trim()).filter(Boolean))].slice(0, 4))
 });
+
+const importOfferSchema = z.object({
+  merchant: z.string().trim().min(2).max(120),
+  url: z.string().trim().url(),
+  currency: z.string().trim().min(3).max(8).default("EUR"),
+  price: z.coerce.number().positive()
+});
+
+export const importRacketSchema = z.object({
+  externalKey: z.string().trim().min(3).max(120),
+  slug: z.string().trim().min(3).max(120),
+  brand: z.string().trim().min(2).max(120),
+  model: z.string().trim().min(2).max(120),
+  fullName: z.string().trim().min(4).max(160),
+  season: z.coerce.number().int().min(2020).max(2035),
+  shape: z.string().trim().min(3).max(40),
+  skillLevel: z.string().trim().min(3).max(40),
+  playStyle: z.string().trim().min(3).max(40),
+  hardness: z.string().trim().min(3).max(40),
+  weight: z.coerce.number().int().min(300).max(420),
+  balance: z.string().trim().min(2).max(40),
+  sweetSpot: z.string().trim().min(2).max(40),
+  faceMaterial: z.string().trim().min(2).max(120),
+  frameMaterial: z.string().trim().min(2).max(120),
+  coreMaterial: z.string().trim().min(2).max(120),
+  verdict: z.string().trim().min(8).max(280),
+  whoItFits: z.string().trim().min(8).max(220),
+  pros: z.array(z.string().trim().min(2).max(120)).min(2).max(6),
+  cons: z.array(z.string().trim().min(2).max(120)).min(2).max(6),
+  imageUrl: z.string().trim().min(3).max(240),
+  offers: z.array(importOfferSchema).min(1).max(8)
+});
+
+export const catalogImportSchema = z.object({
+  dryRun: z.boolean().optional().default(false),
+  items: z.array(importRacketSchema).min(1).max(100)
+});
