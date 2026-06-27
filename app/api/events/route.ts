@@ -1,15 +1,7 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 import { prisma } from "@/lib/db";
-
-const eventSchema = z.object({
-  type: z.string().trim().min(1).max(60),
-  page: z.string().trim().max(120).optional(),
-  racketId: z.string().trim().max(120).optional(),
-  compareIds: z.array(z.string().trim().max(120)).max(4).optional().default([]),
-  meta: z.record(z.union([z.string(), z.number(), z.boolean(), z.null()])).optional().default({})
-});
+import { eventSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);

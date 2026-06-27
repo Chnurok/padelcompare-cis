@@ -28,6 +28,10 @@ type Props = {
     note: string;
     rackets: CatalogRacket[];
   }>;
+  seoPages: {
+    categories: Array<{ slug: string; title: string }>;
+    versus: Array<{ left: string; right: string; title: string }>;
+  };
 };
 
 const MAX_COMPARE = 4;
@@ -63,7 +67,8 @@ export function CatalogExperience({
   stats,
   analytics,
   collections,
-  recommendationRail
+  recommendationRail,
+  seoPages
 }: Props) {
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("all");
@@ -312,6 +317,44 @@ export function CatalogExperience({
               </ul>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">SEO structure</p>
+            <h2>Scale pages под органику уже заведены в routing</h2>
+            <p className="panel-text">
+              Это уже не только каталог и collections: появились шаблоны под intent-страницы и `X vs Y`.
+            </p>
+          </div>
+        </div>
+
+        <div className="detail-related-grid">
+          <article className="detail-list-card">
+            <p className="eyebrow">Best for</p>
+            <h3>Intent pages</h3>
+            <ul className="detail-list">
+              {seoPages.categories.map((page) => (
+                <li key={page.slug}>
+                  <Link href={`/best-for/${page.slug}`}>{page.title}</Link>
+                </li>
+              ))}
+            </ul>
+          </article>
+
+          <article className="detail-list-card">
+            <p className="eyebrow">VS pages</p>
+            <h3>Search-friendly comparisons</h3>
+            <ul className="detail-list">
+              {seoPages.versus.map((page) => (
+                <li key={`${page.left}-${page.right}`}>
+                  <Link href={`/vs/${page.left}/${page.right}`}>{page.title}</Link>
+                </li>
+              ))}
+            </ul>
+          </article>
         </div>
       </section>
 

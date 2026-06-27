@@ -1,19 +1,11 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 import { getCompareSetFromDb } from "@/lib/catalog/catalog-db";
-
-const compareSchema = z.object({
-  ids: z
-    .string()
-    .trim()
-    .min(1)
-    .transform((value) => [...new Set(value.split(",").map((item) => item.trim()).filter(Boolean))].slice(0, 4))
-});
+import { compareQuerySchema } from "@/lib/validation";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const parsed = compareSchema.safeParse({
+  const parsed = compareQuerySchema.safeParse({
     ids: searchParams.get("ids") ?? ""
   });
 

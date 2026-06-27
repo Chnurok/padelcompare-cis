@@ -1,21 +1,11 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 import { listRacketsFromDb } from "@/lib/catalog/catalog-db";
-
-const querySchema = z.object({
-  search: z.string().trim().optional(),
-  brand: z.string().trim().optional(),
-  shape: z.string().trim().optional(),
-  skill: z.string().trim().optional(),
-  style: z.string().trim().optional(),
-  hardness: z.string().trim().optional(),
-  price_max: z.coerce.number().int().positive().optional()
-});
+import { catalogQuerySchema } from "@/lib/validation";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const parsed = querySchema.safeParse({
+  const parsed = catalogQuerySchema.safeParse({
     search: searchParams.get("search") ?? undefined,
     brand: searchParams.get("brand") ?? undefined,
     shape: searchParams.get("shape") ?? undefined,
