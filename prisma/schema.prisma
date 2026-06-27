@@ -70,16 +70,31 @@ model Merchant {
 }
 
 model Offer {
+  id            String         @id @default(cuid())
+  racketId      String
+  merchantId    String
+  productUrl    String
+  currency      String
+  priceAmount   Decimal
+  previousPrice Decimal?
+  availability  String         @default("in_stock")
+  stockNote     String?
+  lastCheckedAt DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  merchant      Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  racket        Racket         @relation(fields: [racketId], references: [id], onDelete: Cascade)
+  priceHistory  OfferPriceLog[]
+}
+
+model OfferPriceLog {
   id          String   @id @default(cuid())
-  racketId    String
-  merchantId  String
-  productUrl  String
-  currency    String
+  offerId     String
   priceAmount Decimal
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
-  racket      Racket   @relation(fields: [racketId], references: [id], onDelete: Cascade)
+  currency    String
+  availability String
+  capturedAt  DateTime @default(now())
+  offer       Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
 }
 
 model Lead {

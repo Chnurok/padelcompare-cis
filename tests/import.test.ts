@@ -34,7 +34,11 @@ const validPayload = {
           merchant: "Padel Pro Shop",
           url: "https://example.com/head-gravity-pro-26",
           currency: "EUR",
-          price: 319
+          price: 319,
+          previousPrice: 339,
+          availability: "limited",
+          stockNote: "Low stock",
+          lastCheckedAt: "2026-06-27T08:00:00.000Z"
         }
       ]
     }
@@ -47,6 +51,7 @@ test("catalog import payload parses valid racket package", () => {
   assert.equal(parsed.items.length, 1);
   assert.equal(parsed.items[0]?.offers.length, 1);
   assert.equal(parsed.items[0]?.externalKey, "head-gravity-pro-26");
+  assert.equal(parsed.items[0]?.offers[0]?.availability, "limited");
 });
 
 test("catalog import payload rejects malformed offers", () => {

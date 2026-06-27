@@ -12,6 +12,16 @@ type ImportSummary = {
   merchants: number;
 };
 
+const IMPORT_TEMPLATE = `Offer fields:
+- merchant
+- url
+- currency
+- price
+- previousPrice (optional)
+- availability: in_stock | limited | preorder | out_of_stock
+- stockNote (optional)
+- lastCheckedAt ISO timestamp (optional)`;
+
 type Props = {
   samplePayload: string;
 };
@@ -102,6 +112,7 @@ export function AdminImportConsole({ samplePayload }: Props) {
       </div>
 
       <p className="form-state">{message}</p>
+      <p className="form-state">{IMPORT_TEMPLATE}</p>
 
       {summary ? (
         <div className="hero-metrics">

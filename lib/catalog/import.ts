@@ -30,6 +30,10 @@ export type ImportPayload = {
       url: string;
       currency: string;
       price: number;
+      previousPrice?: number;
+      availability: "in_stock" | "limited" | "preorder" | "out_of_stock";
+      stockNote?: string;
+      lastCheckedAt?: string;
     }>;
   }>;
 };
@@ -185,7 +189,18 @@ export async function importCatalogPayload(raw: unknown): Promise<ImportSummary>
             merchantId: merchant.id,
             productUrl: offer.url,
             currency: offer.currency,
-            priceAmount: offer.price
+            priceAmount: offer.price,
+            previousPrice: offer.previousPrice,
+            availability: offer.availability,
+            stockNote: offer.stockNote,
+            lastCheckedAt: offer.lastCheckedAt ? new Date(offer.lastCheckedAt) : new Date(),
+            priceHistory: {
+              create: {
+                priceAmount: offer.price,
+                currency: offer.currency,
+                availability: offer.availability
+              }
+            }
           }
         });
       }

@@ -38,13 +38,21 @@ const SAMPLE_PAYLOAD = JSON.stringify(
           merchant: "Padel Pro Shop",
           url: "https://example.com/head-gravity-pro-26",
           currency: "EUR",
-          price: 319
+          price: 319,
+          previousPrice: 339,
+          availability: "limited",
+          stockNote: "Low stock",
+          lastCheckedAt: "2026-06-27T08:00:00.000Z"
         },
         {
           merchant: "Court Side Deals",
           url: "https://example.com/head-gravity-pro-26-deal",
           currency: "EUR",
-          price: 309
+          price: 309,
+          previousPrice: 329,
+          availability: "in_stock",
+          stockNote: "Best current deal",
+          lastCheckedAt: "2026-06-27T08:05:00.000Z"
         }
       ]
     }

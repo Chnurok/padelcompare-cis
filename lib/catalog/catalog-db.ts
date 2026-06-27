@@ -11,6 +11,16 @@ export type CatalogOffer = {
   url: string;
   currency: string;
   price: number;
+  previousPrice?: number;
+  availability: string;
+  stockNote?: string;
+  lastCheckedAt?: string;
+  priceHistory: Array<{
+    price: number;
+    currency: string;
+    availability: string;
+    capturedAt: string;
+  }>;
 };
 
 export type CatalogRacket = {
@@ -88,7 +98,17 @@ function toCatalogRacket(row: Awaited<ReturnType<typeof fetchRackets>>[number]):
       merchant: offer.merchant.name,
       url: offer.productUrl,
       currency: offer.currency,
-      price: Number(offer.priceAmount)
+      price: Number(offer.priceAmount),
+      previousPrice: offer.previousPrice ? Number(offer.previousPrice) : undefined,
+      availability: offer.availability,
+      stockNote: offer.stockNote ?? undefined,
+      lastCheckedAt: offer.lastCheckedAt?.toISOString(),
+      priceHistory: offer.priceHistory.map((entry) => ({
+        price: Number(entry.priceAmount),
+        currency: entry.currency,
+        availability: entry.availability,
+        capturedAt: entry.capturedAt.toISOString()
+      }))
     }));
   const cheapestOffer = offers[0];
 
@@ -129,7 +149,13 @@ async function fetchRackets() {
       cons: true,
       offers: {
         include: {
-          merchant: true
+          merchant: true,
+          priceHistory: {
+            orderBy: {
+              capturedAt: "desc"
+            },
+            take: 6
+          }
         }
       }
     },
@@ -217,7 +243,13 @@ export async function getRacketBySlugFromDb(slug: string) {
       cons: true,
       offers: {
         include: {
-          merchant: true
+          merchant: true,
+          priceHistory: {
+            orderBy: {
+              capturedAt: "desc"
+            },
+            take: 6
+          }
         }
       }
     }

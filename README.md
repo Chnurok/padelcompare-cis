@@ -18,6 +18,7 @@ Investor-facing MVP demo for a Russian-language padel racket comparison product.
 - simple lead capture form
 - basic analytics events for compare, offer clicks, and lead submits
 - internal admin import console for bulk catalog upserts
+- offer availability, previous price, and price history snapshots
 - early roadmap and monetization framing
 
 ## Current snapshot
@@ -56,7 +57,7 @@ npm test
 - open `/admin/import`
 - paste a JSON array of racket objects with `offers`
 - run `Dry run` first to validate structure
-- run full import to upsert brands, rackets, pros/cons, and offers into Prisma
+- run full import to upsert brands, rackets, pros/cons, offers, availability, and price history into Prisma
 
 ## Current publishing model
 

@@ -39,7 +39,11 @@ const importOfferSchema = z.object({
   merchant: z.string().trim().min(2).max(120),
   url: z.string().trim().url(),
   currency: z.string().trim().min(3).max(8).default("EUR"),
-  price: z.coerce.number().positive()
+  price: z.coerce.number().positive(),
+  previousPrice: z.coerce.number().positive().optional(),
+  availability: z.enum(["in_stock", "limited", "preorder", "out_of_stock"]).default("in_stock"),
+  stockNote: z.string().trim().max(120).optional(),
+  lastCheckedAt: z.string().datetime().optional()
 });
 
 export const importRacketSchema = z.object({

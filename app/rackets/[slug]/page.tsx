@@ -44,6 +44,10 @@ function buildSpecs(racket: Awaited<ReturnType<typeof getRacketBySlugFromDb>>) {
   ];
 }
 
+function formatAvailability(value: string) {
+  return value.replaceAll("_", " ");
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const racket = await getRacketBySlugFromDb(params.slug);
 
@@ -170,8 +174,27 @@ export default async function RacketDetailPage({ params }: PageProps) {
                 {offer.merchant}
               </TrackedOutboundLink>{" "}
               · €{offer.price}
+              {offer.previousPrice ? ` (was €${offer.previousPrice})` : ""}
+              {offer.stockNote ? ` · ${offer.stockNote}` : ""}
+              {offer.lastCheckedAt ? ` · checked ${offer.lastCheckedAt.slice(0, 10)}` : ""}
+              {` · ${formatAvailability(offer.availability)}`}
             </li>
           ))}
+        </ul>
+      </section>
+
+      <section className="card detail-list-card">
+        <p className="eyebrow">Price history</p>
+        <h2>Последние price snapshots</h2>
+        <ul className="detail-list">
+          {racket.offers.flatMap((offer) =>
+            offer.priceHistory.slice(0, 2).map((entry) => (
+              <li key={`${offer.merchant}-${entry.capturedAt}`}>
+                {offer.merchant} · €{entry.price} · {formatAvailability(entry.availability)} ·{" "}
+                {entry.capturedAt.slice(0, 10)}
+              </li>
+            ))
+          )}
         </ul>
       </section>
 

@@ -13,20 +13,45 @@ function slugify(input: string) {
 
 function buildExtraOffers(racket: (typeof rackets)[number]) {
   const variants = [
-    { name: `${racket.brand} Direct`, delta: 0, suffix: "?channel=direct" },
-    { name: "Padel Pro Shop", delta: 9, suffix: "?channel=pro-shop" },
-    { name: "Court Side Deals", delta: -7, suffix: "?channel=deal" }
+    {
+      name: `${racket.brand} Direct`,
+      delta: 0,
+      previousDelta: 24,
+      suffix: "?channel=direct",
+      availability: "in_stock",
+      stockNote: "Brand direct"
+    },
+    {
+      name: "Padel Pro Shop",
+      delta: 9,
+      previousDelta: 18,
+      suffix: "?channel=pro-shop",
+      availability: "limited",
+      stockNote: "Low stock"
+    },
+    {
+      name: "Court Side Deals",
+      delta: -7,
+      previousDelta: 16,
+      suffix: "?channel=deal",
+      availability: "in_stock",
+      stockNote: "Best current deal"
+    }
   ];
 
   return variants.map((variant, index) => ({
     merchantName: index === 0 ? racket.shopName : variant.name,
     url: index === 0 ? racket.shopUrl : `${racket.shopUrl}${variant.suffix}`,
-    price: Math.max(199, racket.currentPrice + variant.delta)
+    price: Math.max(199, racket.currentPrice + variant.delta),
+    previousPrice: Math.max(205, racket.currentPrice + variant.previousDelta),
+    availability: variant.availability,
+    stockNote: variant.stockNote
   }));
 }
 
 async function main() {
   await prisma.analyticsEvent.deleteMany();
+  await prisma.offerPriceLog.deleteMany();
   await prisma.offer.deleteMany();
   await prisma.racketPro.deleteMany();
   await prisma.racketCon.deleteMany();
@@ -95,7 +120,27 @@ async function main() {
           merchantId: merchant.id,
           productUrl: offer.url,
           currency: "EUR",
-          priceAmount: offer.price
+          priceAmount: offer.price,
+          previousPrice: offer.previousPrice,
+          availability: offer.availability,
+          stockNote: offer.stockNote,
+          lastCheckedAt: new Date(),
+          priceHistory: {
+            create: [
+              {
+                priceAmount: offer.previousPrice,
+                currency: "EUR",
+                availability: offer.availability,
+                capturedAt: new Date("2026-06-20T12:00:00.000Z")
+              },
+              {
+                priceAmount: offer.price,
+                currency: "EUR",
+                availability: offer.availability,
+                capturedAt: new Date("2026-06-27T12:00:00.000Z")
+              }
+            ]
+          }
         }
       });
     }
