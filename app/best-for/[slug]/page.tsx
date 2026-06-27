@@ -46,7 +46,12 @@ export default async function BestForPage({ params }: PageProps) {
 
   return (
     <main className="page-shell">
-      <AnalyticsPageView page={`seo:${page.slug}`} />
+      <AnalyticsPageView
+        page={`seo:${page.slug}`}
+        stage="acquisition"
+        source="seo_landing"
+        intent="discover_recommendations"
+      />
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Rackets</Link>
         <span>/</span>

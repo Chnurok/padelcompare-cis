@@ -13,6 +13,9 @@ export const eventSchema = z.object({
   type: z.string().trim().min(1).max(60),
   page: z.string().trim().max(120).optional(),
   racketId: z.string().trim().max(120).optional(),
+  stage: z.string().trim().max(60).optional(),
+  source: z.string().trim().max(120).optional(),
+  intent: z.string().trim().max(120).optional(),
   compareIds: z.array(z.string().trim().max(120)).max(4).optional().default([]),
   meta: z.record(z.union([z.string(), z.number(), z.boolean(), z.null()])).optional().default({})
 });

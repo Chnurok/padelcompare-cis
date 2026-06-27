@@ -86,7 +86,13 @@ export default async function RacketDetailPage({ params }: PageProps) {
 
   return (
     <main className="page-shell">
-      <AnalyticsPageView page="detail" racketId={racket.id} />
+      <AnalyticsPageView
+        page="detail"
+        racketId={racket.id}
+        stage="evaluation"
+        source="racket_detail"
+        intent="inspect_model"
+      />
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Rackets</Link>
         <span>/</span>
@@ -117,9 +123,12 @@ export default async function RacketDetailPage({ params }: PageProps) {
               className="button button-primary"
               page="detail"
               racketId={racket.id}
+              intent="visit_offer"
               meta={{
                 merchant: racket.shopName
               }}
+              source="hero_offer_cta"
+              stage="offer"
             >
               Смотреть оффер за €{racket.currentPrice}
             </TrackedOutboundLink>
@@ -169,7 +178,10 @@ export default async function RacketDetailPage({ params }: PageProps) {
                 rel="noreferrer"
                 page="detail"
                 racketId={racket.id}
+                intent="visit_offer"
                 meta={{ merchant: offer.merchant, price: offer.price }}
+                source="offers_list"
+                stage="offer"
               >
                 {offer.merchant}
               </TrackedOutboundLink>{" "}

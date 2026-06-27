@@ -6,15 +6,21 @@ import { trackEvent } from "@/lib/analytics";
 
 type Props = {
   compareIds?: string[];
+  intent?: string;
   page: string;
   racketId?: string;
+  source?: string;
+  stage?: string;
   type?: string;
 };
 
 export function AnalyticsPageView({
   compareIds = [],
+  intent,
   page,
   racketId,
+  source,
+  stage,
   type = "page_view"
 }: Props) {
   useEffect(() => {
@@ -22,9 +28,12 @@ export function AnalyticsPageView({
       type,
       page,
       racketId,
-      compareIds
+      compareIds,
+      intent,
+      source,
+      stage
     });
-  }, [compareIds, page, racketId, type]);
+  }, [compareIds, intent, page, racketId, source, stage, type]);
 
   return null;
 }

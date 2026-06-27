@@ -116,7 +116,14 @@ export default async function ComparePage({ searchParams }: PageProps) {
 
   return (
     <main className="page-shell">
-      <AnalyticsPageView page="compare" type="compare_open" compareIds={ids} />
+      <AnalyticsPageView
+        page="compare"
+        type="compare_open"
+        compareIds={ids}
+        stage="decision"
+        source="compare_screen"
+        intent="evaluate_shortlist"
+      />
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Rackets</Link>
         <span>/</span>
@@ -214,7 +221,10 @@ export default async function ComparePage({ searchParams }: PageProps) {
                           page="compare"
                           racketId={racket.id}
                           compareIds={ids}
+                          intent="visit_offer"
                           meta={{ merchant: racket.shopName }}
+                          source="compare_card"
+                          stage="offer"
                         >
                           Смотреть оффер
                         </TrackedOutboundLink>

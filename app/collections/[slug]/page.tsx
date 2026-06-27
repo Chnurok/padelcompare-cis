@@ -47,7 +47,12 @@ export default async function CollectionPage({ params }: PageProps) {
 
   return (
     <main className="page-shell">
-      <AnalyticsPageView page={`collection:${collection.slug}`} />
+      <AnalyticsPageView
+        page={`collection:${collection.slug}`}
+        stage="discovery"
+        source="collection_page"
+        intent="browse_segment"
+      />
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Rackets</Link>
         <span>/</span>

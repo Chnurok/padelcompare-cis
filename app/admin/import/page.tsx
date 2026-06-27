@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { AdminImportConsole } from "@/components/admin-import-console";
+import { FunnelDashboard } from "@/components/funnel-dashboard";
+import { getFunnelDashboardFromDb } from "@/lib/analytics-dashboard";
 import { getCatalogStatsFromDb } from "@/lib/catalog/catalog-db";
 
 export const metadata: Metadata = {
@@ -62,7 +64,10 @@ const SAMPLE_PAYLOAD = JSON.stringify(
 );
 
 export default async function AdminImportPage() {
-  const stats = await getCatalogStatsFromDb();
+  const [stats, funnelDashboard] = await Promise.all([
+    getCatalogStatsFromDb(),
+    getFunnelDashboardFromDb()
+  ]);
 
   return (
     <main className="page-shell">
@@ -96,6 +101,7 @@ export default async function AdminImportPage() {
       </section>
 
       <AdminImportConsole samplePayload={SAMPLE_PAYLOAD} />
+      <FunnelDashboard data={funnelDashboard} />
     </main>
   );
 }

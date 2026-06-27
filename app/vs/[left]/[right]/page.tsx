@@ -48,7 +48,13 @@ export default async function VsPage({ params }: PageProps) {
 
   return (
     <main className="page-shell">
-      <AnalyticsPageView page={`seo-vs:${params.left}:${params.right}`} compareIds={rackets.map((item) => item.id)} />
+      <AnalyticsPageView
+        page={`seo-vs:${params.left}:${params.right}`}
+        compareIds={rackets.map((item) => item.id)}
+        stage="acquisition"
+        source="seo_vs"
+        intent="compare_specific_models"
+      />
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Rackets</Link>
         <span>/</span>

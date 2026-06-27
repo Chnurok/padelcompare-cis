@@ -8,18 +8,24 @@ type Props = AnchorHTMLAttributes<HTMLAnchorElement> & {
   children: ReactNode;
   compareIds?: string[];
   eventType?: string;
+  intent?: string;
   meta?: Record<string, string | number | boolean | null | undefined>;
   page: string;
   racketId?: string;
+  source?: string;
+  stage?: string;
 };
 
 export function TrackedOutboundLink({
   children,
   compareIds = [],
   eventType = "offer_click",
+  intent,
   meta,
   page,
   racketId,
+  source,
+  stage,
   onClick,
   ...props
 }: Props) {
@@ -33,7 +39,10 @@ export function TrackedOutboundLink({
           page,
           racketId,
           compareIds,
-          meta
+          intent,
+          meta,
+          source,
+          stage
         });
       }}
     >

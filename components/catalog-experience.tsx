@@ -33,6 +33,12 @@ type Props = {
     versus: Array<{ left: string; right: string; title: string }>;
   };
   adminHref: string;
+  funnel: {
+    compareCtaClicks: number;
+    compareLinkCopies: number;
+    topSource?: string;
+    topIntent?: string;
+  };
 };
 
 const MAX_COMPARE = 4;
@@ -70,7 +76,8 @@ export function CatalogExperience({
   collections,
   recommendationRail,
   seoPages,
-  adminHref
+  adminHref,
+  funnel
 }: Props) {
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("all");
@@ -163,7 +170,10 @@ export function CatalogExperience({
       await trackEvent({
         type: "compare_link_copy",
         page: "home",
-        compareIds
+        compareIds,
+        intent: "share_shortlist",
+        source: "shortlist_banner",
+        stage: "decision"
       });
     } catch {
       setCompareState("error");
@@ -205,7 +215,10 @@ export function CatalogExperience({
           type: "lead_submit",
           page: "home",
           racketId: featuredRacket?.id,
-          compareIds
+          compareIds,
+          intent: "partner_follow_up",
+          source: "investor_cta",
+          stage: "lead"
         });
       }
 
@@ -282,6 +295,40 @@ export function CatalogExperience({
           <div className="metric-card">
             <span>Moat layer</span>
             <strong>Specs + verdict + route</strong>
+          </div>
+          <div className="metric-card">
+            <span>Funnel signals</span>
+            <strong>{analytics.offerClicks} clicks / {analytics.leadSubmits} leads</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Signals</p>
+            <h2>Поведение уже читается как воронка</h2>
+            <p className="panel-text">
+              Compare CTA, копирование shortlist и offer clicks теперь можно разрезать по stage/source/intent.
+            </p>
+          </div>
+        </div>
+        <div className="hero-metrics">
+          <div className="metric-card">
+            <span>Compare CTA</span>
+            <strong>{funnel.compareCtaClicks}</strong>
+          </div>
+          <div className="metric-card">
+            <span>Link copies</span>
+            <strong>{funnel.compareLinkCopies}</strong>
+          </div>
+          <div className="metric-card">
+            <span>Top source</span>
+            <strong>{funnel.topSource ?? "no data"}</strong>
+          </div>
+          <div className="metric-card">
+            <span>Top intent</span>
+            <strong>{funnel.topIntent ?? "no data"}</strong>
           </div>
         </div>
       </section>
@@ -546,7 +593,10 @@ export function CatalogExperience({
                 void trackEvent({
                   type: "compare_cta_click",
                   page: "home",
-                  compareIds
+                  compareIds,
+                  intent: "open_compare",
+                  source: "shortlist_banner",
+                  stage: "decision"
                 });
               }}
             >

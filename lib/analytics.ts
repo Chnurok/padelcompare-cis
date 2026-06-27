@@ -3,7 +3,10 @@ export type AnalyticsPayload = {
   page?: string;
   racketId?: string;
   compareIds?: string[];
+  intent?: string;
   meta?: Record<string, string | number | boolean | null | undefined>;
+  source?: string;
+  stage?: string;
 };
 
 export async function trackEvent(payload: AnalyticsPayload) {

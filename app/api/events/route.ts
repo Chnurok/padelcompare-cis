@@ -20,7 +20,12 @@ export async function POST(request: Request) {
       page: parsed.data.page,
       racketId: parsed.data.racketId,
       compareIds: JSON.stringify(parsed.data.compareIds),
-      meta: JSON.stringify(parsed.data.meta)
+      meta: JSON.stringify({
+        ...parsed.data.meta,
+        stage: parsed.data.stage,
+        source: parsed.data.source,
+        intent: parsed.data.intent
+      })
     }
   });
 

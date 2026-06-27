@@ -29,6 +29,9 @@ test("lead schema rejects too-short payloads", () => {
 test("event schema keeps structured meta", () => {
   const parsed = eventSchema.parse({
     type: "offer_click",
+    stage: "offer",
+    source: "compare_card",
+    intent: "visit_offer",
     meta: {
       merchant: "Padel Zone",
       rank: 1,
@@ -41,6 +44,9 @@ test("event schema keeps structured meta", () => {
     rank: 1,
     featured: true
   });
+  assert.equal(parsed.stage, "offer");
+  assert.equal(parsed.source, "compare_card");
+  assert.equal(parsed.intent, "visit_offer");
 });
 
 test("catalog query schema parses numeric filters", () => {
