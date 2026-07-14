@@ -3,6 +3,7 @@ import { catalogImportSchema } from "@/lib/validation";
 
 export type ImportPayload = {
   dryRun?: boolean;
+  sourceLabel?: string;
   items: Array<{
     externalKey: string;
     slug: string;
@@ -40,6 +41,7 @@ export type ImportPayload = {
 
 export type ImportSummary = {
   dryRun: boolean;
+  sourceLabel?: string;
   rackets: number;
   created: number;
   updated: number;
@@ -65,6 +67,7 @@ export async function importCatalogPayload(raw: unknown): Promise<ImportSummary>
   if (payload.dryRun) {
     return {
       dryRun: true,
+      sourceLabel: payload.sourceLabel,
       rackets: payload.items.length,
       created: payload.items.length,
       updated: 0,
@@ -119,7 +122,9 @@ export async function importCatalogPayload(raw: unknown): Promise<ImportSummary>
           frameMaterial: item.frameMaterial,
           coreMaterial: item.coreMaterial,
           verdict: item.verdict,
-          whoItFits: item.whoItFits
+          whoItFits: item.whoItFits,
+          sourceLabel: payload.sourceLabel,
+          importedAt: new Date()
         },
         create: {
           externalKey: item.externalKey,
@@ -139,7 +144,9 @@ export async function importCatalogPayload(raw: unknown): Promise<ImportSummary>
           frameMaterial: item.frameMaterial,
           coreMaterial: item.coreMaterial,
           verdict: item.verdict,
-          whoItFits: item.whoItFits
+          whoItFits: item.whoItFits,
+          sourceLabel: payload.sourceLabel,
+          importedAt: new Date()
         }
       });
 
@@ -194,6 +201,8 @@ export async function importCatalogPayload(raw: unknown): Promise<ImportSummary>
             availability: offer.availability,
             stockNote: offer.stockNote,
             lastCheckedAt: offer.lastCheckedAt ? new Date(offer.lastCheckedAt) : new Date(),
+            sourceLabel: payload.sourceLabel,
+            importedAt: new Date(),
             priceHistory: {
               create: {
                 priceAmount: offer.price,
@@ -206,8 +215,9 @@ export async function importCatalogPayload(raw: unknown): Promise<ImportSummary>
       }
     }
 
-    return {
+    const summary = {
       dryRun: false,
+      sourceLabel: payload.sourceLabel,
       rackets: payload.items.length,
       created,
       updated,
@@ -215,5 +225,20 @@ export async function importCatalogPayload(raw: unknown): Promise<ImportSummary>
       brands: brandNames.size,
       merchants: merchantNames.size
     };
+
+    await tx.importRun.create({
+      data: {
+        sourceLabel: payload.sourceLabel,
+        rackets: summary.rackets,
+        createdCount: summary.created,
+        updatedCount: summary.updated,
+        offers: summary.offers,
+        brands: summary.brands,
+        merchants: summary.merchants,
+        payloadSize: payload.items.length
+      }
+    });
+
+    return summary;
   });
 }

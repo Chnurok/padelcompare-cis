@@ -6,19 +6,16 @@ import {
   getBrandSummariesFromDb,
   getCatalogStatsFromDb,
   getLatestRacketsFromDb,
-  getRecommendationRailFromDb,
   getTopDealsFromDb,
   listRacketsFromDb
 } from "@/lib/catalog/catalog-db";
 import { COLLECTIONS } from "@/lib/catalog/collections";
-import { SEO_CATEGORY_PAGES, SEO_VS_PAGES } from "@/lib/seo/landing-pages";
 
 export default async function HomePage() {
-  const [rackets, stats, analytics, recommendationRail, funnelDashboard, topDeals, latestRackets, brands] = await Promise.all([
+  const [rackets, stats, analytics, funnelDashboard, topDeals, latestRackets, brands] = await Promise.all([
     listRacketsFromDb(),
     getCatalogStatsFromDb(),
     getAnalyticsSummaryFromDb(),
-    getRecommendationRailFromDb(),
     getFunnelDashboardFromDb(),
     getTopDealsFromDb(),
     getLatestRacketsFromDb(),
@@ -33,12 +30,6 @@ export default async function HomePage() {
         stats={stats}
         analytics={analytics}
         collections={COLLECTIONS.map(({ slug, title }) => ({ slug, title }))}
-        recommendationRail={recommendationRail}
-        seoPages={{
-          categories: SEO_CATEGORY_PAGES.map(({ slug, title }) => ({ slug, title })),
-          versus: SEO_VS_PAGES.map(({ left, right, title }) => ({ left, right, title }))
-        }}
-        adminHref="/admin/import"
         funnel={{
           compareCtaClicks: funnelDashboard.compareCtaClicks,
           compareLinkCopies: funnelDashboard.compareLinkCopies,

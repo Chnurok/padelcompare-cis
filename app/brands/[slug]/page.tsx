@@ -54,7 +54,7 @@ export default async function BrandPage({ params }: PageProps) {
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Rackets</Link>
         <span>/</span>
-        <span>Brands</span>
+        <Link href="/brands">Brands</Link>
         <span>/</span>
         <span>{brand.name}</span>
       </nav>

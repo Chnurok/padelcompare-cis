@@ -36,6 +36,22 @@ test("seo category recommendations return ranked rackets", () => {
   assert.ok(items.some((item) => item.playStyle === "power"));
 });
 
+test("seo catalog covers more than five intent pages", () => {
+  const slugs = [
+    "best-padel-racket-for-beginners",
+    "best-control-padel-rackets",
+    "best-power-padel-rackets",
+    "best-padel-rackets-under-300",
+    "best-padel-racket-for-intermediate-players",
+    "best-round-padel-rackets",
+    "best-soft-padel-rackets"
+  ];
+
+  for (const slug of slugs) {
+    assert.ok(getSeoCategoryPage(slug));
+  }
+});
+
 test("vs pages resolve regardless of side order", () => {
   const page = getSeoVsPage("bullpadel-vertex-04-25", "nox-at10-18k-25");
 

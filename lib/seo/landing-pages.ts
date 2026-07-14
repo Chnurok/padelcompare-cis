@@ -57,6 +57,33 @@ export const SEO_CATEGORY_PAGES: SeoCategoryPage[] = [
       "Фокус здесь не просто на низкой цене, а на моделях, которые дают лучший decision value в своём бюджете.",
     compareTitle: "Сравнить модели до 300 евро",
     presetSlug: "value-hunter"
+  },
+  {
+    slug: "best-padel-racket-for-intermediate-players",
+    title: "Best padel racket for intermediate players",
+    description: "Универсальные padel-ракетки для игрока, который уже вырос из beginner-сегмента.",
+    intro:
+      "Этот интент стоит между безопасным первым выбором и дорогим pro-сегментом: здесь важны баланс, уверенность в защите и запас для атаки.",
+    compareTitle: "Сравнить варианты для intermediate",
+    presetSlug: "all-court-upgrade"
+  },
+  {
+    slug: "best-round-padel-rackets",
+    title: "Best round padel rackets",
+    description: "Round-shaped padel-ракетки для контроля, sweet spot и более предсказуемой защиты.",
+    intro:
+      "Такой запрос обычно приходит от игроков, которым нужен control-first shape без резкого ухода в атакующую жёсткость.",
+    compareTitle: "Сравнить round-модели",
+    presetSlug: "control-builder"
+  },
+  {
+    slug: "best-soft-padel-rackets",
+    title: "Best soft padel rackets",
+    description: "Мягкие padel-ракетки для comfort feel, снижения жёсткости на руке и более лёгкого выхода мяча.",
+    intro:
+      "Это buyer intent для тех, кто ищет comfort-first feel, safer touch и более мягкий отклик без ощущения доски.",
+    compareTitle: "Сравнить soft-модели",
+    presetSlug: "comfort-first"
   }
 ];
 
@@ -84,6 +111,22 @@ export const SEO_VS_PAGES: SeoVsPage[] = [
     description: "Лёгкая универсальная модель против мягкой power-entry ракетки для более смелой игры сверху.",
     intro:
       "Такой compare особенно полезен для intermediate игрока, который хочет понять, стоит ли уходить в power-сегмент."
+  },
+  {
+    left: "babolat-counter-viper-25",
+    right: "adidas-metalbone-ctrl-25",
+    title: "Babolat Counter Viper vs Adidas Metalbone Ctrl",
+    description: "Сравнение двух control-oriented вариантов для игрока, который хочет выбирать между стабильностью и более строгим feel.",
+    intro:
+      "Этот запрос отражает реальный decision moment: обе модели сильны в control-сценарии, но дают разный характер отклика."
+  },
+  {
+    left: "wilson-blade-pro-v3",
+    right: "head-speed-motion-25",
+    title: "Wilson Blade Pro V3 vs Head Speed Motion",
+    description: "Более агрессивная performance-модель против лёгкой и мобильной all-court рамки.",
+    intro:
+      "Полезно для игрока, который сомневается между raw performance feel и более лёгким переходом для регулярной игры."
   }
 ];
 

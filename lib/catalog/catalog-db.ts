@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
+import { normalizeOfferUrl } from "@/lib/catalog/links";
 import { getRacketImageUrl } from "@/lib/catalog/racket-media";
+import { buildAffiliateLink } from "@/lib/commerce/affiliate";
 import {
   getPresetRecommendations,
   getSimilarityScore,
@@ -9,12 +11,16 @@ import {
 export type CatalogOffer = {
   merchant: string;
   url: string;
+  isAffiliate: boolean;
+  affiliateLabel?: string;
   currency: string;
   price: number;
   previousPrice?: number;
   availability: string;
   stockNote?: string;
   lastCheckedAt?: string;
+  sourceLabel?: string;
+  importedAt?: string;
   priceHistory: Array<{
     price: number;
     currency: string;
@@ -42,6 +48,8 @@ export type CatalogRacket = {
   currentPrice: number;
   verdict: string;
   whoItFits: string;
+  sourceLabel?: string;
+  importedAt?: string;
   pros: string[];
   cons: string[];
   offers: CatalogOffer[];
@@ -81,6 +89,14 @@ export type BrandSummary = {
   maxPrice: number;
 };
 
+export type MerchantSummary = {
+  slug: string;
+  name: string;
+  offers: number;
+  rackets: number;
+  bestDiscountPercent: number;
+};
+
 export type AnalyticsSummary = {
   compareOpens: number;
   offerClicks: number;
@@ -91,6 +107,10 @@ export type DealRailItem = CatalogRacket & {
   discountAmount: number;
   discountPercent: number;
 };
+
+function slugify(input: string) {
+  return input.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
 
 function makeImageMark(brand: string, model: string) {
   const token = `${brand} ${model}`
@@ -108,22 +128,30 @@ function toCatalogRacket(row: Awaited<ReturnType<typeof fetchRackets>>[number]):
     .sort(
     (left, right) => Number(left.priceAmount) - Number(right.priceAmount)
     )
-    .map((offer) => ({
+    .map((offer) => {
+      const affiliate = buildAffiliateLink(normalizeOfferUrl(offer.productUrl));
+
+      return {
       merchant: offer.merchant.name,
-      url: offer.productUrl,
+      url: affiliate.url,
+      isAffiliate: affiliate.isAffiliate,
+      affiliateLabel: affiliate.label,
       currency: offer.currency,
       price: Number(offer.priceAmount),
       previousPrice: offer.previousPrice ? Number(offer.previousPrice) : undefined,
       availability: offer.availability,
       stockNote: offer.stockNote ?? undefined,
       lastCheckedAt: offer.lastCheckedAt?.toISOString(),
-      priceHistory: offer.priceHistory.map((entry) => ({
-        price: Number(entry.priceAmount),
+      sourceLabel: offer.sourceLabel ?? undefined,
+        importedAt: offer.importedAt?.toISOString(),
+        priceHistory: offer.priceHistory.map((entry) => ({
+          price: Number(entry.priceAmount),
         currency: entry.currency,
         availability: entry.availability,
-        capturedAt: entry.capturedAt.toISOString()
-      }))
-    }));
+          capturedAt: entry.capturedAt.toISOString()
+        }))
+      };
+    });
   const cheapestOffer = offers[0];
 
   return {
@@ -145,6 +173,8 @@ function toCatalogRacket(row: Awaited<ReturnType<typeof fetchRackets>>[number]):
     currentPrice: cheapestOffer?.price ?? 0,
     verdict: row.verdict,
     whoItFits: row.whoItFits,
+    sourceLabel: row.sourceLabel ?? undefined,
+    importedAt: row.importedAt?.toISOString(),
     pros: row.pros.sort((a, b) => a.position - b.position).map((item) => item.text),
     cons: row.cons.sort((a, b) => a.position - b.position).map((item) => item.text),
     offers,
@@ -279,6 +309,14 @@ export async function getCompareSetFromDb(ids: string[]) {
   return normalized.map((id) => byId.get(id)).filter((racket): racket is CatalogRacket => Boolean(racket));
 }
 
+export async function getCatalogRacketsByIdsFromDb(ids: string[]) {
+  const rows = await fetchRackets();
+  const byId = new Map(rows.map(toCatalogRacket).map((racket) => [racket.id, racket]));
+  return [...new Set(ids.map((id) => id.trim()).filter(Boolean))]
+    .map((id) => byId.get(id))
+    .filter((racket): racket is CatalogRacket => Boolean(racket));
+}
+
 export async function getRelatedRacketsFromDb(slug: string, limit = 3) {
   const rows = await fetchRackets();
   const rackets = rows.map(toCatalogRacket);
@@ -331,6 +369,47 @@ export async function getTopDealsFromDb(limit = 4): Promise<DealRailItem[]> {
     .slice(0, limit);
 }
 
+export async function getMerchantSummariesFromDb(limit = 8): Promise<MerchantSummary[]> {
+  const rackets = await listRacketsFromDb();
+  const map = new Map<string, { name: string; offers: number; rackets: Set<string>; bestDiscountPercent: number }>();
+
+  for (const racket of rackets) {
+    for (const offer of racket.offers) {
+      const previousPrice = offer.previousPrice ?? offer.price;
+      const discountAmount = Math.max(0, previousPrice - offer.price);
+      const discountPercent = previousPrice > 0 ? Math.round((discountAmount / previousPrice) * 100) : 0;
+      const current = map.get(offer.merchant) ?? {
+        name: offer.merchant,
+        offers: 0,
+        rackets: new Set<string>(),
+        bestDiscountPercent: 0
+      };
+
+      current.offers += 1;
+      current.rackets.add(racket.id);
+      current.bestDiscountPercent = Math.max(current.bestDiscountPercent, discountPercent);
+      map.set(offer.merchant, current);
+    }
+  }
+
+  return [...map.values()]
+    .map((item) => ({
+      slug: slugify(item.name),
+      name: item.name,
+      offers: item.offers,
+      rackets: item.rackets.size,
+      bestDiscountPercent: item.bestDiscountPercent
+    }))
+    .sort((left, right) => {
+      if (right.bestDiscountPercent !== left.bestDiscountPercent) {
+        return right.bestDiscountPercent - left.bestDiscountPercent;
+      }
+
+      return right.offers - left.offers;
+    })
+    .slice(0, limit);
+}
+
 export async function getLatestRacketsFromDb(limit = 4) {
   const rackets = await listRacketsFromDb();
 
@@ -371,5 +450,13 @@ export async function getRacketsByBrandSlugFromDb(slug: string) {
   const rackets = await listRacketsFromDb();
   return rackets.filter(
     (racket) => racket.brand.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === slug
+  );
+}
+
+export async function getRacketsByMerchantSlugFromDb(slug: string) {
+  const rackets = await listRacketsFromDb();
+
+  return rackets.filter((racket) =>
+    racket.offers.some((offer) => slugify(offer.merchant) === slug)
   );
 }

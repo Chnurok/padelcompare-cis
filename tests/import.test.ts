@@ -72,6 +72,7 @@ test("catalog import dry run returns summary without db writes", async () => {
   const summary = await importCatalogPayload(validPayload);
 
   assert.equal(summary.dryRun, true);
+  assert.equal(summary.sourceLabel, undefined);
   assert.equal(summary.rackets, 1);
   assert.equal(summary.offers, 1);
   assert.equal(summary.created, 1);

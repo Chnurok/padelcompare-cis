@@ -1,8 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 
+import { normalizeOfferUrl } from "../lib/catalog/links";
 import { rackets } from "../data/rackets.js";
 
 const prisma = new PrismaClient();
+type SeedRacket = (typeof rackets)[number];
 
 function slugify(input: string) {
   return input
@@ -11,7 +13,7 @@ function slugify(input: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-function buildExtraOffers(racket: (typeof rackets)[number]) {
+function buildExtraOffers(racket: SeedRacket) {
   const variants = [
     {
       name: `${racket.brand} Direct`,
@@ -41,7 +43,7 @@ function buildExtraOffers(racket: (typeof rackets)[number]) {
 
   return variants.map((variant, index) => ({
     merchantName: index === 0 ? racket.shopName : variant.name,
-    url: index === 0 ? racket.shopUrl : `${racket.shopUrl}${variant.suffix}`,
+    url: normalizeOfferUrl(index === 0 ? racket.shopUrl : `${racket.shopUrl}${variant.suffix}`),
     price: Math.max(199, racket.currentPrice + variant.delta),
     previousPrice: Math.max(205, racket.currentPrice + variant.previousDelta),
     availability: variant.availability,
@@ -59,7 +61,7 @@ async function main() {
   await prisma.merchant.deleteMany();
   await prisma.brand.deleteMany();
 
-  for (const racket of rackets) {
+  for (const racket of rackets as SeedRacket[]) {
     const brand = await prisma.brand.upsert({
       where: { name: racket.brand },
       update: {},
@@ -89,14 +91,16 @@ async function main() {
         coreMaterial: racket.coreMaterial,
         verdict: racket.verdict,
         whoItFits: racket.whoItFits,
+        sourceLabel: "Seed catalog",
+        importedAt: new Date("2026-06-28T00:00:00.000Z"),
         pros: {
-          create: racket.pros.map((text, position) => ({
+          create: racket.pros.map((text: string, position: number) => ({
             text,
             position
           }))
         },
         cons: {
-          create: racket.cons.map((text, position) => ({
+          create: racket.cons.map((text: string, position: number) => ({
             text,
             position
           }))
@@ -125,6 +129,8 @@ async function main() {
           availability: offer.availability,
           stockNote: offer.stockNote,
           lastCheckedAt: new Date(),
+          sourceLabel: "Seed catalog",
+          importedAt: new Date("2026-06-28T00:00:00.000Z"),
           priceHistory: {
             create: [
               {

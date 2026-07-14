@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AffiliateDisclosure } from "@/components/affiliate-disclosure";
 import { AnalyticsPageView } from "@/components/analytics-page-view";
 import { getCompareSetFromDb } from "@/lib/catalog/catalog-db";
 import { getAverageScore, getMetricScore, scoreLabel } from "@/lib/catalog/recommendation";
@@ -105,6 +106,24 @@ export default async function VsPage({ params }: PageProps) {
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="card detail-card">
+        <p className="eyebrow">Следующий шаг</p>
+        <h2>Если всё ещё сомневаешься</h2>
+        <p>
+          Этот `vs`-экран закрывает acquisition intent, но финальное решение удобнее дожать через полный
+          compare и персональный подбор с сохранением shortlist.
+        </p>
+        <div className="hero-actions">
+          <Link href={`/compare?ids=${rackets.map((item) => item.id).join(",")}`} className="button button-primary">
+            Открыть full compare
+          </Link>
+          <Link href="/finder#personal-fitting" className="button">
+            Попросить персональный подбор
+          </Link>
+        </div>
+        <AffiliateDisclosure compact />
       </section>
     </main>
   );

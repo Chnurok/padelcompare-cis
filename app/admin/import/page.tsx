@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { AdminImportHistory } from "@/components/admin-import-history";
 import { AdminImportConsole } from "@/components/admin-import-console";
 import { FunnelDashboard } from "@/components/funnel-dashboard";
+import { getImportRunsFromDb } from "@/lib/admin/import-runs";
 import { getFunnelDashboardFromDb } from "@/lib/analytics-dashboard";
 import { getCatalogStatsFromDb } from "@/lib/catalog/catalog-db";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Admin import",
@@ -64,9 +68,10 @@ const SAMPLE_PAYLOAD = JSON.stringify(
 );
 
 export default async function AdminImportPage() {
-  const [stats, funnelDashboard] = await Promise.all([
+  const [stats, funnelDashboard, importRuns] = await Promise.all([
     getCatalogStatsFromDb(),
-    getFunnelDashboardFromDb()
+    getFunnelDashboardFromDb(),
+    getImportRunsFromDb()
   ]);
 
   return (
@@ -100,7 +105,21 @@ export default async function AdminImportPage() {
         </div>
       </section>
 
+      <section className="card">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Admin navigation</p>
+            <h2>Ops entrypoints</h2>
+            <p className="panel-text">Из админки уже можно управлять не только каталогом, но и входящими product leads.</p>
+          </div>
+          <Link href="/admin/leads" className="button button-primary">
+            Открыть lead inbox
+          </Link>
+        </div>
+      </section>
+
       <AdminImportConsole samplePayload={SAMPLE_PAYLOAD} />
+      <AdminImportHistory runs={importRuns} />
       <FunnelDashboard data={funnelDashboard} />
     </main>
   );

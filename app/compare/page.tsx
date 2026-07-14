@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { AffiliateDisclosure } from "@/components/affiliate-disclosure";
 import { AnalyticsPageView } from "@/components/analytics-page-view";
 import { TrackedOutboundLink } from "@/components/tracked-outbound-link";
 import { getCompareSetFromDb } from "@/lib/catalog/catalog-db";
@@ -8,11 +9,16 @@ import type { CatalogRacket } from "@/lib/catalog/catalog-db";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
 import {
   getAverageScore,
+  getCompareEdgeHighlights,
   getMetricScore,
+  getPlayerFitLabel,
   RATING_ROWS,
   type RatingKey,
-  scoreLabel
+  scoreLabel,
+  getTradeoffNote,
+  getValueScore
 } from "@/lib/catalog/recommendation";
+import { formatAvailability, formatBalance, formatHardness, formatPlayStyle, formatShape, formatSkillLevel, formatSweetSpot } from "@/lib/catalog/format";
 
 type PageProps = {
   searchParams: {
@@ -32,18 +38,24 @@ const FIELDS: Array<[string, string]> = [
   ["Вес", "weight"],
   ["Баланс", "balance"],
   ["Жесткость", "hardness"],
-  ["Face", "faceMaterial"],
-  ["Frame", "frameMaterial"],
-  ["Core", "coreMaterial"],
+  ["Поверхность", "faceMaterial"],
+  ["Рама", "frameMaterial"],
+  ["Сердцевина", "coreMaterial"],
   ["Уровень", "skillLevel"],
   ["Профиль", "playStyle"],
-  ["Sweet spot", "sweetSpot"],
+  ["Сладкая точка", "sweetSpot"],
   ["Цена", "currentPrice"]
 ];
 
 type InsightCard = {
   title: string;
   value: string;
+  note: string;
+};
+
+type DecisionAngle = {
+  title: string;
+  winner: string;
   note: string;
 };
 
@@ -63,6 +75,40 @@ function getCheapestRacket(rackets: CatalogRacket[]) {
   return [...rackets].sort((left, right) => left.currentPrice - right.currentPrice)[0];
 }
 
+function getBestValueRacket(rackets: CatalogRacket[]) {
+  return [...rackets].sort((left, right) => getValueScore(right) - getValueScore(left))[0];
+}
+
+function getMostForgivingRacket(rackets: CatalogRacket[]) {
+  return [...rackets].sort((left, right) => getMetricScore(right, "forgiveness") - getMetricScore(left, "forgiveness"))[0];
+}
+
+function buildDecisionAngles(rackets: CatalogRacket[]): DecisionAngle[] {
+  if (rackets.length === 0) return [];
+
+  const comfortLeader = getLeaderByMetric(rackets, "comfort");
+  const forgivingLeader = getMostForgivingRacket(rackets);
+  const valueLeader = getBestValueRacket(rackets);
+
+  return [
+    {
+      title: "Самый безопасный выбор",
+      winner: forgivingLeader.fullName,
+      note: `${getMetricScore(forgivingLeader, "forgiveness")} forgiveness · ${getPlayerFitLabel(forgivingLeader)}`
+    },
+    {
+      title: "Лучший comfort / easy transition",
+      winner: comfortLeader.fullName,
+      note: `${getMetricScore(comfortLeader, "comfort")} comfort · ${getTradeoffNote(comfortLeader)}`
+    },
+    {
+      title: "Лучший value-for-money",
+      winner: valueLeader.fullName,
+      note: `Value score ${getValueScore(valueLeader)} · EUR ${valueLeader.currentPrice}`
+    }
+  ];
+}
+
 function buildInsights(rackets: CatalogRacket[]): InsightCard[] {
   if (rackets.length === 0) {
     return [];
@@ -75,22 +121,22 @@ function buildInsights(rackets: CatalogRacket[]): InsightCard[] {
 
   return [
     {
-      title: "Best overall",
+      title: "Лучший общий выбор",
       value: overallLeader.fullName,
       note: `${getAverageScore(overallLeader)} overall score · ${overallLeader.verdict}`
     },
     {
-      title: "Best for control",
+      title: "Лучший для контроля",
       value: controlLeader.fullName,
       note: `${scoreLabel(getMetricScore(controlLeader, "control"))} control profile`
     },
     {
-      title: "Best for power",
+      title: "Лучший для атаки",
       value: powerLeader.fullName,
       note: `${scoreLabel(getMetricScore(powerLeader, "power"))} attacking profile`
     },
     {
-      title: "Best value entry",
+      title: "Лучший по цене",
       value: valueLeader.fullName,
       note: `От €${valueLeader.currentPrice} · ${valueLeader.shopName}`
     }
@@ -101,7 +147,7 @@ export function generateMetadata({ searchParams }: PageProps): Metadata {
   const ids = normalizeIds(searchParams.ids);
 
   return {
-    title: ids.length >= 2 ? "Сравнение ракеток | PadelCompare CIS" : "Compare | PadelCompare CIS",
+    title: ids.length >= 2 ? "Сравнение ракеток | PadelCompare CIS" : "Сравнение | PadelCompare CIS",
     description:
       ids.length >= 2
         ? "Сравнивай характеристики, профиль и trade-offs нескольких padel-ракеток на одном экране."
@@ -113,6 +159,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
   const ids = normalizeIds(searchParams.ids);
   const rackets = await getCompareSetFromDb(ids);
   const insights = buildInsights(rackets);
+  const decisionAngles = buildDecisionAngles(rackets);
 
   return (
     <main className="page-shell">
@@ -125,22 +172,22 @@ export default async function ComparePage({ searchParams }: PageProps) {
         intent="evaluate_shortlist"
       />
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
-        <Link href="/">Rackets</Link>
+        <Link href="/">Ракетки</Link>
         <span>/</span>
-        <span>Compare</span>
+        <span>Сравнение</span>
       </nav>
 
       <section className="hero-card compare-hero">
         <div>
-          <p className="eyebrow">Compare view</p>
-          <h1>Сравнивай модели как отдельные продуктовые карточки, а не как сухую таблицу.</h1>
+          <p className="eyebrow">Сравнение</p>
+          <h1>Сравнивай shortlist как экран приложения, а не как сухую таблицу.</h1>
           <p className="hero-text">
-            Подтянул layout ближе к референсу: крупные визуалы ракеток, быстрые лидеры и компактный
-            ratings-блок под карточками.
+            Этот экран должен работать как финальная decision surface для будущего iPhone-клиента:
+            крупные карточки, быстрые лидеры и понятные trade-offs.
           </p>
         </div>
         <Link href="/" className="button button-primary">
-          Вернуться в каталог
+          Вернуться домой
         </Link>
       </section>
 
@@ -178,9 +225,20 @@ export default async function ComparePage({ searchParams }: PageProps) {
               ))}
             </section>
 
+            <section className="insights-grid">
+              {decisionAngles.map((item) => (
+                <article key={item.title} className="insight-card">
+                  <p>{item.title}</p>
+                  <h2>{item.winner}</h2>
+                  <span>{item.note}</span>
+                </article>
+              ))}
+            </section>
+
             <section className="compare-cards-grid">
               {rackets.map((racket) => {
                 const totalScore = getAverageScore(racket);
+                const edgeHighlights = getCompareEdgeHighlights(racket, rackets);
 
                 return (
                   <article key={racket.id} className="compare-racket-card">
@@ -201,12 +259,21 @@ export default async function ComparePage({ searchParams }: PageProps) {
                         <li key={point}>{point}</li>
                       ))}
                     </ul>
+                    <div className="compare-explainer">
+                      <p><strong>Подойдет если:</strong> {getPlayerFitLabel(racket)}</p>
+                      <p><strong>Учти:</strong> {getTradeoffNote(racket)}</p>
+                    </div>
+                    <div className="compare-edge-list">
+                      {edgeHighlights.map((item) => (
+                        <span key={`${racket.id}-${item}`}>{item}</span>
+                      ))}
+                    </div>
                     <div className="compare-card-footer">
                       <div className="compare-price-tag">
                         <strong>€{racket.currentPrice}</strong>
                         <span>
                           {racket.shopName}
-                          {racket.offers.length > 1 ? ` · ${racket.offers.length} offers` : ""}
+                          {racket.offers.length > 1 ? ` · ${racket.offers.length} офферов` : ""}
                         </span>
                       </div>
                       <div className="compare-card-actions">
@@ -226,10 +293,11 @@ export default async function ComparePage({ searchParams }: PageProps) {
                           source="compare_card"
                           stage="offer"
                         >
-                          Смотреть оффер
+                          Смотреть предложение
                         </TrackedOutboundLink>
                       </div>
                     </div>
+                    {racket.offers.some((offer) => offer.isAffiliate) ? <AffiliateDisclosure compact /> : null}
                   </article>
                 );
               })}
@@ -237,8 +305,8 @@ export default async function ComparePage({ searchParams }: PageProps) {
 
             <section className="ratings-panel">
               <div className="ratings-panel-head">
-                <h2>Ratings</h2>
-                <p>Каждая строка показывает одну характеристику сразу по всем выбранным моделям.</p>
+                <h2>Оценки</h2>
+                <p>Каждая строка показывает одну характеристику сразу по всем выбранным моделям, чтобы было видно не только кто лучше, но и по какой оси.</p>
               </div>
 
               <div className="ratings-compare-head">
@@ -277,7 +345,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
 
             <section className="specs-panel">
               <div className="ratings-panel-head">
-                <h2>Specs</h2>
+                <h2>Характеристики</h2>
                 <p>Ниже оставил и сухие характеристики, чтобы экран был не только красивым, но и полезным.</p>
               </div>
 
@@ -323,7 +391,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
                     ))}
                   </tr>
                   <tr>
-                    <td>Best for</td>
+                    <td>Кому подходит</td>
                     {rackets.map((racket) => (
                       <td key={`${racket.id}-who`} className="verdict-cell">
                         {racket.whoItFits}

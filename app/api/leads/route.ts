@@ -22,7 +22,9 @@ export async function POST(request: Request) {
       name: parsed.data.name,
       contact: parsed.data.contact,
       intent: parsed.data.intent,
-      notes: parsed.data.notes,
+      notes: [parsed.data.sourcePage ? `Source page: ${parsed.data.sourcePage}` : "", parsed.data.notes]
+        .filter(Boolean)
+        .join(" || "),
       selectedId: parsed.data.selectedId,
       compareIds: JSON.stringify(parsed.data.compareIds)
     }

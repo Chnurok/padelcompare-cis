@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AffiliateDisclosure } from "@/components/affiliate-disclosure";
 import { AnalyticsPageView } from "@/components/analytics-page-view";
 import { RacketDetailCompare } from "@/components/racket-detail-compare";
 import { TrackedOutboundLink } from "@/components/tracked-outbound-link";
 import { getRacketBySlugFromDb, getRelatedRacketsFromDb } from "@/lib/catalog/catalog-db";
+import { formatAvailability, formatBalance, formatHardness, formatPlayStyle, formatShape, formatSkillLevel, formatSweetSpot } from "@/lib/catalog/format";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
 import { getAverageScore, getSimilarityScore, scoreLabel } from "@/lib/catalog/recommendation";
 
@@ -15,18 +17,14 @@ type PageProps = {
   };
 };
 
-function formatTitleCase(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
 function buildProfile(racket: Awaited<ReturnType<typeof getRacketBySlugFromDb>>) {
   if (!racket) return [];
 
   return [
-    { label: "Shape", value: formatTitleCase(racket.shape) },
-    { label: "Style", value: formatTitleCase(racket.playStyle) },
-    { label: "Level", value: formatTitleCase(racket.skillLevel) },
-    { label: "Balance", value: formatTitleCase(racket.balance) }
+    { label: "Форма", value: formatShape(racket.shape) },
+    { label: "Профиль", value: formatPlayStyle(racket.playStyle) },
+    { label: "Уровень", value: formatSkillLevel(racket.skillLevel) },
+    { label: "Баланс", value: formatBalance(racket.balance) }
   ];
 }
 
@@ -34,18 +32,14 @@ function buildSpecs(racket: Awaited<ReturnType<typeof getRacketBySlugFromDb>>) {
   if (!racket) return [];
 
   return [
-    { label: "Season", value: String(racket.season) },
-    { label: "Weight", value: `${racket.weight} g` },
-    { label: "Hardness", value: formatTitleCase(racket.hardness) },
-    { label: "Sweet spot", value: formatTitleCase(racket.sweetSpot) },
-    { label: "Face", value: racket.faceMaterial },
-    { label: "Frame", value: racket.frameMaterial },
-    { label: "Core", value: racket.coreMaterial }
+    { label: "Сезон", value: String(racket.season) },
+    { label: "Вес", value: `${racket.weight} g` },
+    { label: "Жесткость", value: formatHardness(racket.hardness) },
+    { label: "Сладкая точка", value: formatSweetSpot(racket.sweetSpot) },
+    { label: "Поверхность", value: racket.faceMaterial },
+    { label: "Рама", value: racket.frameMaterial },
+    { label: "Сердцевина", value: racket.coreMaterial }
   ];
-}
-
-function formatAvailability(value: string) {
-  return value.replaceAll("_", " ");
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -94,7 +88,7 @@ export default async function RacketDetailPage({ params }: PageProps) {
         intent="inspect_model"
       />
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
-        <Link href="/">Rackets</Link>
+        <Link href="/">Ракетки</Link>
         <span>/</span>
         <span>{racket.brand}</span>
         <span>/</span>
@@ -103,7 +97,7 @@ export default async function RacketDetailPage({ params }: PageProps) {
 
       <section className="hero-card racket-detail-hero">
         <div className="racket-detail-copy">
-          <p className="eyebrow">Racket profile</p>
+          <p className="eyebrow">Профиль ракетки</p>
           <h1>{racket.fullName}</h1>
           <p className="hero-text">{racket.verdict}</p>
 
@@ -144,6 +138,9 @@ export default async function RacketDetailPage({ params }: PageProps) {
             <a href={`/similar?to=${racket.id}`} className="button">
               Найти похожие
             </a>
+              <Link href="/finder" className="button">
+              Открыть подбор
+            </Link>
           </div>
         </div>
 
@@ -154,24 +151,48 @@ export default async function RacketDetailPage({ params }: PageProps) {
 
       <section className="racket-detail-grid">
         <article className="card detail-card">
-          <p className="eyebrow">Best for</p>
+          <p className="eyebrow">Кому подходит</p>
           <h2>Кому подойдет</h2>
           <p>{racket.whoItFits}</p>
         </article>
 
         <article className="card detail-card">
-          <p className="eyebrow">Recommendation</p>
-          <h2>{scoreLabel(getAverageScore(racket))} fit score</h2>
+          <p className="eyebrow">Оценка</p>
+          <h2>{scoreLabel(getAverageScore(racket))} по профилю</h2>
           <p>
             Общий профиль модели сейчас оценивается в {getAverageScore(racket)}. Это уже идёт из общего
-            scoring engine, который одновременно питает compare и home recommendations.
+            scoring engine, который одновременно питает сравнение и рекомендации на главной.
+          </p>
+        </article>
+
+        <article className="card detail-card">
+          <p className="eyebrow">Следующий шаг</p>
+          <h2>Нужен более точный shortlist?</h2>
+          <p>
+            Если выбираешь не эту модель конкретно, а класс ракетки под свой стиль, открой подбор и
+            собери подбор уже от профиля игрока, бюджета и feel.
+          </p>
+          <div className="hero-actions">
+            <Link href="/finder" className="button button-primary">
+              Перейти в подбор
+            </Link>
+          </div>
+        </article>
+
+        <article className="card detail-card">
+          <p className="eyebrow">Источник данных</p>
+          <h2>Откуда эти данные</h2>
+          <p>
+            Источник: {racket.sourceLabel ?? "неизвестен"}
+            {racket.importedAt ? ` · импорт ${racket.importedAt.slice(0, 10)}` : ""}
           </p>
         </article>
       </section>
 
       <section className="card detail-list-card">
-        <p className="eyebrow">Offers</p>
+        <p className="eyebrow">Предложения</p>
         <h2>Где покупать</h2>
+        <AffiliateDisclosure compact />
         <ul className="detail-list">
           {racket.offers.map((offer) => (
             <li key={`${offer.merchant}-${offer.url}`}>
@@ -189,9 +210,11 @@ export default async function RacketDetailPage({ params }: PageProps) {
                 {offer.merchant}
               </TrackedOutboundLink>{" "}
               · €{offer.price}
-              {offer.previousPrice ? ` (was €${offer.previousPrice})` : ""}
+              {offer.isAffiliate ? " · affiliate" : ""}
+              {offer.previousPrice ? ` (было €${offer.previousPrice})` : ""}
               {offer.stockNote ? ` · ${offer.stockNote}` : ""}
-              {offer.lastCheckedAt ? ` · checked ${offer.lastCheckedAt.slice(0, 10)}` : ""}
+              {offer.lastCheckedAt ? ` · проверено ${offer.lastCheckedAt.slice(0, 10)}` : ""}
+              {offer.sourceLabel ? ` · источник ${offer.sourceLabel}` : ""}
               {` · ${formatAvailability(offer.availability)}`}
             </li>
           ))}
@@ -199,8 +222,8 @@ export default async function RacketDetailPage({ params }: PageProps) {
       </section>
 
       <section className="card detail-list-card">
-        <p className="eyebrow">Price history</p>
-        <h2>Последние price snapshots</h2>
+        <p className="eyebrow">История цены</p>
+        <h2>Последние изменения цены</h2>
         <ul className="detail-list">
           {racket.offers.flatMap((offer) =>
             offer.priceHistory.slice(0, 2).map((entry) => (

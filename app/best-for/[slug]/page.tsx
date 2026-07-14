@@ -43,6 +43,16 @@ export default async function BestForPage({ params }: PageProps) {
   const items = getSeoCategoryRecommendations(rackets, params.slug, 4);
   const compareHref =
     items.length >= 2 ? `/compare?ids=${items.slice(0, 3).map((item) => item.id).join(",")}` : null;
+  const faq = [
+    {
+      question: `Как выбрать страницу ${page.title}?`,
+      answer: "Сначала смотри на форму, feel и роль ракетки в розыгрыше, а потом уже на бренд и цену."
+    },
+    {
+      question: "Нужно ли сразу идти в compare?",
+      answer: "Да, если shortlist уже сузился до 2-3 моделей. Так быстрее видно реальные trade-offs."
+    }
+  ];
 
   return (
     <main className="page-shell">
@@ -55,7 +65,7 @@ export default async function BestForPage({ params }: PageProps) {
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Rackets</Link>
         <span>/</span>
-        <span>Best for</span>
+        <Link href="/best-for">Best for</Link>
         <span>/</span>
         <span>{page.title}</span>
       </nav>
@@ -78,6 +88,25 @@ export default async function BestForPage({ params }: PageProps) {
           </div>
         </div>
       </section>
+
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faq.map((item) => ({
+              "@type": "Question",
+              name: item.question,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: item.answer
+              }
+            }))
+          })
+        }}
+      />
 
       <section className="catalog-grid">
         {items.map((racket) => {
@@ -118,6 +147,23 @@ export default async function BestForPage({ params }: PageProps) {
             </article>
           );
         })}
+      </section>
+
+      <section className="card detail-list-card">
+        <p className="eyebrow">FAQ</p>
+        <h2>Что обычно хочет понять человек с этим запросом</h2>
+        <ul className="detail-list">
+          {faq.map((item) => (
+            <li key={item.question}>
+              <strong>{item.question}</strong> {item.answer}
+            </li>
+          ))}
+        </ul>
+        <div className="hero-actions">
+          <Link href="/finder#personal-fitting" className="button button-primary">
+            Получить персональный shortlist
+          </Link>
+        </div>
       </section>
     </main>
   );

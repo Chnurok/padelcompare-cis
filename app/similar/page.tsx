@@ -52,9 +52,10 @@ export default async function SimilarPage({ searchParams }: PageProps) {
       <section className="hero-card compare-hero">
         <div>
           <p className="eyebrow">Similar rackets tool</p>
-          <h1>Найди похожие варианты быстро</h1>
+          <h1>Найди похожие варианты как отдельный app flow</h1>
           <p className="hero-text">
-            Отдельный вход в продукт для сценария “мне нравится эта модель, но хочу ещё 5-8 близких альтернатив”.
+            Это отдельный вход для сценария “эта модель нравится, но покажи ещё 5-8 близких альтернатив”,
+            без возврата в общий каталог.
           </p>
         </div>
       </section>

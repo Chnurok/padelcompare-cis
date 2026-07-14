@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PadelCompare CIS — Гайд со скринами</title>
+  <style>
+    :root {
+      --bg: #f5efe4;
+      --paper: #fffdfa;
+      --text: #231d18;
+      --muted: #6b6259;
+      --line: #eadfce;
+      --accent: #c06f3b;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); line-height: 1.45; }
+    .page { max-width: 960px; margin: 0 auto; padding: 30px 24px 50px; }
+    .card { background: var(--paper); border: 1px solid var(--line); border-radius: 22px; padding: 24px; margin-bottom: 18px; }
+    .eyebrow { margin: 0 0 10px; color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; }
+    h1,h2,h3,p { margin-top: 0; }
+    h1 { font-size: 36px; line-height: 1.02; }
+    h2 { font-size: 24px; margin-bottom: 12px; }
+    .muted { color: var(--muted); }
+    .shot { margin-top: 16px; }
+    .shot img { width: 100%; border-radius: 16px; border: 1px solid var(--line); display: block; }
+    .caption { margin-top: 8px; font-size: 13px; color: var(--muted); }
+    ol, ul { padding-left: 20px; }
+    code { background: #f4efe8; padding: 2px 6px; border-radius: 6px; }
+    @media print { .card { break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="card">
+      <p class="eyebrow">PadelCompare CIS</p>
+      <h1>Как пользоваться сайтом и админкой</h1>
+      <p class="muted">Версия со скринами: главная, finder, compare и обе admin-страницы.</p>
+    </section>
+
+    <section class="card">
+      <h2>1. Главная и входы в сценарии</h2>
+      <ul>
+        <li><strong>Подобрать ракетку</strong> ведёт в Finder.</li>
+        <li><strong>Открыть сравнение</strong> ведёт в compare по готовому shortlist.</li>
+        <li><strong>Найти похожие</strong> открывает alternative-first сценарий.</li>
+      </ul>
+      <div class="shot">
+        <img src="file:///home/clawd/.openclaw/workspace/tmp_ui_audit/padel-home-desktop.png" alt="Padel home desktop" />
+        <div class="caption">Главная страница с быстрыми входами в подбор, similar и compare.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2. Finder</h2>
+      <ol>
+        <li>Выбери бюджет, приоритет, уровень и feel.</li>
+        <li>Получишь лучшую рекомендацию и shortlist.</li>
+        <li>Можно открыть детали, похожие модели, сравнение или оставить контакт.</li>
+      </ol>
+      <div class="shot">
+        <img src="file:///home/clawd/.openclaw/workspace/tmp_ui_audit/padel-finder-desktop.png" alt="Padel finder desktop" />
+        <div class="caption">Finder: параметры игрока, лучшая рекомендация и лид-форма внизу.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. Compare</h2>
+      <p>Экран сравнения нужен для финального выбора между 2-4 моделями.</p>
+      <div class="shot">
+        <img src="file:///home/clawd/.openclaw/workspace/tmp_ui_audit/padel-compare-desktop.png" alt="Padel compare desktop" />
+        <div class="caption">Compare-экран в пустом состоянии: если моделей ещё нет, сайт просит вернуться в каталог и собрать shortlist.</div>
+      </div>
+      <div class="shot">
+        <img src="file:///home/clawd/.openclaw/workspace/tmp_ui_mobile3/padel-compare.png" alt="Padel compare mobile" />
+        <div class="caption">Mobile-версия compare.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>4. Админка импорта</h2>
+      <ol>
+        <li>Открой <code>/admin/import</code>.</li>
+        <li>Укажи source label.</li>
+        <li>Вставь JSON-пакет.</li>
+        <li>Сначала нажми <strong>Dry run</strong>, потом <strong>Импортировать в базу</strong>.</li>
+        <li>Ниже проверь историю импортов.</li>
+      </ol>
+      <div class="shot">
+        <img src="file:///home/clawd/.openclaw/workspace/tmp_admin_shots2/padel-admin-import.png" alt="Padel admin import" />
+        <div class="caption">Экран admin import: JSON payload, dry run, import в базу и история запусков.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>5. Админка лидов</h2>
+      <ol>
+        <li>Открой <code>/admin/leads</code>.</li>
+        <li>Посмотри, кто пришёл из product flow.</li>
+        <li>В каждой карточке видно контакт, shortlist и best match.</li>
+        <li>Кнопка <strong>Открыть compare</strong> восстанавливает decision context пользователя.</li>
+      </ol>
+      <div class="shot">
+        <img src="file:///home/clawd/.openclaw/workspace/tmp_admin_shots2/padel-admin-leads.png" alt="Padel admin leads" />
+        <div class="caption">Inbox лидов: контакт, shortlist items и быстрый переход в compare.</div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

@@ -15,14 +15,14 @@ export type CatalogFilters = {
 export function getCatalogSnapshot() {
   return {
     total: rackets.length,
-    brands: [...new Set(rackets.map((racket) => racket.brand))].sort()
+    brands: [...new Set(rackets.map((racket: DemoRacket) => racket.brand))].sort()
   };
 }
 
 export function listRackets(filters: CatalogFilters = {}) {
   const search = filters.search?.trim().toLowerCase();
 
-  return rackets.filter((racket) => {
+  return rackets.filter((racket: DemoRacket) => {
     const matchesSearch =
       !search ||
       [racket.brand, racket.model, racket.fullName].join(" ").toLowerCase().includes(search);
@@ -40,10 +40,10 @@ export function listRackets(filters: CatalogFilters = {}) {
 }
 
 export function getRacketBySlug(slug: string) {
-  return rackets.find((racket) => racket.id === slug) ?? null;
+  return rackets.find((racket: DemoRacket) => racket.id === slug) ?? null;
 }
 
 export function getCompareSet(ids: string[]) {
   const normalized = ids.slice(0, 4);
-  return rackets.filter((racket) => normalized.includes(racket.id));
+  return rackets.filter((racket: DemoRacket) => normalized.includes(racket.id));
 }

@@ -28,6 +28,7 @@ type Props = {
 
 export function AdminImportConsole({ samplePayload }: Props) {
   const [payload, setPayload] = useState(samplePayload);
+  const [sourceLabel, setSourceLabel] = useState("Manual admin import");
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [summary, setSummary] = useState<ImportSummary | null>(null);
   const [message, setMessage] = useState("Вставь JSON-массив с моделями и офферами. Можно сначала сделать dry run.");
@@ -46,6 +47,7 @@ export function AdminImportConsole({ samplePayload }: Props) {
         },
         body: JSON.stringify({
           dryRun,
+          sourceLabel,
           items
         })
       });
@@ -81,6 +83,15 @@ export function AdminImportConsole({ samplePayload }: Props) {
           </p>
         </div>
       </div>
+
+      <label className="field admin-field">
+        <span>Source label</span>
+        <input
+          value={sourceLabel}
+          onChange={(event) => setSourceLabel(event.target.value)}
+          placeholder="Manual admin import / CSV batch / merchant refresh"
+        />
+      </label>
 
       <label className="field admin-field">
         <span>JSON payload</span>

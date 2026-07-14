@@ -167,6 +167,75 @@ export function getAverageScore(racket: CatalogRacket) {
   );
 }
 
+export function getValueScore(racket: CatalogRacket) {
+  return Math.round(getAverageScore(racket) + Math.max(0, 340 - racket.currentPrice) / 18);
+}
+
+export function getTopMetric(racket: CatalogRacket) {
+  return getRatings(racket).sort((left, right) => right.score - left.score)[0];
+}
+
+export function getPlayerFitLabel(racket: CatalogRacket) {
+  if (racket.playStyle === "power" || racket.balance === "high") {
+    return "Для игрока, который хочет first-strike pressure и мощное завершение.";
+  }
+
+  if (racket.playStyle === "control" || racket.shape === "round") {
+    return "Для игрока, который строит розыгрыш через стабильность, защиту и placement.";
+  }
+
+  if (racket.hardness === "soft" || racket.sweetSpot === "large") {
+    return "Для игрока, которому нужен более дружелюбный feel и запас по комфорту.";
+  }
+
+  return "Для all-court игрока, которому нужен баланс между обороной, переходом и атакой.";
+}
+
+export function getTradeoffNote(racket: CatalogRacket) {
+  if (racket.hardness === "hard" && racket.weight >= 365) {
+    return "Trade-off: плотный feel и меньше бесплатного комфорта на медленной защите.";
+  }
+
+  if (racket.playStyle === "power" && racket.shape === "diamond") {
+    return "Trade-off: в защите и на медленных мячах будет требовательнее, чем round/control модели.";
+  }
+
+  if (racket.playStyle === "control" || racket.shape === "round") {
+    return "Trade-off: меньше free power на finish shots, чем у attacking alternatives.";
+  }
+
+  if (racket.hardness === "soft") {
+    return "Trade-off: feel комфортный, но при максимальном ускорении меньше плотности и stability.";
+  }
+
+  return "Trade-off: универсальность хорошая, но по одной конкретной оси есть более специализированные модели.";
+}
+
+export function getCompareEdgeHighlights(racket: CatalogRacket, peers: CatalogRacket[]) {
+  const others = peers.filter((item) => item.id !== racket.id);
+  if (others.length === 0) return [];
+
+  const averageOtherMetric = (key: RatingKey) =>
+    Math.round(others.reduce((sum, item) => sum + getMetricScore(item, key), 0) / others.length);
+
+  const edges = RATING_ROWS.map((row) => ({
+    key: row.key,
+    label: row.label,
+    delta: getMetricScore(racket, row.key) - averageOtherMetric(row.key),
+    score: getMetricScore(racket, row.key)
+  }))
+    .sort((left, right) => right.delta - left.delta)
+    .filter((item) => item.delta > 0)
+    .slice(0, 2)
+    .map((item) => `${item.label} ${item.score} (+${item.delta} vs shortlist avg)`);
+
+  if (racket.currentPrice === Math.min(...peers.map((item) => item.currentPrice))) {
+    edges.push(`Лучшая цена в shortlist · EUR ${racket.currentPrice}`);
+  }
+
+  return edges.slice(0, 3);
+}
+
 function getPricePenalty(racket: CatalogRacket, maxPrice?: number) {
   if (!maxPrice) return 0;
   if (racket.currentPrice <= maxPrice) return 4;

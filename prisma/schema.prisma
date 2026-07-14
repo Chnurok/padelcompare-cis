@@ -36,6 +36,8 @@ model Racket {
   coreMaterial  String
   verdict       String
   whoItFits     String
+  sourceLabel   String?
+  importedAt    DateTime?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   brand         Brand           @relation(fields: [brandId], references: [id], onDelete: Cascade)
@@ -80,6 +82,8 @@ model Offer {
   availability  String         @default("in_stock")
   stockNote     String?
   lastCheckedAt DateTime?
+  sourceLabel   String?
+  importedAt    DateTime?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   merchant      Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
@@ -116,4 +120,17 @@ model AnalyticsEvent {
   compareIds String?
   meta       String?
   createdAt  DateTime @default(now())
+}
+
+model ImportRun {
+  id           String   @id @default(cuid())
+  sourceLabel  String?
+  rackets      Int
+  createdCount Int
+  updatedCount Int
+  offers       Int
+  brands       Int
+  merchants    Int
+  payloadSize  Int
+  createdAt    DateTime @default(now())
 }

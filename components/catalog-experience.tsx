@@ -12,6 +12,7 @@ import type {
   CatalogStats
 } from "@/lib/catalog/catalog-db";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
+import { buildCompareHref } from "@/lib/catalog/links";
 import {
   getAverageScore,
   getQuizRecommendationReason,
@@ -20,27 +21,14 @@ import {
   type QuizProfile
 } from "@/lib/catalog/recommendation";
 
-type CollectionLink = {
-  slug: string;
-  title: string;
-};
-
 type Props = {
   rackets: CatalogRacket[];
   stats: CatalogStats;
   analytics: AnalyticsSummary;
-  collections: CollectionLink[];
-  recommendationRail: Array<{
+  collections: Array<{
     slug: string;
     title: string;
-    note: string;
-    rackets: CatalogRacket[];
   }>;
-  seoPages: {
-    categories: Array<{ slug: string; title: string }>;
-    versus: Array<{ left: string; right: string; title: string }>;
-  };
-  adminHref: string;
   funnel: {
     compareCtaClicks: number;
     compareLinkCopies: number;
@@ -59,35 +47,79 @@ const STARTER_COMPARE = [
   "adidas-metalbone-ctrl-25"
 ];
 
-const INVESTOR_POINTS = [
+const QUICK_PATHS = [
   {
-    title: "Покупатель тонет в шуме",
-    text: "Спеки, feel, форма, вес и живые цены раскиданы между магазинами, обзорами и брендовыми страницами."
+    eyebrow: "Подбор",
+    title: "Подобрать под свой профиль",
+    text: "Отвечаешь на несколько вопросов и сразу получаешь shortlist с объяснением почему именно эти модели выше.",
+    href: "/finder",
+    cta: "Открыть подбор"
   },
   {
-    title: "Выигрывает нормализованный слой",
-    text: "Moat здесь не блог. Это структурированный каталог, который питает compare, рекомендации и коммерческие переходы."
+    eyebrow: "Похожие",
+    title: "Найти альтернативу текущей ракетке",
+    text: "Полезно, если уже смотришь конкретную модель и хочешь понять, какие варианты рядом по feel и профилю.",
+    href: "/similar",
+    cta: "Открыть похожие"
   },
   {
-    title: "У интента есть деньги",
-    text: "Пользователь приходит почти на покупке. Значит можно монетизировать через affiliate, лиды, магазины и клубы."
+    eyebrow: "Сравнение",
+    title: "Сравнить shortlist в одном экране",
+    text: "Собирай 2-4 модели и смотри различия как product cards, а не как сухую спецификацию в таблице.",
+    href: `/compare?ids=${STARTER_COMPARE.join(",")}`,
+    cta: "Открыть сравнение"
+  },
+  {
+    eyebrow: "Скидки",
+    title: "Зайти от лучшей цены на рынке",
+    text: "Если пользователь price-sensitive, ему нужен отдельный вход в рынок скидок, а не только общий каталог.",
+    href: "/deals",
+    cta: "Открыть скидки"
   }
-];
+] as const;
 
-const ROADMAP_STEPS = [
-  "Расширить demo-каталог до первого по-настоящему полезного market inventory.",
-  "Добавить recommendation paths для beginner, control, power и budget-sensitive сценариев.",
-  "Собирать shortlist и заявки как готовый qualified lead для shops, coaches и clubs."
-];
+function formatApproxPrice(value: number) {
+  if (value <= 260) return "около EUR 250";
+  if (value <= 300) return "около EUR 290";
+  if (value <= 340) return "около EUR 330";
+  return "около EUR 370";
+}
+
+function formatPriceBand(racket: CatalogRacket) {
+  const prices = racket.offers.map((offer) => offer.price).filter((price) => Number.isFinite(price));
+
+  if (!prices.length) {
+    return "цена уточняется";
+  }
+
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+
+  if (max - min <= 12) {
+    return formatApproxPrice(min);
+  }
+
+  const roundedMin = Math.floor(min / 10) * 10;
+  const roundedMax = Math.ceil(max / 10) * 10;
+  return `примерно EUR ${roundedMin}-${roundedMax}`;
+}
+
+function formatQuizSummary(quiz: QuizProfile) {
+  const budget =
+    {
+      under_280: "бюджет до EUR 280",
+      under_330: "бюджет до EUR 330",
+      premium: "премиум-бюджет"
+    }[quiz.budget] ?? quiz.budget;
+
+  return `${quiz.level} уровень, приоритет ${quiz.priority}, feel ${quiz.feel}, ${budget}`;
+}
 
 export function CatalogExperience({
   rackets,
   stats,
   analytics,
   collections,
-  recommendationRail,
-  seoPages,
-  adminHref,
   funnel,
   topDeals,
   latestRackets,
@@ -100,7 +132,6 @@ export function CatalogExperience({
   const [style, setStyle] = useState("all");
   const [hardness, setHardness] = useState("all");
   const [priceMax, setPriceMax] = useState(stats.maxPrice);
-  const [leadState, setLeadState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [compareIds, setCompareIds] = useState<string[]>([
     rackets[0]?.id ?? "",
     rackets[1]?.id ?? ""
@@ -113,7 +144,6 @@ export function CatalogExperience({
     feel: "medium"
   });
 
-  const featuredRacket = rackets[0];
   const starterCompareIds = STARTER_COMPARE.filter((id) => rackets.some((racket) => racket.id === id));
 
   const filtered = useMemo(() => {
@@ -144,6 +174,32 @@ export function CatalogExperience({
     [compareIds, rackets]
   );
   const quizResults = useMemo(() => getQuizRecommendations(rackets, quiz, 3), [quiz, rackets]);
+  const homeHighlights = useMemo(() => {
+    const pool = [...latestRackets, ...topDeals, ...rackets];
+    const byBrand = new Set<string>();
+    const byId = new Set<string>();
+    const picked: CatalogRacket[] = [];
+
+    for (const racket of pool) {
+      if (picked.length >= 4) break;
+      if (byId.has(racket.id)) continue;
+      if (byBrand.has(racket.brand)) continue;
+      byId.add(racket.id);
+      byBrand.add(racket.brand);
+      picked.push(racket);
+    }
+
+    if (picked.length < 4) {
+      for (const racket of pool) {
+        if (picked.length >= 4) break;
+        if (byId.has(racket.id)) continue;
+        byId.add(racket.id);
+        picked.push(racket);
+      }
+    }
+
+    return picked;
+  }, [latestRackets, rackets, topDeals]);
 
   const isCompareReady = compareIds.length >= 2;
   const hasFilters =
@@ -208,236 +264,178 @@ export function CatalogExperience({
     }
   }
 
-  async function submitInvestorLead(formData: FormData) {
-    const name = String(formData.get("name") ?? "").trim();
-    const contact = String(formData.get("contact") ?? "").trim();
-    const notes = String(formData.get("notes") ?? "").trim();
-
-    if (!name || !contact) {
-      setLeadState("error");
-      return false;
-    }
-
-    try {
-      setLeadState("sending");
-
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json"
-        },
-        body: JSON.stringify({
-          name,
-          contact,
-          notes,
-          intent: "partner-follow-up",
-          selectedId: featuredRacket?.id,
-          compareIds
-        })
-      });
-
-      setLeadState(response.ok ? "sent" : "error");
-
-      if (response.ok) {
-        await trackEvent({
-          type: "lead_submit",
-          page: "home",
-          racketId: featuredRacket?.id,
-          compareIds,
-          intent: "partner_follow_up",
-          source: "investor_cta",
-          stage: "lead"
-        });
-      }
-
-      return response.ok;
-    } catch {
-      setLeadState("error");
-      return false;
-    }
-  }
-
   return (
     <>
-      <section className="hero-card investor-hero">
+      <section className="hero-card investor-hero app-preview-hero">
         <div className="investor-copy">
-          <p className="eyebrow">Live preview</p>
-          <h1>PadelCompare превращает выбор ракетки в decision product, а не в хаос вкладок.</h1>
-          <p className="hero-text">
-            Уже есть рабочий каталог, shortlist на 2-4 модели, отдельный compare screen, detail pages
-            и переходы в оффер. Это не концепт на словах, а показываемый продуктовый слой.
-          </p>
+          <p className="eyebrow">Превью PadelCompare</p>
+          <h1>Выбери ракетку быстро и по делу.</h1>
+          <p className="hero-text">Подбор, сравнение, похожие модели и цены на одном экране.</p>
           <div className="hero-actions">
-            <Link
-              href={`/compare?ids=${starterCompareIds.join(",")}`}
-              className="button button-primary"
-            >
-              Открыть sample compare
+            <Link href="/finder" className="button button-primary">
+              Подобрать ракетку
             </Link>
-            {featuredRacket ? (
-              <Link href={`/rackets/${featuredRacket.id}`} className="button">
-                Открыть detail page
+            <Link href={`/compare?ids=${starterCompareIds.join(",")}`} className="button">
+              Открыть сравнение
+            </Link>
+            <Link href="/similar" className="button">
+              Найти похожие
+            </Link>
+          </div>
+        </div>
+
+        <div className="hero-showcase">
+          {homeHighlights.slice(0, 3).map((racket) => (
+            <article key={`hero-${racket.id}`} className="hero-racket-card">
+              <div className="hero-racket-media">
+                <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+              </div>
+              <div className="hero-racket-copy">
+                <span>{racket.brand}</span>
+                <strong>{racket.model}</strong>
+                <small>{formatPriceBand(racket)}</small>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="investor-grid">
+        {QUICK_PATHS.map((item) => (
+          <article key={item.title} className="investor-panel">
+            <p className="eyebrow">{item.eyebrow}</p>
+            <h2>{item.title}</h2>
+            <p>{item.text}</p>
+            <Link href={item.href} className="text-link">
+              {item.cta}
+            </Link>
+          </article>
+        ))}
+      </section>
+
+      <section className="card">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Сейчас в фокусе</p>
+            <h2>Фото, цены и быстрый вход</h2>
+            <p className="panel-text">Самые заметные модели без длинных описаний.</p>
+          </div>
+        </div>
+
+        <div className="home-highlights-grid">
+          {homeHighlights.map((racket) => (
+            <article key={`highlight-${racket.id}`} className="home-highlight-card">
+              <Link href={`/rackets/${racket.id}`} className="home-highlight-media">
+                <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
               </Link>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="investor-proof">
-          <div className="proof-card">
-            <span>Каталог live</span>
-            <strong>{stats.total} моделей</strong>
-          </div>
-          <div className="proof-card">
-            <span>Нормализовано</span>
-            <strong>{stats.brands.length} брендов</strong>
-          </div>
-          <div className="proof-card">
-            <span>Цена</span>
-            <strong>€{stats.minPrice} - €{stats.maxPrice}</strong>
-          </div>
-          <div className="proof-card">
-            <span>Decision flow</span>
-            <strong>catalog → detail → compare</strong>
-          </div>
-        </div>
-      </section>
-
-      <section className="hero-card product-hero">
-        <div>
-          <p className="eyebrow">Product thesis</p>
-          <h2>Сайт уже отвечает на вопрос “что мне брать?”, а не просто показывает SKU.</h2>
-          <p className="hero-text">
-            Пользователь видит verdict, профиль игрока, trade-offs, цены, shortlist и прямой
-            переход в оффер. То есть путь идёт от confusion к decision, а не к ещё десяти открытым вкладкам.
-          </p>
-        </div>
-        <div className="hero-metrics">
-          <div className="metric-card">
-            <span>Каталог</span>
-            <strong>{stats.total} моделей</strong>
-          </div>
-          <div className="metric-card">
-            <span>Compare flow</span>
-            <strong>До {MAX_COMPARE} ракеток</strong>
-          </div>
-          <div className="metric-card">
-            <span>Moat layer</span>
-            <strong>Specs + verdict + route</strong>
-          </div>
-          <div className="metric-card">
-            <span>Funnel signals</span>
-            <strong>{analytics.offerClicks} clicks / {analytics.leadSubmits} leads</strong>
-          </div>
+              <div className="home-highlight-copy">
+                <p>{racket.brand}</p>
+                <h3>
+                  <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link>
+                </h3>
+                <span>{racket.shape} · {racket.playStyle} · {formatPriceBand(racket)}</span>
+              </div>
+              <div className="racket-actions">
+                <Link href={`/rackets/${racket.id}`} className="button">
+                  Смотреть
+                </Link>
+                <button type="button" className="button" onClick={() => toggleCompare(racket.id)}>
+                  {compareIds.includes(racket.id) ? "Убрать" : "Сравнить"}
+                </button>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
       <section className="card">
         <div className="section-head">
           <div>
-            <p className="eyebrow">Signals</p>
-            <h2>Поведение уже читается как воронка</h2>
-            <p className="panel-text">
-              Compare CTA, копирование shortlist и offer clicks теперь можно разрезать по stage/source/intent.
-            </p>
+            <p className="eyebrow">Быстрый старт</p>
+            <h2>Быстрый shortlist под твой профиль</h2>
+            <p className="panel-text">Выбираешь профиль и сразу видишь 3 лучших варианта.</p>
           </div>
-        </div>
-        <div className="hero-metrics">
-          <div className="metric-card">
-            <span>Compare CTA</span>
-            <strong>{funnel.compareCtaClicks}</strong>
-          </div>
-          <div className="metric-card">
-            <span>Link copies</span>
-            <strong>{funnel.compareLinkCopies}</strong>
-          </div>
-          <div className="metric-card">
-            <span>Top source</span>
-            <strong>{funnel.topSource ?? "no data"}</strong>
-          </div>
-          <div className="metric-card">
-            <span>Top intent</span>
-            <strong>{funnel.topIntent ?? "no data"}</strong>
-          </div>
-        </div>
-      </section>
-
-      <section className="card">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">Quiz intake</p>
-            <h2>Подбор под игрока, а не только общие полки</h2>
-            <p className="panel-text">
-              Этот intake уже собирает базовый player profile и сразу перестраивает top picks под budget, priority, level и feel.
-            </p>
-          </div>
+          <Link href="/finder" className="button button-primary">
+            Полный подбор
+          </Link>
         </div>
 
         <div className="detail-related-grid">
           <article className="detail-list-card">
-            <p className="eyebrow">Player profile</p>
-            <h3>Intake</h3>
+            <p className="eyebrow">Профиль игрока</p>
+            <h3>Ввод</h3>
             <div className="grid">
               <label className="field">
-                <span>Budget</span>
+                <span>Бюджет</span>
                 <select
                   value={quiz.budget}
                   onChange={(event) => {
                     const value = event.target.value as QuizProfile["budget"];
                     updateQuiz("budget", value);
-                    void trackEvent({ type: "quiz_change", page: "home", stage: "intake", source: "quiz", intent: value });
+                    void trackEvent({
+                      type: "quiz_change",
+                      page: "home",
+                      stage: "intake",
+                      source: "quiz_teaser",
+                      intent: value
+                    });
                   }}
                 >
-                  <option value="under_280">Under 280</option>
-                  <option value="under_330">Under 330</option>
-                  <option value="premium">Premium</option>
+                  <option value="under_280">До 280</option>
+                  <option value="under_330">До 330</option>
+                  <option value="premium">Премиум</option>
                 </select>
               </label>
               <label className="field">
-                <span>Priority</span>
+                <span>Приоритет</span>
                 <select
                   value={quiz.priority}
                   onChange={(event) => updateQuiz("priority", event.target.value as QuizProfile["priority"])}
                 >
-                  <option value="balanced">Balanced</option>
-                  <option value="control">Control</option>
-                  <option value="power">Power</option>
-                  <option value="comfort">Comfort</option>
+                  <option value="balanced">Баланс</option>
+                  <option value="control">Контроль</option>
+                  <option value="power">Мощность</option>
+                  <option value="comfort">Комфорт</option>
                 </select>
               </label>
               <label className="field">
-                <span>Level</span>
+                <span>Уровень</span>
                 <select
                   value={quiz.level}
                   onChange={(event) => updateQuiz("level", event.target.value as QuizProfile["level"])}
                 >
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
+                  <option value="intermediate">Средний</option>
+                  <option value="advanced">Продвинутый</option>
                 </select>
               </label>
               <label className="field">
-                <span>Feel</span>
+                <span>Ощущение</span>
                 <select
                   value={quiz.feel}
                   onChange={(event) => updateQuiz("feel", event.target.value as QuizProfile["feel"])}
                 >
-                  <option value="soft">Soft</option>
-                  <option value="medium">Medium</option>
-                  <option value="hard">Hard</option>
+                  <option value="soft">Мягкое</option>
+                  <option value="medium">Среднее</option>
+                  <option value="hard">Жесткое</option>
                 </select>
               </label>
+            </div>
+            <div className="panel-note">
+              <strong>{formatQuizSummary(quiz)}</strong>
+              <span>Текущий профиль для рекомендаций.</span>
             </div>
           </article>
 
           <article className="detail-list-card">
-            <p className="eyebrow">Personal picks</p>
-            <h3>Top 3 right now</h3>
+            <p className="eyebrow">Текущие рекомендации</p>
+            <h3>Топ-3 сейчас</h3>
             <ul className="detail-list">
               {quizResults.map((racket) => {
                 const score = getAverageScore(racket);
 
                 return (
                   <li key={`quiz-${racket.id}`}>
-                    <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link> · {scoreLabel(score)} {score} · €{racket.currentPrice}
+                    <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link> · {scoreLabel(score)} {score} · EUR {racket.currentPrice}
                     <br />
                     {getQuizRecommendationReason(racket, quiz)}
                   </li>
@@ -451,209 +449,92 @@ export function CatalogExperience({
       <section className="card">
         <div className="section-head">
           <div>
-            <p className="eyebrow">Market view</p>
-            <h2>Как у сильных price-comparison аналогов</h2>
+            <p className="eyebrow">Рынок</p>
+            <h2>Скидки, свежие модели и рынок в том же сценарии</h2>
             <p className="panel-text">
-              Добавил два самых важных buyer-oriented слоя: заметные deals и быстрый вход в свежие модели сезона.
+              После выбора shortlist пользователь не выпадает обратно в сайт, а продолжает путь через скидки,
+              новые модели и глубокие карточки.
             </p>
           </div>
         </div>
 
         <div className="detail-related-grid">
           <article className="detail-list-card">
-            <p className="eyebrow">Top deals</p>
-            <h3>Где скидка реально заметна</h3>
+            <p className="eyebrow">Лучшие скидки</p>
+            <h3>Где сейчас выгоднее</h3>
             <ul className="detail-list">
               {topDeals.map((racket) => (
                 <li key={`deal-${racket.id}`}>
-                  <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link> · save €{racket.discountAmount} ({racket.discountPercent}%) · now €{racket.currentPrice}
+                  <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link> · скидка EUR {racket.discountAmount} ({racket.discountPercent}%) · сейчас EUR {racket.currentPrice}
                 </li>
               ))}
             </ul>
+            <div className="hero-actions">
+              <Link href="/deals" className="button button-primary">
+                Все скидки
+              </Link>
+            </div>
           </article>
 
           <article className="detail-list-card">
-            <p className="eyebrow">Latest rackets</p>
-            <h3>Быстрый вход в свежие модели</h3>
+            <p className="eyebrow">Новые ракетки</p>
+            <h3>Что смотреть в свежих релизах</h3>
             <ul className="detail-list">
               {latestRackets.map((racket) => (
                 <li key={`latest-${racket.id}`}>
-                  <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link> · {racket.shape} · €{racket.currentPrice}
+                  <Link href={`/rackets/${racket.id}`}>{racket.fullName}</Link> · {racket.shape} · EUR {racket.currentPrice}
                 </li>
               ))}
             </ul>
           </article>
         </div>
-      </section>
-
-      <section className="card">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">Discovery tools</p>
-            <h2>Похожие модели и brand depth</h2>
-            <p className="panel-text">
-              Ещё один важный слой против аналогов: отдельный similar finder и входы в брендовые каталоги.
-            </p>
-          </div>
-        </div>
-
-        <div className="detail-related-grid">
-          <article className="detail-list-card">
-            <p className="eyebrow">Similar finder</p>
-            <h3>Alternative-first entrypoint</h3>
-            <ul className="detail-list">
-              {latestRackets.slice(0, 4).map((racket) => (
-                <li key={`similar-entry-${racket.id}`}>
-                  <a href={`/similar?to=${racket.id}`}>{racket.fullName}</a>
-                </li>
-              ))}
-            </ul>
-          </article>
-
-          <article className="detail-list-card">
-            <p className="eyebrow">Brands</p>
-            <h3>Browse by manufacturer</h3>
-            <ul className="detail-list">
-              {brands.slice(0, 6).map((brand) => (
-                <li key={brand.slug}>
-                  <Link href={`/brands/${brand.slug}`}>{brand.name}</Link> · {brand.count} models
-                </li>
-              ))}
-            </ul>
-          </article>
-        </div>
-      </section>
-
-      <section className="card">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">Recommendation engine</p>
-            <h2>Smart picks вместо ручных подборок на глаз</h2>
-            <p className="panel-text">
-              Один scoring layer теперь ранжирует модели под разные сценарии, а не просто раскладывает
-              каталог по фильтрам.
-            </p>
-          </div>
-        </div>
-
-        <div className="detail-related-grid">
-          {recommendationRail.map((rail) => (
-            <article key={rail.slug} className="detail-list-card">
-              <p className="eyebrow">{rail.title}</p>
-              <h3>{rail.note}</h3>
-              <ul className="detail-list">
-                {rail.rackets.map((racket) => {
-                  const score = getAverageScore(racket);
-
-                  return (
-                    <li key={`${rail.slug}-${racket.id}`}>
-                      <Link href={`/rackets/${racket.id}`}>
-                        {racket.fullName}
-                      </Link>{" "}
-                      · {scoreLabel(score)} {score} · from €{racket.currentPrice}
-                    </li>
-                  );
-                })}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="card">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">SEO structure</p>
-            <h2>Scale pages под органику уже заведены в routing</h2>
-            <p className="panel-text">
-              Это уже не только каталог и collections: появились шаблоны под intent-страницы и `X vs Y`.
-            </p>
-          </div>
-        </div>
-
-        <div className="detail-related-grid">
-          <article className="detail-list-card">
-            <p className="eyebrow">Best for</p>
-            <h3>Intent pages</h3>
-            <ul className="detail-list">
-              {seoPages.categories.map((page) => (
-                <li key={page.slug}>
-                  <Link href={`/best-for/${page.slug}`}>{page.title}</Link>
-                </li>
-              ))}
-            </ul>
-          </article>
-
-          <article className="detail-list-card">
-            <p className="eyebrow">VS pages</p>
-            <h3>Search-friendly comparisons</h3>
-            <ul className="detail-list">
-              {seoPages.versus.map((page) => (
-                <li key={`${page.left}-${page.right}`}>
-                  <Link href={`/vs/${page.left}/${page.right}`}>{page.title}</Link>
-                </li>
-              ))}
-            </ul>
-          </article>
-        </div>
-      </section>
-
-      <section className="card">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">Catalog ops</p>
-            <h2>Admin import flow уже подключен</h2>
-            <p className="panel-text">
-              Следующий уровень после demo seed: bulk upsert ракеток и multi-offer пакетов через внутренний экран.
-            </p>
-          </div>
-          <a href={adminHref} className="button button-primary">
-            Открыть import console
-          </a>
-        </div>
-      </section>
-
-      <section className="investor-grid">
-        {INVESTOR_POINTS.map((point) => (
-          <article key={point.title} className="investor-panel">
-            <p className="eyebrow">Почему это важно</p>
-            <h2>{point.title}</h2>
-            <p>{point.text}</p>
-          </article>
-        ))}
       </section>
 
       <section className="investor-grid">
         <article className="investor-panel">
-          <p className="eyebrow">Collections</p>
-          <h2>Готовые входы в каталог</h2>
-          <p>Сайт уже умеет вести пользователя не только в общий каталог, но и в подборки под конкретный intent.</p>
+            <p className="eyebrow">Дополнительные входы</p>
+            <h2>Бренды, коллекции и расширенные маршруты</h2>
+            <p>Эти маршруты остаются вторым слоем и не ломают основной сценарий выбора.</p>
           <div className="hero-actions">
-            {collections.map((collection) => (
-              <Link key={collection.slug} href={`/collections/${collection.slug}`} className="button">
-                {collection.title}
+            <Link href="/brands" className="button button-primary">
+              Все бренды
+            </Link>
+            <Link href="/collections" className="button">
+              Все коллекции
+            </Link>
+            {brands.slice(0, 6).map((item) => (
+              <Link key={item.slug} href={`/brands/${item.slug}`} className="button">
+                {item.name} · {item.count}
+              </Link>
+            ))}
+            {collections.slice(0, 4).map((item) => (
+              <Link key={item.slug} href={`/collections/${item.slug}`} className="button">
+                {item.title}
               </Link>
             ))}
           </div>
         </article>
+
         <article className="investor-panel">
-          <p className="eyebrow">Signals</p>
-          <h2>Первые продуктовые сигналы</h2>
-          <p>Теперь сайт может копить не только контент и каталог, но и базовую продуктовую аналитику.</p>
+            <p className="eyebrow">Сигналы</p>
+            <h2>Ключевые цифры</h2>
           <div className="bullet-grid">
             <div>
               <strong>{analytics.compareOpens}</strong>
-              <span>compare opens</span>
+              <span>открытия сравнения</span>
             </div>
             <div>
               <strong>{analytics.offerClicks}</strong>
-              <span>offer clicks</span>
+              <span>клики по предложениям</span>
             </div>
             <div>
-              <strong>{analytics.leadSubmits}</strong>
-              <span>lead submits</span>
+              <strong>{funnel.compareLinkCopies}</strong>
+              <span>поделились shortlist</span>
             </div>
           </div>
+          <p className="panel-text">
+            Главный источник: {funnel.topSource ?? "нет данных"} · главный intent: {funnel.topIntent ?? "нет данных"}
+          </p>
         </article>
       </section>
 
@@ -662,7 +543,7 @@ export function CatalogExperience({
           <div>
             <p className="eyebrow">Фильтры</p>
             <h2>Каталог</h2>
-            <p className="panel-text">Можно быстро сузить рынок по бренду, форме, профилю и бюджету.</p>
+            <p className="panel-text">Фильтруй рынок по бренду, форме, стилю, feel и бюджету.</p>
           </div>
 
           <label className="field">
@@ -670,7 +551,7 @@ export function CatalogExperience({
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Nox AT10, control, beginner..."
+              placeholder="Nox AT10, control, comfort..."
             />
           </label>
 
@@ -735,7 +616,7 @@ export function CatalogExperience({
           </label>
 
           <label className="field">
-            <span>Бюджет до €{priceMax}</span>
+            <span>Бюджет до EUR {priceMax}</span>
             <input
               type="range"
               min={stats.minPrice}
@@ -763,36 +644,48 @@ export function CatalogExperience({
 
         <div className="catalog-column">
           <section className="compare-banner">
+            {(() => {
+              const compareHref = buildCompareHref(compareIds);
+
+              return (
+                <>
             <div>
               <p className="eyebrow">Compare</p>
               <h2>Собран shortlist</h2>
               <p className="panel-text">
-                Выбрано {compareRackets.length} из {MAX_COMPARE}. Уже можно вынести это на отдельный compare screen.
+                Выбрано {compareRackets.length} из {MAX_COMPARE}. Уже можно открыть отдельный compare screen.
               </p>
               <div className="compare-tags">
                 {compareRackets.map((racket) => (
-                  <span key={racket.id}>{racket.brand} {racket.model}</span>
+                  <span key={racket.id}>
+                    {racket.brand} {racket.model}
+                  </span>
                 ))}
               </div>
             </div>
             <div className="compare-banner-actions">
-            <Link
-              href={isCompareReady ? `/compare?ids=${compareIds.join(",")}` : "#"}
-              className={`button button-primary${isCompareReady ? "" : " is-disabled"}`}
-              onClick={() => {
-                if (!isCompareReady) return;
-                void trackEvent({
-                  type: "compare_cta_click",
-                  page: "home",
-                  compareIds,
-                  intent: "open_compare",
-                  source: "shortlist_banner",
-                  stage: "decision"
-                });
-              }}
-            >
-              {isCompareReady ? "Открыть сравнение" : "Нужно 2 модели"}
-            </Link>
+              {isCompareReady && compareHref ? (
+                <Link
+                  href={compareHref}
+                  className="button button-primary"
+                  onClick={() => {
+                    void trackEvent({
+                      type: "compare_cta_click",
+                      page: "home",
+                      compareIds,
+                      intent: "open_compare",
+                      source: "shortlist_banner",
+                      stage: "decision"
+                    });
+                  }}
+                >
+                  Открыть сравнение
+                </Link>
+              ) : (
+                <button type="button" className="button button-primary is-disabled" disabled>
+                  Нужно 2 модели
+                </button>
+              )}
               <button type="button" className="button" onClick={copyCompareLink} disabled={!isCompareReady}>
                 Скопировать ссылку
               </button>
@@ -802,8 +695,11 @@ export function CatalogExperience({
                 ? "Ссылка на compare скопирована."
                 : compareState === "error"
                   ? "Не удалось скопировать ссылку."
-                  : "Compare URL можно отправлять партнёру или клиенту как готовый shortlist."}
+                  : "Shortlist можно сохранить и отправить как готовую decision page."}
             </p>
+                </>
+              );
+            })()}
           </section>
 
           {filtered.length === 0 ? (
@@ -840,7 +736,7 @@ export function CatalogExperience({
                       <span>{racket.weight} g</span>
                     </div>
                     <div className="racket-price">
-                      <strong>€{racket.currentPrice}</strong>
+                      <strong>EUR {racket.currentPrice}</strong>
                       <span>
                         {racket.shopName}
                         {racket.offers.length > 1 ? ` · ${racket.offers.length} offers` : ""}
@@ -850,11 +746,7 @@ export function CatalogExperience({
                       <Link href={`/rackets/${racket.id}`} className="button">
                         Детали
                       </Link>
-                      <button
-                        type="button"
-                        className="button"
-                        onClick={() => toggleCompare(racket.id)}
-                      >
+                      <button type="button" className="button" onClick={() => toggleCompare(racket.id)}>
                         {inCompare ? "Убрать" : "Сравнить"}
                       </button>
                     </div>
@@ -866,82 +758,6 @@ export function CatalogExperience({
         </div>
       </section>
 
-      <section className="bottom-grid">
-        <article className="card business-card">
-          <p className="eyebrow">Monetization</p>
-          <h2>Как это может зарабатывать</h2>
-          <div className="bullet-grid">
-            <div>
-              <strong>Affiliate offers</strong>
-              <span>Переходы в магазины из catalog, detail и compare.</span>
-            </div>
-            <div>
-              <strong>Qualified leads</strong>
-              <span>Shortlist и заявки можно маршрутизировать в shops, coaches и clubs.</span>
-            </div>
-            <div>
-              <strong>B2B data layer</strong>
-              <span>Нормализованный каталог можно развивать как backend для реселлеров и контента.</span>
-            </div>
-          </div>
-        </article>
-
-        <article className="card roadmap-card">
-          <p className="eyebrow">Roadmap</p>
-          <h2>Что усиливать дальше</h2>
-          <ol className="roadmap-list">
-            {ROADMAP_STEPS.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ol>
-        </article>
-      </section>
-
-      <section className="card investor-cta-card">
-        <div className="investor-cta-copy">
-          <p className="eyebrow">Next step</p>
-          <h2>Partner / investor follow-up</h2>
-          <p>
-            Можно оставить контакт прямо из демо. Так сайт показывает не только интерфейс, но и готовность
-            собирать коммерческий интерес вокруг shortlist и каталога.
-          </p>
-        </div>
-
-        <form
-          className="investor-form"
-          onSubmit={async (event) => {
-            event.preventDefault();
-            const ok = await submitInvestorLead(new FormData(event.currentTarget));
-
-            if (ok) {
-              event.currentTarget.reset();
-            }
-          }}
-        >
-          <label className="field">
-            <span>Имя</span>
-            <input name="name" placeholder="Михаил / фонд / магазин" />
-          </label>
-          <label className="field">
-            <span>Контакт</span>
-            <input name="contact" placeholder="@telegram, email, WhatsApp" />
-          </label>
-          <label className="field">
-            <span>Комментарий</span>
-            <input name="notes" placeholder="Партнёрство, дистрибуция, SEO, инвестиции..." />
-          </label>
-          <button type="submit" className="button button-primary">
-            {leadState === "sending" ? "Сохраняю..." : "Сохранить контакт"}
-          </button>
-          <p className="form-state">
-            {leadState === "sent"
-              ? "Контакт сохранён в локальную базу."
-              : leadState === "error"
-                ? "Нужны имя и контакт, либо API вернул ошибку."
-                : "Лид сохраняется вместе с текущим shortlist и featured racket."}
-          </p>
-        </form>
-      </section>
     </>
   );
 }

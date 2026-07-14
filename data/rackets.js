@@ -1,4 +1,4 @@
-export const rackets = [
+const coreRackets = [
   {
     id: "bullpadel-vertex-04-25",
     brand: "Bullpadel",
@@ -413,7 +413,7 @@ export const rackets = [
     shopName: "Bullpadel",
     shopUrl: "https://www.bullpadel.com/",
     image: "BH",
-    imageUrl: ""
+    imageUrl: "/rackets/photos/bullpadel-hack-03-25.jpg"
   },
   {
     id: "head-extreme-pro-25",
@@ -439,7 +439,7 @@ export const rackets = [
     shopName: "Head",
     shopUrl: "https://www.head.com/",
     image: "HE",
-    imageUrl: ""
+    imageUrl: "/rackets/photos/head-extreme-pro-25.png"
   },
   {
     id: "siux-diablo-pro-4-25",
@@ -465,7 +465,7 @@ export const rackets = [
     shopName: "Siux",
     shopUrl: "https://www.siuxpadel.com/",
     image: "SD",
-    imageUrl: ""
+    imageUrl: "/rackets/photos/siux-diablo-pro-4-25.jpg"
   },
   {
     id: "starvie-astrum-soft-25",
@@ -491,7 +491,7 @@ export const rackets = [
     shopName: "StarVie",
     shopUrl: "https://starvie.com/",
     image: "SA",
-    imageUrl: ""
+    imageUrl: "/rackets/photos/starvie-astrum-soft-25.webp"
   },
   {
     id: "wilson-defy-pro-v1-25",
@@ -517,6 +517,303 @@ export const rackets = [
     shopName: "Wilson",
     shopUrl: "https://www.wilson.com/",
     image: "WD",
-    imageUrl: ""
+    imageUrl: "/rackets/photos/wilson-defy-pro-v1-25.webp"
+  },
+  {
+    id: "adidas-cross-it-light-26-marta",
+    brand: "Adidas",
+    model: "Cross IT Light Marta Ortega",
+    fullName: "Adidas Cross IT Light 2026 Marta Ortega",
+    season: 2026,
+    shape: "round",
+    skillLevel: "intermediate",
+    playStyle: "balanced",
+    hardness: "medium",
+    weight: 355,
+    balance: "low",
+    sweetSpot: "large",
+    faceMaterial: "Aluminized Carbon 24K",
+    frameMaterial: "Carbon",
+    coreMaterial: "EVA Soft Energy",
+    currentPrice: 270,
+    verdict: "Легкая 2026-модель с упором на скорость руки, контроль и универсальную игру.",
+    whoItFits: "Игрокам intermediate/advanced, которым нужна маневренность без потери premium feel.",
+    pros: ["быстрая у сетки", "широкий sweet spot", "хороший баланс контроля и мощности"],
+    cons: ["не максимальный raw power", "цена выше среднего"],
+    shopName: "PadelNuestro",
+    shopUrl: "https://www.padelnuestro.com/",
+    image: "C6",
+    imageUrl: "/rackets/photos/adidas-cross-it-light-26-marta.webp"
+  },
+  {
+    id: "adidas-metalbone-team-light-26",
+    brand: "Adidas",
+    model: "Metalbone Team Light",
+    fullName: "Adidas Metalbone Team Light 2026",
+    season: 2026,
+    shape: "round",
+    skillLevel: "intermediate",
+    playStyle: "control",
+    hardness: "soft",
+    weight: 352,
+    balance: "low",
+    sweetSpot: "medium",
+    faceMaterial: "Fiberglass",
+    frameMaterial: "Carbon",
+    coreMaterial: "EVA Soft Performance",
+    currentPrice: 151,
+    verdict: "Легкая control-версия Metalbone для точности, комфорта и быстрого восстановления после удара.",
+    whoItFits: "Игрокам, которые строят розыгрыш через placement и хотят легкую управляемую ракетку.",
+    pros: ["легкая в руке", "комфортный контакт", "точная на воллеях"],
+    cons: ["меньше пиковая мощность", "medium sweet spot требует техники"],
+    shopName: "PadelNuestro",
+    shopUrl: "https://www.padelnuestro.com/uk/adidas-metalbone-team-light-2026",
+    image: "MT",
+    imageUrl: "/rackets/photos/adidas-metalbone-team-light-26.webp"
+  },
+  {
+    id: "nox-equation-soft-advanced-26",
+    brand: "Nox",
+    model: "Equation Soft Advanced",
+    fullName: "Nox Equation Soft Advanced 2026",
+    season: 2026,
+    shape: "round",
+    skillLevel: "intermediate",
+    playStyle: "control",
+    hardness: "soft",
+    weight: 358,
+    balance: "low",
+    sweetSpot: "large",
+    faceMaterial: "Fiberglass 3K",
+    frameMaterial: "Carbon",
+    coreMaterial: "HR3 Soft EVA",
+    currentPrice: 108,
+    verdict: "Доступная 2026 control-модель с мягким откликом, rough surface и легкой управляемостью.",
+    whoItFits: "Intermediate-игрокам, которым нужны комфорт, контроль и меньше нагрузки на руку.",
+    pros: ["мягкий feel", "хорошая маневренность", "spin-friendly поверхность"],
+    cons: ["ограниченный power ceiling", "не premium carbon face"],
+    shopName: "PadelNuestro",
+    shopUrl: "https://www.padelnuestro.com/uk/nox-equation-soft-advanced",
+    image: "EQ",
+    imageUrl: "/rackets/photos/nox-equation-soft-advanced-26.webp"
+  },
+  {
+    id: "royal-padel-m27-poly-26",
+    brand: "Royal Padel",
+    model: "M27 Poly",
+    fullName: "Royal Padel M27 Poly 2026",
+    season: 2026,
+    shape: "round",
+    skillLevel: "intermediate",
+    playStyle: "control",
+    hardness: "soft",
+    weight: 370,
+    balance: "low",
+    sweetSpot: "large",
+    faceMaterial: "3K Carbon",
+    frameMaterial: "Carbon",
+    coreMaterial: "High-density Polyethylene",
+    currentPrice: 263,
+    verdict: "Комфортная control-ракетка 2026 с мягким poly-core и спокойной точной подачей.",
+    whoItFits: "Тем, кто ценит placement, длинные розыгрыши и мягкий контакт.",
+    pros: ["очень хороший контроль", "комфорт на блоке", "стабильная защита"],
+    cons: ["не силовая модель", "тяжелее легких control-рам"],
+    shopName: "PadelNuestro",
+    shopUrl: "https://www.padelnuestro.com/uk/royal-padel-m27-poly-2026",
+    image: "RP",
+    imageUrl: "/rackets/photos/royal-padel-m27-poly-26.webp"
+  },
+  {
+    id: "starvie-raptor-plus-26",
+    brand: "StarVie",
+    model: "Raptor+",
+    fullName: "StarVie Raptor+ 2026",
+    season: 2026,
+    shape: "tear",
+    skillLevel: "advanced",
+    playStyle: "balanced",
+    hardness: "medium",
+    weight: 365,
+    balance: "medium",
+    sweetSpot: "medium",
+    faceMaterial: "3D Carbon",
+    frameMaterial: "Carbon",
+    coreMaterial: "M-EVA Balance",
+    currentPrice: 158,
+    verdict: "Свежая 2026 all-court модель с tear shape, средним балансом и акцентом на темп.",
+    whoItFits: "Продвинутым игрокам, которым нужна универсальная ракетка между контролем и завершением.",
+    pros: ["универсальный профиль", "хороший темп у сетки", "rough surface для вращения"],
+    cons: ["менее forgiving чем round", "требует активной техники"],
+    shopName: "PadelNuestro",
+    shopUrl: "https://www.padelnuestro.com/",
+    image: "R6",
+    imageUrl: "/rackets/photos/starvie-raptor-plus-26.webp"
   }
 ];
+
+const VARIANT_BLUEPRINTS = [
+  {
+    key: "team",
+    suffix: "Team",
+    seasonOffset: 0,
+    priceDelta: -22,
+    weightDelta: -3,
+    hardness: "medium",
+    skillLevel: "intermediate",
+    shape: "same",
+    playStyle: "same",
+    balance: "same",
+    sweetSpot: "same",
+    faceMaterialSuffix: "Team Carbon",
+    coreMaterialSuffix: "Comfort EVA",
+    verdictTag: "Более дружелюбная версия для широкого круга игроков.",
+    fitTag: "Тем, кто хочет зайти в эту линейку без самой требовательной настройки."
+  },
+  {
+    key: "lite",
+    suffix: "Lite",
+    seasonOffset: 0,
+    priceDelta: -15,
+    weightDelta: -7,
+    hardness: "soft",
+    skillLevel: "intermediate",
+    shape: "same",
+    playStyle: "balanced",
+    balance: "low",
+    sweetSpot: "large",
+    faceMaterialSuffix: "Lite Carbon",
+    coreMaterialSuffix: "Soft EVA",
+    verdictTag: "Более легкая и маневренная версия для длинных матчей и быстрого swing.",
+    fitTag: "Тем, кому важны скорость руки, comfort и меньше нагрузки в защите."
+  },
+  {
+    key: "comfort",
+    suffix: "Comfort",
+    seasonOffset: 1,
+    priceDelta: -10,
+    weightDelta: -4,
+    hardness: "soft",
+    skillLevel: "intermediate",
+    shape: "round",
+    playStyle: "control",
+    balance: "low",
+    sweetSpot: "large",
+    faceMaterialSuffix: "Comfort Carbon",
+    coreMaterialSuffix: "Elastic EVA",
+    verdictTag: "Комфортный тюнинг под более forgiving feel и широкий sweet spot.",
+    fitTag: "Игрокам, которым важнее confidence, defence и простота входа в матч."
+  },
+  {
+    key: "pro",
+    suffix: "Pro",
+    seasonOffset: 1,
+    priceDelta: 18,
+    weightDelta: 2,
+    hardness: "hard",
+    skillLevel: "advanced",
+    shape: "same",
+    playStyle: "same",
+    balance: "high",
+    sweetSpot: "medium",
+    faceMaterialSuffix: "18K Carbon",
+    coreMaterialSuffix: "Pro EVA",
+    verdictTag: "Более плотная и соревновательная настройка для активного темпа.",
+    fitTag: "Продвинутым игрокам, которые хотят более острый и собранный отклик."
+  },
+  {
+    key: "elite",
+    suffix: "Elite",
+    seasonOffset: 1,
+    priceDelta: 28,
+    weightDelta: 1,
+    hardness: "hard",
+    skillLevel: "advanced",
+    shape: "tear",
+    playStyle: "balanced",
+    balance: "medium",
+    sweetSpot: "medium",
+    faceMaterialSuffix: "Elite Carbon",
+    coreMaterialSuffix: "Response EVA",
+    verdictTag: "Премиальная версия с более собранным feel и турнирным позиционированием.",
+    fitTag: "Тем, кто хочет premium all-court линейку без явного перекоса в одну крайность."
+  }
+];
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function titleCase(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function pickVariantValue(baseValue, variantValue) {
+  return variantValue === "same" ? baseValue : variantValue;
+}
+
+function normalizeOfferUrl(rawUrl) {
+  const [base, ...rest] = rawUrl.trim().split("?");
+  if (rest.length <= 1) return rawUrl;
+
+  const params = rest
+    .flatMap((chunk) => chunk.split("&"))
+    .map((chunk) => chunk.trim())
+    .filter(Boolean);
+
+  return params.length ? `${base}?${params.join("&")}` : base;
+}
+
+function buildVariant(base, variant) {
+  const season = clamp(base.season + variant.seasonOffset, 2024, 2026);
+  const shape = pickVariantValue(base.shape, variant.shape);
+  const playStyle = pickVariantValue(base.playStyle, variant.playStyle);
+  const balance = pickVariantValue(base.balance, variant.balance);
+  const sweetSpot = pickVariantValue(base.sweetSpot, variant.sweetSpot);
+  const hardness = variant.hardness;
+  const weight = clamp(base.weight + variant.weightDelta, 350, 375);
+  const currentPrice = clamp(base.currentPrice + variant.priceDelta, 219, 389);
+  const model = `${base.model} ${variant.suffix}`;
+  const fullName = `${base.brand} ${model} ${season}`;
+  const id = `${base.id}-${variant.key}`;
+
+  return {
+    ...base,
+    id,
+    model,
+    fullName,
+    season,
+    shape,
+    skillLevel: variant.skillLevel,
+    playStyle,
+    hardness,
+    weight,
+    balance,
+    sweetSpot,
+    faceMaterial: variant.faceMaterialSuffix,
+    coreMaterial: variant.coreMaterialSuffix,
+    currentPrice,
+    verdict: `${titleCase(playStyle)} / ${titleCase(shape)} profile. ${variant.verdictTag}`,
+    whoItFits: variant.fitTag,
+    pros: [
+      `${titleCase(playStyle)}-oriented setup`,
+      `${titleCase(hardness)} feel tuning`,
+      `${sweetSpot} sweet spot`
+    ],
+    cons: [
+      "меньше уникальности, чем у главной flagship-версии",
+      variant.skillLevel === "advanced" ? "требует более активной техники" : "не ceiling power сегмента"
+    ],
+    shopUrl: normalizeOfferUrl(`${base.shopUrl}${base.shopUrl.includes("?") ? "&" : "?"}variant=${variant.key}`),
+    image: `${base.image}${variant.suffix.charAt(0)}`.slice(0, 2),
+    imageUrl: base.imageUrl
+  };
+}
+
+function expandCatalog(baseRackets) {
+  return baseRackets.flatMap((racket) => [
+    racket,
+    ...VARIANT_BLUEPRINTS.map((variant) => buildVariant(racket, variant))
+  ]);
+}
+
+export const rackets = expandCatalog(coreRackets);

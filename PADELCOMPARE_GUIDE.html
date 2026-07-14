@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PadelCompare CIS — Как пользоваться сайтом и админкой</title>
+  <style>
+    :root {
+      --bg: #f5efe4;
+      --paper: #fffdfa;
+      --text: #231d18;
+      --muted: #6b6259;
+      --line: #eadfce;
+      --accent: #c06f3b;
+      --accent-soft: #f8e5d5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+    .page {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 36px 28px 60px;
+    }
+    .hero, .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 28px;
+      margin-bottom: 18px;
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: 38px; line-height: 1.02; margin-bottom: 12px; }
+    h2 { font-size: 24px; margin-bottom: 12px; }
+    h3 { font-size: 18px; margin-bottom: 10px; }
+    p, li { font-size: 15px; }
+    .muted { color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .pill {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      margin: 6px 8px 0 0;
+    }
+    ul, ol { padding-left: 20px; }
+    code {
+      font-family: "Courier New", monospace;
+      background: #f4efe8;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    .note {
+      padding: 14px 16px;
+      border-left: 4px solid var(--accent);
+      background: #fcf4ef;
+      border-radius: 12px;
+    }
+    @media print {
+      body { background: white; }
+      .page { padding: 18px 10px 28px; }
+      .hero, .card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <p class="eyebrow">PadelCompare CIS</p>
+      <h1>Как пользоваться сайтом и админкой</h1>
+      <p class="muted">
+        Короткий гайд по buyer-facing части и внутренним admin-экранам:
+        как искать модели, собирать shortlist, сравнивать ракетки и как работать с импортом и лидами.
+      </p>
+      <div>
+        <span class="pill">Публичный сайт: <code>/</code></span>
+        <span class="pill">Админ импорт: <code>/admin/import</code></span>
+        <span class="pill">Админ лиды: <code>/admin/leads</code></span>
+        <span class="pill">Live preview: <code>http://185.205.246.169:8087</code></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>1. Что делает публичный сайт</h2>
+      <p>PadelCompare помогает выбрать padel-ракетку не по хаотичному каталогу, а по задаче игрока.</p>
+      <ul>
+        <li><strong>Главная</strong> даёт быстрые входы в основные сценарии.</li>
+        <li><strong>Finder / Подбор</strong> собирает короткий shortlist по бюджету, стилю, уровню и feel.</li>
+        <li><strong>Compare / Сравнение</strong> сравнивает 2-4 модели на одном экране.</li>
+        <li><strong>Similar / Похожие</strong> помогает найти альтернативы текущей модели.</li>
+        <li><strong>Deals / Скидки</strong> показывает ценовые предложения и быстрые точки входа.</li>
+        <li><strong>Brands</strong>, <strong>Collections</strong> и <strong>Best for</strong> работают как дополнительные входы по бренду и намерению.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>2. Как пользоваться публичной частью</h2>
+      <ol>
+        <li>Открой главную страницу.</li>
+        <li>Если нужен быстрый старт, нажми <strong>Подобрать ракетку</strong>.</li>
+        <li>Если уже есть shortlist, сразу переходи в <strong>Сравнение</strong>.</li>
+        <li>Если есть одна знакомая модель и нужно найти замену, используй <strong>Похожие</strong>.</li>
+        <li>Если приоритет цена, открой <strong>Скидки</strong>.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>3. Как работает Finder</h2>
+      <ol>
+        <li>Открой <code>/finder</code>.</li>
+        <li>Выбери бюджет.</li>
+        <li>Выбери приоритет: например баланс, контроль, мощность или комфорт.</li>
+        <li>Укажи уровень игрока.</li>
+        <li>Выбери feel/ощущение.</li>
+        <li>Сайт покажет лучшую рекомендацию и ещё несколько похожих вариантов.</li>
+        <li>Можно нажать <strong>Открыть детали</strong>, <strong>Похожие модели</strong> или <strong>Сравнить shortlist</strong>.</li>
+      </ol>
+      <div class="note">
+        Если пользователь хочет вернуться позже, внизу Finder можно оставить контакт.
+        Лид сохраняется вместе с текущим shortlist.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>4. Как пользоваться карточкой модели и compare</h2>
+      <div class="grid">
+        <div>
+          <h3>Страница модели</h3>
+          <p>Показывает verdict, ключевые плюсы/минусы, параметры, цену и быстрые входы в compare или similar.</p>
+        </div>
+        <div>
+          <h3>Сравнение</h3>
+          <p>Compare нужен, когда уже есть 2-4 варианта. Там видно общий score, trade-offs, лидер по метрикам и быструю decision surface.</p>
+        </div>
+        <div>
+          <h3>Collections / Best for</h3>
+          <p>Это curated полки: по задаче, сегменту или намерению поиска.</p>
+        </div>
+        <div>
+          <h3>Deals / Shops</h3>
+          <p>Нужны для price-first сценария: посмотреть текущие офферы и перейти к модели или compare.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>5. Что умеет админка</h2>
+      <p>Внутренняя часть проекта состоит из двух экранов.</p>
+      <ul>
+        <li><strong>/admin/import</strong> — bulk import каталога, офферов и истории импортов.</li>
+        <li><strong>/admin/leads</strong> — inbox лидов из product flow.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>6. Как пользоваться админкой импорта</h2>
+      <ol>
+        <li>Открой <code>/admin/import</code>.</li>
+        <li>В поле <strong>Source label</strong> укажи понятную подпись импорта.</li>
+        <li>Вставь JSON-массив с ракетками и офферами.</li>
+        <li>Сначала нажми <strong>Dry run</strong>, чтобы проверить структуру пакета без записи в базу.</li>
+        <li>Если проверка нормальная, нажми <strong>Импортировать в базу</strong>.</li>
+        <li>Ниже проверь блок <strong>Последние applied imports</strong>: там видно, сколько сущностей создалось или обновилось.</li>
+      </ol>
+      <p class="muted">Рекомендация: не начинать с полного боевого пакета. Сначала гонять короткий dry run на 1-2 моделях.</p>
+    </section>
+
+    <section class="card">
+      <h2>7. Как пользоваться inbox лидов</h2>
+      <ol>
+        <li>Открой <code>/admin/leads</code>.</li>
+        <li>Смотри, кто пришёл из product flow и какой intent у него был.</li>
+        <li>В каждой карточке видно контакт, дату, shortlist items и best match.</li>
+        <li>Кнопка <strong>Открыть compare</strong> переносит в compare с тем набором моделей, который был у пользователя.</li>
+        <li>Это удобно для follow-up: можно не угадывать, что пользователь видел, а открыть его decision context сразу.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>8. Практический рабочий сценарий</h2>
+      <ol>
+        <li>Обновить каталог через <code>/admin/import</code>.</li>
+        <li>Проверить, что модели появились на публичных страницах.</li>
+        <li>Открыть Finder и убедиться, что подбор продолжает работать.</li>
+        <li>Если начали приходить лиды, открыть <code>/admin/leads</code>.</li>
+        <li>Для каждого важного лида открыть compare и посмотреть реальный shortlist пользователя.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>9. Мини-чек перед публикацией</h2>
+      <ul>
+        <li>Работают главные входы: <strong>Подобрать</strong>, <strong>Похожие</strong>, <strong>Сравнение</strong>, <strong>Скидки</strong>.</li>
+        <li>Finder даёт shortlist и позволяет отправить лид.</li>
+        <li>Compare открывается и без ошибок показывает 2-4 модели.</li>
+        <li>Карточки брендов, коллекций и best-for страниц открываются.</li>
+        <li>Админ импорт делает dry run и показывает историю импортов.</li>
+        <li>Inbox лидов открывается и даёт переход в compare.</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

@@ -56,7 +56,7 @@ export default async function CollectionPage({ params }: PageProps) {
       <nav className="compare-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Rackets</Link>
         <span>/</span>
-        <span>Collections</span>
+        <Link href="/collections">Collections</Link>
         <span>/</span>
         <span>{collection.title}</span>
       </nav>
@@ -70,7 +70,7 @@ export default async function CollectionPage({ params }: PageProps) {
           <div className="hero-actions">
             {compareHref ? (
               <Link href={compareHref} className="button button-primary">
-                Открыть sample compare
+                Открыть готовое сравнение
               </Link>
             ) : null}
             <Link href="/" className="button">

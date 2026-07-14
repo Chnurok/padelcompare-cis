@@ -3,8 +3,13 @@ import assert from "node:assert/strict";
 
 import { rackets } from "@/data/rackets.js";
 import {
+  getAverageScore,
+  getCompareEdgeHighlights,
+  getPlayerFitLabel,
   getPresetRecommendations,
   getQuizRecommendations,
+  getTradeoffNote,
+  getValueScore,
   RECOMMENDATION_PRESETS
 } from "@/lib/catalog/recommendation";
 import type { CatalogRacket } from "@/lib/catalog/catalog-db";
@@ -55,4 +60,29 @@ test("quiz recommendations respect control-oriented intermediate profile", () =>
 
   assert.equal(results.length, 3);
   assert.ok(results.some((item) => item.playStyle === "control" || item.shape === "round"));
+});
+
+test("value score rewards cheaper strong rackets", () => {
+  const cheaper = catalog.find((item) => item.currentPrice <= 280);
+  const expensive = catalog.find((item) => item.currentPrice >= 340);
+
+  assert.ok(cheaper);
+  assert.ok(expensive);
+  assert.ok(getValueScore(cheaper) >= getAverageScore(cheaper));
+  assert.ok(getValueScore(cheaper) >= getValueScore(expensive) - 20);
+});
+
+test("compare edge highlights surface concrete shortlist advantages", () => {
+  const shortlist = catalog.slice(0, 3);
+  const highlights = getCompareEdgeHighlights(shortlist[0], shortlist);
+
+  assert.ok(highlights.length >= 1);
+  assert.ok(highlights.every((item) => typeof item === "string" && item.length > 0));
+});
+
+test("fit and tradeoff notes stay explainable", () => {
+  const sample = catalog[0];
+
+  assert.match(getPlayerFitLabel(sample), /игрок/i);
+  assert.match(getTradeoffNote(sample), /Trade-off/i);
 });

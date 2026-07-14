@@ -4,6 +4,7 @@ export const leadSchema = z.object({
   name: z.string().trim().min(2).max(80),
   contact: z.string().trim().min(3).max(120),
   intent: z.string().trim().min(1).max(40),
+  sourcePage: z.string().trim().max(80).optional().default(""),
   notes: z.string().trim().max(500).optional().default(""),
   selectedId: z.string().trim().optional(),
   compareIds: z.array(z.string().trim()).max(4).optional().default([])
@@ -76,5 +77,6 @@ export const importRacketSchema = z.object({
 
 export const catalogImportSchema = z.object({
   dryRun: z.boolean().optional().default(false),
+  sourceLabel: z.string().trim().min(2).max(120).optional(),
   items: z.array(importRacketSchema).min(1).max(100)
 });
