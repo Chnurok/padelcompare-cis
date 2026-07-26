@@ -14,7 +14,7 @@ import {
 } from "@/lib/catalog/recommendation";
 import type { CatalogRacket } from "@/lib/catalog/catalog-db";
 
-const catalog = rackets.map((racket) => ({
+const catalog = rackets.map((racket: (typeof rackets)[number]) => ({
   ...racket,
   weight: racket.weight,
   offers: [

@@ -9,7 +9,7 @@ import {
   getSeoVsPage
 } from "@/lib/seo/landing-pages";
 
-const catalog = rackets.map((racket) => ({
+const catalog = rackets.map((racket: (typeof rackets)[number]) => ({
   ...racket,
   weight: racket.weight,
   offers: [

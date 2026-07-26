@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
+import Image from "next/image";
 import Link from "next/link";
 
 import { AffiliateDisclosure } from "@/components/affiliate-disclosure";
@@ -18,12 +19,11 @@ import {
   getTradeoffNote,
   getValueScore
 } from "@/lib/catalog/recommendation";
-import { formatAvailability, formatBalance, formatHardness, formatPlayStyle, formatShape, formatSkillLevel, formatSweetSpot } from "@/lib/catalog/format";
 
 type PageProps = {
-  searchParams: {
+  searchParams: Promise<{
     ids?: string;
-  };
+  }>;
 };
 
 function normalizeIds(value: string | undefined) {
@@ -62,7 +62,7 @@ type DecisionAngle = {
 function RacketVisual({ racket }: { racket: CatalogRacket }) {
   return (
     <div className="compare-racket-visual">
-      <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+      <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} />
     </div>
   );
 }
@@ -143,8 +143,9 @@ function buildInsights(rackets: CatalogRacket[]): InsightCard[] {
   ];
 }
 
-export function generateMetadata({ searchParams }: PageProps): Metadata {
-  const ids = normalizeIds(searchParams.ids);
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const { ids: rawIds } = await searchParams;
+  const ids = normalizeIds(rawIds);
 
   return {
     title: ids.length >= 2 ? "Сравнение ракеток | PadelCompare CIS" : "Сравнение | PadelCompare CIS",
@@ -156,7 +157,8 @@ export function generateMetadata({ searchParams }: PageProps): Metadata {
 }
 
 export default async function ComparePage({ searchParams }: PageProps) {
-  const ids = normalizeIds(searchParams.ids);
+  const { ids: rawIds } = await searchParams;
+  const ids = normalizeIds(rawIds);
   const rackets = await getCompareSetFromDb(ids);
   const insights = buildInsights(rackets);
   const decisionAngles = buildDecisionAngles(rackets);

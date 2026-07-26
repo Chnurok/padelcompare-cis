@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -12,9 +13,9 @@ import { getRacketImageAlt } from "@/lib/catalog/racket-media";
 import { getAverageScore, getSimilarityScore, scoreLabel } from "@/lib/catalog/recommendation";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 function buildProfile(racket: Awaited<ReturnType<typeof getRacketBySlugFromDb>>) {
@@ -43,7 +44,8 @@ function buildSpecs(racket: Awaited<ReturnType<typeof getRacketBySlugFromDb>>) {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const racket = await getRacketBySlugFromDb(params.slug);
+  const { slug } = await params;
+  const racket = await getRacketBySlugFromDb(slug);
 
   if (!racket) {
     return {
@@ -63,9 +65,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function RacketDetailPage({ params }: PageProps) {
+  const { slug } = await params;
   const [racket, relatedRackets] = await Promise.all([
-    getRacketBySlugFromDb(params.slug),
-    getRelatedRacketsFromDb(params.slug, 3)
+    getRacketBySlugFromDb(slug),
+    getRelatedRacketsFromDb(slug, 3)
   ]);
 
   if (!racket) {
@@ -145,7 +148,7 @@ export default async function RacketDetailPage({ params }: PageProps) {
         </div>
 
         <div className="racket-detail-visual">
-          <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+          <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={640} height={800} priority />
         </div>
       </section>
 
@@ -290,7 +293,7 @@ export default async function RacketDetailPage({ params }: PageProps) {
           {relatedRackets.map((item) => (
             <article key={item.id} className="detail-related-item">
               <div className="detail-related-media">
-                <img src={item.imageUrl} alt={getRacketImageAlt(item.fullName)} />
+                <Image src={item.imageUrl} alt={getRacketImageAlt(item.fullName)} width={480} height={600} />
               </div>
               <div className="detail-related-copy">
                 <p>{item.brand}</p>

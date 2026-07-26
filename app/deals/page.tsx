@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
+import Image from "next/image";
 import Link from "next/link";
 
 import { AnalyticsPageView } from "@/components/analytics-page-view";
@@ -81,7 +82,7 @@ export default async function DealsPage() {
           return (
             <article key={racket.id} className="racket-card">
               <div className="racket-media">
-                <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+                <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} />
               </div>
               <div className="racket-head">
                 <p>{racket.brand}</p>

@@ -4,9 +4,10 @@ import { getRacketBySlugFromDb } from "@/lib/catalog/catalog-db";
 
 export async function GET(
   _request: Request,
-  context: { params: { slug: string } }
+  context: { params: Promise<{ slug: string }> }
 ) {
-  const racket = await getRacketBySlugFromDb(context.params.slug);
+  const { slug } = await context.params;
+  const racket = await getRacketBySlugFromDb(slug);
 
   if (!racket) {
     return NextResponse.json({ error: "Racket not found" }, { status: 404 });

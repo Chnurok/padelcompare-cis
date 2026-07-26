@@ -32,27 +32,57 @@ Buyer-facing padel racket decision product for Russian-speaking users.
 
 ## Current snapshot
 
-- 120 rackets in the catalog
-- 8 brands normalized into Prisma
+- 150 rackets in the catalog
+- 9 brands normalized into Prisma
 - dedicated routes for `/finder`, `/similar`, `/compare`, `/deals`, `/brands`, `/brands/[slug]`, `/shops/[slug]`, `/collections/[slug]`, `/best-for/[slug]`, `/vs/[left]/[right]`
 - hub routes for `/collections`, `/best-for`, and `/brands`
 - collection routes for `beginner`, `control`, `power`, and `under-300`
 - Prisma-backed event collection for compare opens, offer clicks, and lead submits
 
-## Local run
+## Requirements
+
+- Node.js 20.9 or newer
+- npm 10 or newer
+
+## Run from a clone or downloaded ZIP
 
 ```bash
 npm install
+npm run db:generate
+cp .env.example .env
 npm run dev
 ```
 
-Then open the local Next.js URL, usually <http://localhost:3000>.
+On PowerShell, use `Copy-Item .env.example .env` instead of `cp`.
+Then open <http://localhost:3000>. The repository includes `prisma/dev.db` with the release catalog, so seeding is not required for the first launch.
 
-## Build check
+Before exposing the app publicly, replace `ADMIN_PASSWORD` in `.env` with a long random value. The `/admin/*` pages and `/api/admin/*` routes fail closed when admin credentials are absent. Set `ANALYTICS_ENABLED=true` only when analytics persistence is intentionally enabled.
+
+## Release checks
 
 ```bash
+npm run lint
+npm run typecheck
+npm test
 npm run build
 ```
+
+To verify the production server locally after a successful build:
+
+```bash
+npm start
+```
+
+## Database reset
+
+The checked-in SQLite snapshot contains the release catalog. To recreate it from `data/rackets.js` and remove local leads, import history, and analytics events:
+
+```bash
+npm run db:push
+npm run db:seed
+```
+
+Do not commit a root-level `dev.db`, SQLite journal/WAL files, `.env`, `.next`, or analytics generated during local testing.
 
 ## Tests
 
@@ -62,6 +92,7 @@ npm test
 
 ## Admin import
 
+- configure `ADMIN_USERNAME` and `ADMIN_PASSWORD`
 - open `/admin/import`
 - paste a JSON array of racket objects with `offers`
 - run `Dry run` first to validate structure
@@ -72,3 +103,4 @@ npm test
 - `systemd` runs `next start` on `127.0.0.1:3301`
 - `nginx` exposes that preview on `:8087`
 - GitHub Pages is kept only as a redirect entrypoint so there is one canonical product version
+- the self-hosted environment must provide `DATABASE_URL`, `SITE_URL`, `ADMIN_USERNAME`, and `ADMIN_PASSWORD`; analytics storage is opt-in via `ANALYTICS_ENABLED=true`

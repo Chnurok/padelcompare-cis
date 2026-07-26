@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -264,7 +265,7 @@ export function RacketFinder({ rackets, stats }: Props) {
                 </div>
               </div>
               <div className="racket-detail-visual">
-                <img src={best.imageUrl} alt={getRacketImageAlt(best.fullName)} />
+                <Image src={best.imageUrl} alt={getRacketImageAlt(best.fullName)} width={480} height={600} />
               </div>
             </section>
           ) : null}
@@ -299,7 +300,7 @@ export function RacketFinder({ rackets, stats }: Props) {
             {recommendations.map((racket, index) => (
               <article key={racket.id} className="racket-card">
                 <div className="racket-media">
-                  <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+                  <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} />
                 </div>
                 <div className="racket-head">
                   <p>#{index + 1} рекомендация</p>

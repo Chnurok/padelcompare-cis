@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -288,7 +289,7 @@ export function CatalogExperience({
           {homeHighlights.slice(0, 3).map((racket) => (
             <article key={`hero-${racket.id}`} className="hero-racket-card">
               <div className="hero-racket-media">
-                <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+                <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} priority />
               </div>
               <div className="hero-racket-copy">
                 <span>{racket.brand}</span>
@@ -326,7 +327,7 @@ export function CatalogExperience({
           {homeHighlights.map((racket) => (
             <article key={`highlight-${racket.id}`} className="home-highlight-card">
               <Link href={`/rackets/${racket.id}`} className="home-highlight-media">
-                <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+                <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} />
               </Link>
               <div className="home-highlight-copy">
                 <p>{racket.brand}</p>
@@ -718,7 +719,7 @@ export function CatalogExperience({
                 return (
                   <article key={racket.id} className="racket-card">
                     <div className="racket-media">
-                      <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+                      <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} />
                     </div>
                     <div className="racket-head">
                       <p>{racket.brand}</p>

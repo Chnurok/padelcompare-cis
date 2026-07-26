@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -7,13 +8,13 @@ import {
   getMerchantSummariesFromDb,
   getRacketsByMerchantSlugFromDb
 } from "@/lib/catalog/catalog-db";
-import { formatAvailability, formatHardness, formatPlayStyle, formatShape } from "@/lib/catalog/format";
+import { formatAvailability, formatPlayStyle, formatShape } from "@/lib/catalog/format";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 function slugify(input: string) {
@@ -26,8 +27,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
   const merchants = await getMerchantSummariesFromDb(32);
-  const merchant = merchants.find((item) => item.slug === params.slug);
+  const merchant = merchants.find((item) => item.slug === slug);
 
   if (!merchant) {
     return { title: "Магазин не найден" };
@@ -40,12 +42,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ShopMerchantPage({ params }: PageProps) {
+  const { slug } = await params;
   const [merchants, rackets] = await Promise.all([
     getMerchantSummariesFromDb(32),
-    getRacketsByMerchantSlugFromDb(params.slug)
+    getRacketsByMerchantSlugFromDb(slug)
   ]);
 
-  const merchant = merchants.find((item) => item.slug === params.slug);
+  const merchant = merchants.find((item) => item.slug === slug);
 
   if (!merchant || rackets.length === 0) {
     notFound();
@@ -88,7 +91,7 @@ export default async function ShopMerchantPage({ params }: PageProps) {
 
       <section className="catalog-grid">
         {rackets.map((racket) => {
-          const merchantOffer = racket.offers.find((offer) => slugify(offer.merchant) === params.slug);
+          const merchantOffer = racket.offers.find((offer) => slugify(offer.merchant) === slug);
           const compareMate = rackets.find((item) => item.id !== racket.id);
           const previousPrice = merchantOffer?.previousPrice ?? merchantOffer?.price ?? racket.currentPrice;
           const discountAmount = Math.max(0, previousPrice - (merchantOffer?.price ?? racket.currentPrice));
@@ -97,7 +100,7 @@ export default async function ShopMerchantPage({ params }: PageProps) {
           return (
             <article key={racket.id} className="racket-card">
               <div className="racket-media">
-                <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+                <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} />
               </div>
               <div className="racket-head">
                 <p>{racket.brand}</p>

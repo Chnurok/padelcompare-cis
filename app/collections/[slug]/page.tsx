@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -8,13 +9,14 @@ import { getCollectionBySlug } from "@/lib/catalog/collections";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const collection = getCollectionBySlug(params.slug);
+  const { slug } = await params;
+  const collection = getCollectionBySlug(slug);
 
   if (!collection) {
     return {
@@ -29,7 +31,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function CollectionPage({ params }: PageProps) {
-  const collection = getCollectionBySlug(params.slug);
+  const { slug } = await params;
+  const collection = getCollectionBySlug(slug);
 
   if (!collection) {
     notFound();
@@ -98,7 +101,7 @@ export default async function CollectionPage({ params }: PageProps) {
         {items.map((racket) => (
           <article key={racket.id} className="racket-card">
             <div className="racket-media">
-              <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+              <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} />
             </div>
             <div className="racket-head">
               <p>{racket.brand}</p>

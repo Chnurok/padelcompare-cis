@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -13,9 +14,9 @@ import {
 } from "@/lib/seo/landing-pages";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export function generateStaticParams() {
@@ -23,7 +24,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const page = getSeoCategoryPage(params.slug);
+  const { slug } = await params;
+  const page = getSeoCategoryPage(slug);
 
   if (!page) {
     return { title: "SEO page not found" };
@@ -36,11 +38,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function BestForPage({ params }: PageProps) {
-  const page = getSeoCategoryPage(params.slug);
+  const { slug } = await params;
+  const page = getSeoCategoryPage(slug);
   if (!page) notFound();
 
   const rackets = await listRacketsFromDb();
-  const items = getSeoCategoryRecommendations(rackets, params.slug, 4);
+  const items = getSeoCategoryRecommendations(rackets, slug, 4);
   const compareHref =
     items.length >= 2 ? `/compare?ids=${items.slice(0, 3).map((item) => item.id).join(",")}` : null;
   const faq = [
@@ -116,7 +119,7 @@ export default async function BestForPage({ params }: PageProps) {
           return (
             <article key={racket.id} className="racket-card">
               <div className="racket-media">
-                <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+                <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} />
               </div>
               <div className="racket-head">
                 <p>{racket.brand}</p>

@@ -1,4 +1,11 @@
 .next/
 node_modules/
 .env
+.env*.local
 .artifacts/
+*.tsbuildinfo
+dev.db
+!prisma/dev.db
+*.db-journal
+*.db-shm
+*.db-wal

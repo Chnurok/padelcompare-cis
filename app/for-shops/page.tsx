@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
 import Link from "next/link";
 
 import { AffiliateDisclosure } from "@/components/affiliate-disclosure";

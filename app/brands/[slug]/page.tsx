@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -7,9 +8,9 @@ import { getBrandSummariesFromDb, getRacketsByBrandSlugFromDb } from "@/lib/cata
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export async function generateStaticParams() {
@@ -18,8 +19,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
   const brands = await getBrandSummariesFromDb();
-  const brand = brands.find((item) => item.slug === params.slug);
+  const brand = brands.find((item) => item.slug === slug);
 
   if (!brand) {
     return { title: "Brand not found" };
@@ -32,12 +34,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function BrandPage({ params }: PageProps) {
+  const { slug } = await params;
   const [brands, rackets] = await Promise.all([
     getBrandSummariesFromDb(),
-    getRacketsByBrandSlugFromDb(params.slug)
+    getRacketsByBrandSlugFromDb(slug)
   ]);
 
-  const brand = brands.find((item) => item.slug === params.slug);
+  const brand = brands.find((item) => item.slug === slug);
 
   if (!brand || rackets.length === 0) {
     notFound();
@@ -87,7 +90,7 @@ export default async function BrandPage({ params }: PageProps) {
         {rackets.map((racket) => (
           <article key={racket.id} className="racket-card">
             <div className="racket-media">
-              <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+              <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} />
             </div>
             <div className="racket-head">
               <p>{racket.brand}</p>

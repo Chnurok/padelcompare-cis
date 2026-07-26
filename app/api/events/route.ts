@@ -14,6 +14,10 @@ export async function POST(request: Request) {
     );
   }
 
+  if (process.env.ANALYTICS_ENABLED !== "true") {
+    return NextResponse.json({ ok: true, persistence: "disabled" });
+  }
+
   await prisma.analyticsEvent.create({
     data: {
       type: parsed.data.type,

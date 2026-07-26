@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
 import { AppShell } from "@/components/app-shell";
 import { getSiteUrl } from "@/lib/site-config";
 import "./globals.css";

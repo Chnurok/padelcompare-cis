@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
 
 import { AnalyticsPageView } from "@/components/analytics-page-view";
 import { RacketFinder } from "@/components/racket-finder";

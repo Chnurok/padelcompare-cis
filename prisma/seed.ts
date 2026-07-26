@@ -53,6 +53,8 @@ function buildExtraOffers(racket: SeedRacket) {
 
 async function main() {
   await prisma.analyticsEvent.deleteMany();
+  await prisma.importRun.deleteMany();
+  await prisma.lead.deleteMany();
   await prisma.offerPriceLog.deleteMany();
   await prisma.offer.deleteMany();
   await prisma.racketPro.deleteMany();
@@ -128,7 +130,7 @@ async function main() {
           previousPrice: offer.previousPrice,
           availability: offer.availability,
           stockNote: offer.stockNote,
-          lastCheckedAt: new Date(),
+          lastCheckedAt: new Date("2026-06-27T12:00:00.000Z"),
           sourceLabel: "Seed catalog",
           importedAt: new Date("2026-06-28T00:00:00.000Z"),
           priceHistory: {

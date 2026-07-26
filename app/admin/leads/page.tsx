@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
 import Link from "next/link";
 
 import { AdminLeadsInbox } from "@/components/admin-leads-inbox";

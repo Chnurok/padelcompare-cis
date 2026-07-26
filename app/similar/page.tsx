@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
+import Image from "next/image";
 import Link from "next/link";
 
 import { AnalyticsPageView } from "@/components/analytics-page-view";
@@ -11,9 +12,9 @@ import { getRacketImageAlt } from "@/lib/catalog/racket-media";
 import { getSimilarityScore } from "@/lib/catalog/recommendation";
 
 type PageProps = {
-  searchParams: {
+  searchParams: Promise<{
     to?: string;
-  };
+  }>;
 };
 
 export const metadata: Metadata = {
@@ -22,9 +23,10 @@ export const metadata: Metadata = {
 };
 
 export default async function SimilarPage({ searchParams }: PageProps) {
+  const { to } = await searchParams;
   const rackets = await listRacketsFromDb();
-  const selectedId = searchParams.to && rackets.some((item) => item.id === searchParams.to)
-    ? searchParams.to
+  const selectedId = to && rackets.some((item) => item.id === to)
+    ? to
     : rackets[0]?.id;
 
   const [base, similar] = selectedId
@@ -108,7 +110,7 @@ export default async function SimilarPage({ searchParams }: PageProps) {
             {similar.map((racket) => (
               <article key={racket.id} className="racket-card">
                 <div className="racket-media">
-                  <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+                  <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} />
                 </div>
                 <div className="racket-head">
                   <p>{racket.brand}</p>

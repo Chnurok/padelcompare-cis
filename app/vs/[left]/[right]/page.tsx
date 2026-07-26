@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -10,10 +11,10 @@ import { getRacketImageAlt } from "@/lib/catalog/racket-media";
 import { getSeoVsPage, SEO_VS_PAGES } from "@/lib/seo/landing-pages";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     left: string;
     right: string;
-  };
+  }>;
 };
 
 const HIGHLIGHTS = [
@@ -28,7 +29,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const page = getSeoVsPage(params.left, params.right);
+  const { left, right } = await params;
+  const page = getSeoVsPage(left, right);
 
   if (!page) {
     return { title: "VS page not found" };
@@ -41,16 +43,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function VsPage({ params }: PageProps) {
-  const page = getSeoVsPage(params.left, params.right);
+  const { left, right } = await params;
+  const page = getSeoVsPage(left, right);
   if (!page) notFound();
 
-  const rackets = await getCompareSetFromDb([params.left, params.right]);
+  const rackets = await getCompareSetFromDb([left, right]);
   if (rackets.length < 2) notFound();
 
   return (
     <main className="page-shell">
       <AnalyticsPageView
-        page={`seo-vs:${params.left}:${params.right}`}
+        page={`seo-vs:${left}:${right}`}
         compareIds={rackets.map((item) => item.id)}
         stage="acquisition"
         source="seo_vs"
@@ -82,7 +85,7 @@ export default async function VsPage({ params }: PageProps) {
             <div className="compare-score">{getAverageScore(racket)}</div>
             <div className="compare-score-label">{scoreLabel(getAverageScore(racket))}</div>
             <div className="compare-racket-visual">
-              <img src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} />
+              <Image src={racket.imageUrl} alt={getRacketImageAlt(racket.fullName)} width={480} height={600} />
             </div>
             <div className="compare-racket-copy">
               <p>
