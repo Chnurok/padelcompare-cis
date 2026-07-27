@@ -1,0 +1,46 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "copyright": "2026 PadelCompare",
+    "categories": [
+      "SPORTS",
+      "SHOPPING"
+    ],
+    "info": {
+      "ru": {
+        "title": "PadelCompare",
+        "subtitle": "Выбор ракетки для падела",
+        "description": "PadelCompare помогает выбрать следующую ракетку для падела по реальным игровым характеристикам, а не по рекламным обещаниям.\n\nВОЗМОЖНОСТИ\n• Каталог из 150 моделей девяти брендов\n• Поиск и фильтры по форме и бренду\n• Персональный подбор по бюджету, уровню, стилю и ощущению\n• Сравнение до четырёх ракеток по шести игровым метрикам\n• Сохранённый shortlist, который остаётся на устройстве\n• Предложения магазинов и заметные снижения цены\n• Работа основного каталога без подключения к интернету\n\nPadelCompare показывает компромиссы каждой модели: мощность, контроль, комфорт, манёвренность, прощение ошибок и вращение. Сохрани интересные варианты, сравни их рядом и переходи к предложению магазина только после осознанного выбора.",
+        "keywords": [
+          "падел,ракетка,спорт,сравнение,подбор,магазин,цена,контроль,мощность,теннис"
+        ],
+        "releaseNotes": "Первая версия PadelCompare: каталог, персональный подбор, сохранённые модели, сравнение и предложения магазинов.",
+        "promoText": "Подбери ракетку под свой стиль и сравни лучшие варианты по понятным игровым метрикам.",
+        "privacyPolicyUrl": "https://chnurok.github.io/padelcompare-cis/privacy/",
+        "supportUrl": "https://github.com/Chnurok/padelcompare-cis/issues",
+        "marketingUrl": "https://chnurok.github.io/padelcompare-cis/"
+      }
+    },
+    "advisory": {
+      "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+      "gamblingSimulated": "NONE",
+      "medicalOrTreatmentInformation": "NONE",
+      "profanityOrCrudeHumor": "NONE",
+      "sexualContentGraphicAndNudity": "NONE",
+      "sexualContentOrNudity": "NONE",
+      "horrorOrFearThemes": "NONE",
+      "matureOrSuggestiveThemes": "NONE",
+      "violenceCartoonOrFantasy": "NONE",
+      "violenceRealistic": "NONE",
+      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+      "contests": "NONE",
+      "gambling": false,
+      "unrestrictedWebAccess": false,
+      "seventeenPlus": false
+    },
+    "release": {
+      "automaticRelease": false,
+      "phasedRelease": true
+    }
+  }
+}

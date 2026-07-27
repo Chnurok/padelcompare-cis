@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "PadelCompare",
+    "slug": "padelcompare",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "padelcompare",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.padelcompare.app",
+      "buildNumber": "1",
+      "supportsTablet": false,
+      "icon": "./assets/images/icon.png",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "CFBundleDisplayName": "PadelCompare"
+      }
+    },
+    "android": {
+      "package": "com.padelcompare.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#20140d",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": true
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#20140d",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 132
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

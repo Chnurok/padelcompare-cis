@@ -12,7 +12,13 @@
     "test": "tsx --test tests/**/*.test.ts",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "mobile:catalog": "node scripts/export-mobile-catalog.mjs",
+    "mobile:install": "npm --prefix mobile install",
+    "mobile:lint": "npm --prefix mobile run lint",
+    "mobile:typecheck": "npm --prefix mobile run typecheck",
+    "mobile:test": "npm --prefix mobile test",
+    "mobile:export": "npm --prefix mobile run export"
   },
   "dependencies": {
     "@prisma/client": "^5.16.2",

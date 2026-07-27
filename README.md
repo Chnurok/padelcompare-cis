@@ -39,6 +39,26 @@ Buyer-facing padel racket decision product for Russian-speaking users.
 - collection routes for `beginner`, `control`, `power`, and `under-300`
 - Prisma-backed event collection for compare opens, offer clicks, and lead submits
 
+## Native iOS app
+
+The repository also contains a production-oriented Expo/React Native client in `mobile/`.
+It includes the complete offline catalog, native finder, saved shortlist, comparison,
+brand and deal screens, App Store metadata, and EAS production profiles.
+
+No local Mac or Xcode installation is required: EAS Build creates the `.ipa` on hosted
+macOS infrastructure and EAS Submit uploads it to App Store Connect from Windows.
+
+```bash
+npm run mobile:install
+npm run mobile:lint
+npm run mobile:typecheck
+npm run mobile:test
+npm run mobile:export
+```
+
+One-time Expo/Apple authorization and release commands are documented in
+`mobile/README.md`.
+
 ## Requirements
 
 - Node.js 20.9 or newer
