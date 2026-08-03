@@ -6,7 +6,7 @@
     <title>Каталог ракеток — PadelCompare</title>
     <meta name="description" content="Каталог padel-ракеток PadelCompare с поиском, фильтрами и сравнением характеристик." />
     <meta name="theme-color" content="#f6f2ea" />
-    <link rel="icon" type="image/png" href="../brand/padelcompare-icon-64.png" />
+    <link rel="icon" type="image/png" href="../public/brand/padelcompare-icon-64.png" />
     <style>
       :root {
         color-scheme: light;
@@ -142,7 +142,7 @@
     <div class="shell">
       <header>
         <a class="brand" href="../" aria-label="PadelCompare — главная">
-          <img src="../brand/padelcompare-logo.png" alt="" width="58" height="54" />
+          <img src="../public/brand/padelcompare-logo.png" alt="" width="58" height="54" />
           <span>PadelCompare</span>
         </a>
         <a class="home-link" href="../">← На главную</a>
@@ -190,7 +190,7 @@
 
       const escapeHtml = (value) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
       const label = (value) => ({ round: "круглая", tear: "капля", diamond: "алмаз", balanced: "баланс", control: "контроль", power: "мощность", intermediate: "средний", advanced: "продвинутый", low: "низкий", medium: "средний", high: "высокий" })[value] || value;
-      const imageUrl = (racket) => `${basePath}${racket.imageUrl.startsWith("/rackets/") ? racket.imageUrl : "/rackets/" + racket.imageUrl}`;
+      const imageUrl = (racket) => `${basePath}/public${racket.imageUrl.startsWith("/rackets/") ? racket.imageUrl : "/rackets/" + racket.imageUrl}`;
 
       function renderCompare() {
         const items = rackets.filter((racket) => selected.has(racket.id));
@@ -239,7 +239,7 @@
       [search, brand, style, level].forEach((control) => control.addEventListener("input", renderCatalog));
       document.querySelector("#clear").addEventListener("click", () => { selected.clear(); renderCatalog(); renderCompare(); });
 
-      fetch(`${basePath}/data/catalog.json`)
+      fetch(`${basePath}/mobile/src/data/catalog.json`)
         .then((response) => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
         .then((data) => {
           rackets = data;
