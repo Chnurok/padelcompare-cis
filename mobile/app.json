@@ -21,6 +21,7 @@
     },
     "android": {
       "package": "com.padelcompare.app",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#20140d",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

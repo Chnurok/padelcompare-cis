@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2d1b12"/><stop offset="1" stop-color="#141312"/></linearGradient></defs>
+  <rect width="1080" height="1920" fill="url(#bg)"/>
+  <circle cx="930" cy="280" r="340" fill="#c96c2f" opacity=".19"/>
+  <text x="72" y="130" fill="#e89155" font-family="Arial,sans-serif" font-size="28" font-weight="700" letter-spacing="5">СРАВНЕНИЕ</text>
+  <text x="72" y="245" fill="#fffaf4" font-family="Arial,sans-serif" font-size="72" font-weight="800">Различия видно</text>
+  <text x="72" y="330" fill="#fffaf4" font-family="Arial,sans-serif" font-size="72" font-weight="800">с первого взгляда.</text>
+  <text x="74" y="397" fill="#e9d8cb" font-family="Arial,sans-serif" font-size="30">От 2 до 4 моделей на одном экране</text>
+  <g transform="translate(110 480)">
+    <rect width="860" height="1320" rx="76" fill="#0f0e0d"/>
+    <rect x="18" y="18" width="824" height="1284" rx="61" fill="#f7efe3"/>
+    <rect x="324" y="35" width="212" height="45" rx="24" fill="#0f0e0d"/>
+    <text x="62" y="142" fill="#c96c2f" font-family="Arial,sans-serif" font-size="23" font-weight="700" letter-spacing="3">ТВОЙ SHORTLIST</text>
+    <text x="62" y="210" fill="#211811" font-family="Arial,sans-serif" font-size="50" font-weight="800">Nox vs Bullpadel</text>
+    <g transform="translate(62 260)">
+      <rect width="350" height="350" rx="36" fill="#fffaf4" stroke="#ded1c3" stroke-width="2"/><ellipse cx="175" cy="152" rx="70" ry="100" fill="#302923"/><ellipse cx="175" cy="152" rx="58" ry="86" fill="none" stroke="#d1793f" stroke-width="13"/><rect x="162" y="240" width="26" height="72" rx="9" fill="#302923"/><text x="32" y="330" fill="#211811" font-family="Arial,sans-serif" font-size="25" font-weight="800">Nox AT10 18K</text>
+    </g>
+    <g transform="translate(448 260)">
+      <rect width="350" height="350" rx="36" fill="#fffaf4" stroke="#ded1c3" stroke-width="2"/><ellipse cx="175" cy="152" rx="73" ry="103" fill="#273039"/><ellipse cx="175" cy="152" rx="60" ry="88" fill="none" stroke="#97c962" stroke-width="13"/><rect x="162" y="242" width="26" height="70" rx="9" fill="#273039"/><text x="32" y="330" fill="#211811" font-family="Arial,sans-serif" font-size="25" font-weight="800">Vertex 04</text>
+    </g>
+    <g font-family="Arial,sans-serif">
+      <text x="62" y="685" fill="#746a62" font-size="22" font-weight="700">КОНТРОЛЬ</text><rect x="62" y="710" width="736" height="24" rx="12" fill="#ded3c7"/><rect x="62" y="710" width="664" height="24" rx="12" fill="#66b587"/><text x="760" y="686" fill="#211811" font-size="24" font-weight="800">9.4</text>
+      <text x="62" y="805" fill="#746a62" font-size="22" font-weight="700">МОЩНОСТЬ</text><rect x="62" y="830" width="736" height="24" rx="12" fill="#ded3c7"/><rect x="62" y="830" width="626" height="24" rx="12" fill="#c96c2f"/><text x="760" y="806" fill="#211811" font-size="24" font-weight="800">8.9</text>
+      <text x="62" y="925" fill="#746a62" font-size="22" font-weight="700">КОМФОРТ</text><rect x="62" y="950" width="736" height="24" rx="12" fill="#ded3c7"/><rect x="62" y="950" width="598" height="24" rx="12" fill="#66b587"/><text x="760" y="926" fill="#211811" font-size="24" font-weight="800">8.6</text>
+      <rect x="62" y="1045" width="736" height="126" rx="30" fill="#211811"/><text x="94" y="1094" fill="#86d49f" font-size="20" font-weight="700">ВЫВОД</text><text x="94" y="1138" fill="#fff" font-size="25" font-weight="700">Nox точнее, Vertex мощнее</text>
+    </g>
+  </g>
+</svg>

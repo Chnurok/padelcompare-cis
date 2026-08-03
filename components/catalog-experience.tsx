@@ -314,6 +314,26 @@ export function CatalogExperience({
         ))}
       </section>
 
+      <section className="mobile-home-promo">
+        <div>
+          <p className="eyebrow">Новое приложение для Android</p>
+          <h2>PadelCompare теперь можно взять на корт.</h2>
+          <p>
+            150 ракеток, подбор, сравнение и сохранённые модели работают в нативном приложении даже без сети.
+            Первый релиз готовится для Google Play.
+          </p>
+          <div className="hero-actions">
+            <Link href="/app" className="button button-primary">Посмотреть приложение</Link>
+            <Link href="/app#early-access" className="button">Попасть в Android-тест</Link>
+          </div>
+        </div>
+        <div className="mobile-home-promo__device" aria-hidden="true">
+          <span>PadelCompare</span>
+          <strong>Подбор без догадок</strong>
+          <div><b>150</b> моделей · <b>9</b> брендов</div>
+        </div>
+      </section>
+
       <section className="card">
         <div className="section-head">
           <div>

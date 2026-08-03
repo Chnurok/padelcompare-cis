@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { href: "/similar", label: "Похожие", icon: "Match" },
   { href: "/compare", label: "Сравнение", icon: "Grid" },
   { href: "/deals", label: "Скидки", icon: "Price" },
-  { href: "/for-shops", label: "B2B", icon: "Pro" }
+  { href: "/app", label: "Приложение", icon: "Android" }
 ] as const;
 
 function isActive(pathname: string, href: string) {
@@ -27,12 +27,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="app-frame">
         <header className="app-topbar">
           <div>
-            <p className="app-kicker">Превью формата приложения</p>
-            <h1 className="app-brand">PadelCompare</h1>
+            <p className="app-kicker">Выбор padel-ракеток</p>
+            <Link href="/" className="app-brand" aria-label="PadelCompare — главная">
+              PadelCompare
+            </Link>
           </div>
           <div className="app-topbar__meta">
             <span>Русский сценарий выбора</span>
-            <strong>Сначала iPhone</strong>
+            <strong>Сначала Android</strong>
           </div>
         </header>
 

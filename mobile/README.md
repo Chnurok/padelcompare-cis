@@ -1,17 +1,18 @@
-# PadelCompare for iOS
+# PadelCompare mobile
 
-Native Expo/React Native client prepared for EAS Build, TestFlight, and the Apple App Store.
+Native Expo/React Native client prepared for Android/Google Play first, with iOS/App Store profiles kept ready for the next release.
 
 ## Included in v1
 
-- native iOS navigation with Home, Catalog, Finder, and Saved tabs
+- native Home, Catalog, Finder, and Saved tabs
 - offline release snapshot: 150 rackets, 9 brands, and store offers
 - catalog search plus brand and shape filters
 - explainable finder based on budget, priority, skill level, and feel
 - persistent shortlist stored locally on the device
-- comparison of 2-4 rackets across six gameplay metrics
+- comparison of 2–4 rackets across six gameplay metrics
 - racket detail, brand, deal, and merchant offer screens
-- App Store icon, splash screen, metadata, privacy copy, and EAS profiles
+- Android adaptive/monochrome icons, splash screen, Play listing copy, and EAS profiles
+- iOS icon, App Store metadata, and EAS profiles for the later iPhone release
 
 ## Local checks on Windows
 
@@ -22,10 +23,10 @@ npm run lint
 npm run typecheck
 npm test
 npm run doctor
-npm run export
+npm run export:android
 ```
 
-`EXPO_PUBLIC_API_URL` is optional. Without it the complete bundled catalog is used. Set it to an HTTPS production host to enable pull-to-refresh from `/api/catalog/rackets`. Client code never accepts a production HTTP API URL.
+`EXPO_PUBLIC_API_URL` is optional. Without it the complete bundled catalog is used. Set it to an HTTPS production host to enable pull-to-refresh from `/api/catalog/rackets`. Client code rejects a production HTTP API URL.
 
 To inspect the universal render in a browser:
 
@@ -33,41 +34,46 @@ To inspect the universal render in a browser:
 npm run web
 ```
 
-## EAS setup (one time)
+## Google Play setup (one time)
 
-No local Mac or Xcode installation is required.
+No Android Studio or local Mac is required for a signed Play build. From this directory:
 
 ```powershell
 npx eas-cli@latest login
 npx eas-cli@latest init
-npx eas-cli@latest credentials --platform ios
 ```
 
-The first `eas init` writes the Expo `projectId` to app configuration. Keep the configured bundle identifier `com.padelcompare.app` only if that identifier belongs to the Apple team; otherwise change it before creating the App Store Connect record.
+The first `eas init` writes the Expo `projectId` to app configuration. Keep `com.padelcompare.app` only if this is the final package name: Google Play does not allow it to change after the first artifact upload.
 
-Create an App Store Connect app using:
-
-- Name: `PadelCompare`
-- Bundle ID: `com.padelcompare.app`
-- Primary language: Russian
-- SKU: for example `padelcompare-ios`
-
-## Build and submit from Windows
+Create the signed artifacts in EAS:
 
 ```powershell
+npm run build:android:preview  # APK for direct device QA
+npm run build:android:prod     # AAB for Play Console
+```
+
+The first `.aab` must be uploaded manually to an Internal testing release in Play Console. After that, EAS Submit can automate future uploads:
+
+```powershell
+npm run submit:android:internal
+npm run submit:android:production
+```
+
+The production submission stays in `draft` until it is reviewed and released in Play Console. Full store setup, test requirements, privacy answers, and listing copy are in [`google-play/LAUNCH_CHECKLIST.md`](google-play/LAUNCH_CHECKLIST.md).
+
+Do not commit Google service-account JSON, Android keystores, `.env`, `.expo`, or export/build output.
+
+## iOS later
+
+EAS also builds the `.ipa` on hosted macOS infrastructure from Windows:
+
+```powershell
+npx eas-cli@latest credentials --platform ios
 npm run build:ios:prod
 npm run submit:ios
 ```
 
-Or build and submit in one command:
-
-```powershell
-npm run build:ios:submit
-```
-
-EAS builds the `.ipa` on hosted macOS infrastructure and uploads it to App Store Connect. The submitted build then appears in TestFlight.
-
-For unattended submission, configure an App Store Connect API key in EAS credentials. Do not commit `.p8` keys, Apple passwords, `.env`, `.expo`, or `dist`.
+Create the App Store Connect record with bundle ID `com.padelcompare.app` before submission.
 
 ## Catalog refresh
 
@@ -77,4 +83,4 @@ The checked-in snapshot is generated from the release Prisma database:
 npm run mobile:catalog
 ```
 
-Run the command from the repository root whenever release catalog data changes, then rerun the mobile tests and export.
+Run the command from the repository root whenever release catalog data changes, then rerun the mobile tests and Android export.
