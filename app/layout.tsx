@@ -12,6 +12,13 @@ export const metadata: Metadata = {
     template: "%s | PadelCompare CIS"
   },
   description: "Русскоязычный decision layer для выбора padel-ракеток: каталог, detail pages и compare flow.",
+  icons: {
+    icon: [
+      { url: "/brand/padelcompare-icon-64.png", type: "image/png", sizes: "64x64" },
+      { url: "/brand/padelcompare-icon-192.png", type: "image/png", sizes: "192x192" }
+    ],
+    apple: [{ url: "/brand/padelcompare-app-icon.png", type: "image/png", sizes: "512x512" }]
+  },
   openGraph: {
     title: "PadelCompare CIS",
     description: "Каталог, detail pages и compare flow для выбора padel-ракеток.",

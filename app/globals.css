@@ -84,8 +84,24 @@ a {
 
 .app-brand {
   margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
   font-size: clamp(26px, 4vw, 34px);
   line-height: 0.98;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+
+.app-brand__mark {
+  width: 58px;
+  height: 54px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 12px rgba(142, 66, 21, 0.14));
+}
+
+.app-brand__word {
+  display: inline-block;
 }
 
 .app-topbar__meta {
@@ -1986,6 +2002,16 @@ h2 {
 }
 
 @media (max-width: 560px) {
+  .app-brand {
+    gap: 8px;
+    font-size: 24px;
+  }
+
+  .app-brand__mark {
+    width: 46px;
+    height: 43px;
+  }
+
   .app-topbar__meta span {
     display: none;
   }

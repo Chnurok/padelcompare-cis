@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
@@ -29,7 +30,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div>
             <p className="app-kicker">Выбор padel-ракеток</p>
             <Link href="/" className="app-brand" aria-label="PadelCompare — главная">
-              PadelCompare
+              <Image
+                className="app-brand__mark"
+                src="/brand/padelcompare-logo.png"
+                alt=""
+                width={58}
+                height={54}
+                priority
+              />
+              <span className="app-brand__word">PadelCompare</span>
             </Link>
           </div>
           <div className="app-topbar__meta">

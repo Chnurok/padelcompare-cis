@@ -3,72 +3,222 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PadelCompare CIS</title>
+    <title>PadelCompare — точный выбор padel-ракетки</title>
     <meta
       name="description"
-      content="PadelCompare CIS moved to the live preview site."
+      content="Сравнивайте padel-ракетки, находите подходящую модель и следите за предложениями в PadelCompare."
     />
-    <meta
-      http-equiv="refresh"
-      content="0; url=http://185.205.246.169:8087/"
-    />
+    <meta name="theme-color" content="#f6f2ea" />
+    <link rel="icon" type="image/png" href="./public/brand/padelcompare-icon-64.png" />
     <style>
       :root {
         color-scheme: light;
-        font-family: Arial, sans-serif;
+        --ink: #1d1a16;
+        --muted: #6d665f;
+        --accent: #c96c2f;
+        --accent-strong: #8e4215;
+        --line: rgba(29, 26, 22, 0.09);
+        font-family: Manrope, "Avenir Next", "Segoe UI", sans-serif;
       }
+
+      * { box-sizing: border-box; }
 
       body {
         margin: 0;
         min-height: 100vh;
-        display: grid;
-        place-items: center;
-        background: #f5f0e8;
-        color: #171717;
+        padding: 20px 14px;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 12% 0%, rgba(201, 108, 47, 0.2), transparent 27%),
+          radial-gradient(circle at 100% 18%, rgba(89, 148, 122, 0.16), transparent 28%),
+          linear-gradient(180deg, #f8f4ec, #efe5d6);
+      }
+
+      .shell {
+        width: min(100%, 980px);
+        min-height: calc(100vh - 40px);
+        margin: 0 auto;
+        padding: clamp(18px, 4vw, 48px);
+        border: 1px solid rgba(255, 255, 255, 0.72);
+        border-radius: 36px;
+        background: linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(250, 245, 236, 0.94));
+        box-shadow: 0 32px 90px rgba(35, 22, 11, 0.16);
+        overflow: hidden;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        color: inherit;
+        text-decoration: none;
+        font-size: clamp(25px, 4vw, 34px);
+        font-weight: 800;
+        letter-spacing: -0.045em;
+      }
+
+      .brand img {
+        width: 62px;
+        height: 58px;
+        object-fit: contain;
+        filter: drop-shadow(0 8px 14px rgba(142, 66, 21, 0.14));
       }
 
       main {
-        width: min(560px, calc(100vw - 32px));
-        padding: 32px;
-        border-radius: 24px;
-        background: #fffaf3;
-        box-shadow: 0 16px 40px rgba(23, 23, 23, 0.08);
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+        gap: clamp(28px, 6vw, 72px);
+        align-items: center;
+        min-height: 70vh;
+        padding: clamp(40px, 8vw, 88px) 0 30px;
+      }
+
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
       }
 
       h1 {
-        margin: 0 0 12px;
-        font-size: clamp(28px, 5vw, 42px);
-        line-height: 1.05;
+        max-width: 12ch;
+        margin: 0;
+        font-size: clamp(48px, 8vw, 82px);
+        line-height: 0.92;
+        letter-spacing: -0.065em;
       }
 
-      p {
-        margin: 0 0 12px;
-        line-height: 1.5;
+      .lead {
+        max-width: 580px;
+        margin: 24px 0 0;
+        color: var(--muted);
+        font-size: clamp(17px, 2.4vw, 21px);
+        line-height: 1.55;
       }
 
-      a {
-        color: #8a3b12;
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+        padding: 0 22px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.72);
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .button-primary {
+        color: white;
+        border-color: var(--accent);
+        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+        box-shadow: 0 14px 30px rgba(201, 108, 47, 0.24);
+      }
+
+      .feature-card {
+        padding: 26px;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.64);
+        box-shadow: 0 18px 50px rgba(90, 52, 20, 0.08);
+      }
+
+      .feature-card h2 { margin: 0 0 18px; font-size: 23px; }
+
+      .feature-list {
+        display: grid;
+        gap: 14px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .feature-list li {
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        gap: 12px;
+        align-items: center;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      .feature-list span {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border-radius: 12px;
+        color: var(--accent-strong);
+        background: rgba(201, 108, 47, 0.13);
+        font-weight: 900;
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      footer a { color: var(--accent-strong); }
+
+      @media (max-width: 720px) {
+        body { padding: 0; }
+        .shell { min-height: 100vh; border-radius: 0; }
+        main { grid-template-columns: 1fr; min-height: auto; padding-top: 54px; }
+        h1 { font-size: clamp(46px, 15vw, 68px); }
+        footer { flex-direction: column; }
       }
     </style>
-    <script>
-      (function redirectToLiveSite() {
-        var target = new URL("http://185.205.246.169:8087/");
-        var path = window.location.pathname.replace(/^\/padelcompare-cis/, "") || "/";
-        target.pathname = path;
-        target.search = window.location.search;
-        target.hash = window.location.hash;
-        window.location.replace(target.toString());
-      })();
-    </script>
   </head>
   <body>
-    <main>
-      <h1>PadelCompare CIS moved</h1>
-      <p>GitHub Pages now redirects to the live preview so there is only one current version.</p>
-      <p>
-        If the redirect does not happen automatically, open
-        <a href="http://185.205.246.169:8087/">the live site</a>.
-      </p>
-    </main>
+    <div class="shell">
+      <a class="brand" href="http://185.205.246.169:8087/" aria-label="Открыть PadelCompare">
+        <img src="./public/brand/padelcompare-logo.png" alt="" width="62" height="58" />
+        <span>PadelCompare</span>
+      </a>
+
+      <main>
+        <section>
+          <p class="eyebrow">Выбор padel-ракеток без догадок</p>
+          <h1>Найдите свою ракетку.</h1>
+          <p class="lead">
+            Сравнивайте характеристики, проходите умный подбор и собирайте короткий список моделей перед покупкой.
+          </p>
+          <div class="actions">
+            <a class="button button-primary" href="http://185.205.246.169:8087/">Открыть каталог →</a>
+            <a class="button" href="http://185.205.246.169:8087/app">Приложение для Android</a>
+          </div>
+        </section>
+
+        <aside class="feature-card">
+          <h2>Всё для точного выбора</h2>
+          <ul class="feature-list">
+            <li><span>01</span> Подбор под уровень и стиль игры</li>
+            <li><span>02</span> Наглядное сравнение характеристик</li>
+            <li><span>03</span> Каталог, коллекции и shortlist</li>
+          </ul>
+        </aside>
+      </main>
+
+      <footer>
+        <span>GitHub Pages — безопасная витрина проекта. Каталог открывается на основном сервере.</span>
+        <a href="https://github.com/Chnurok/padelcompare-cis">GitHub</a>
+      </footer>
+    </div>
   </body>
 </html>

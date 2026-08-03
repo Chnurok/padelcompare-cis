@@ -6,7 +6,7 @@ Buyer-facing padel racket decision product for Russian-speaking users.
 
 - Product repo: <https://github.com/Chnurok/padelcompare-cis>
 - Live preview: <http://185.205.246.169:8087/>
-- GitHub Pages entrypoint: <https://chnurok.github.io/padelcompare-cis/> (redirects to the live preview)
+- GitHub Pages branded entrypoint: <https://chnurok.github.io/padelcompare-cis/> (responsive product landing with links to the live catalog and Android page)
 - Domain-ready config: set `SITE_URL` before production launch
 
 ## What the product already does
