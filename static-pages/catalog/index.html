@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Каталог ракеток — PadelCompare</title>
+    <meta name="description" content="Каталог padel-ракеток PadelCompare с поиском, фильтрами и сравнением характеристик." />
+    <meta name="theme-color" content="#f6f2ea" />
+    <link rel="icon" type="image/png" href="../brand/padelcompare-icon-64.png" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f2ea;
+        --surface: rgba(255, 252, 247, 0.94);
+        --ink: #1d1a16;
+        --muted: #6d665f;
+        --line: rgba(29, 26, 22, 0.1);
+        --accent: #c96c2f;
+        --accent-strong: #8e4215;
+        font-family: Manrope, "Avenir Next", "Segoe UI", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 10% 0%, rgba(201, 108, 47, 0.17), transparent 26%),
+          radial-gradient(circle at 100% 12%, rgba(89, 148, 122, 0.14), transparent 28%),
+          linear-gradient(180deg, #f8f4ec, #efe5d6);
+      }
+
+      a { color: inherit; text-decoration: none; }
+      button, input, select { font: inherit; }
+
+      .shell {
+        width: min(1180px, calc(100% - 28px));
+        margin: 20px auto;
+        padding: clamp(18px, 3vw, 36px);
+        border: 1px solid rgba(255, 255, 255, 0.72);
+        border-radius: 34px;
+        background: linear-gradient(180deg, rgba(255, 253, 249, 0.97), rgba(250, 245, 236, 0.95));
+        box-shadow: 0 30px 80px rgba(35, 22, 11, 0.15);
+      }
+
+      header { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+
+      .brand { display: inline-flex; align-items: center; gap: 11px; font-size: clamp(24px, 4vw, 32px); font-weight: 850; letter-spacing: -0.045em; }
+      .brand img { width: 58px; height: 54px; object-fit: contain; }
+      .home-link { color: var(--muted); font-size: 14px; font-weight: 750; }
+
+      .hero { padding: clamp(44px, 7vw, 76px) 0 30px; }
+      .eyebrow { margin: 0 0 12px; color: var(--accent); font-size: 12px; font-weight: 850; letter-spacing: 0.14em; text-transform: uppercase; }
+      h1 { margin: 0; font-size: clamp(46px, 8vw, 76px); line-height: 0.94; letter-spacing: -0.06em; }
+      .hero-copy { max-width: 690px; margin: 20px 0 0; color: var(--muted); font-size: clamp(17px, 2vw, 20px); line-height: 1.55; }
+
+      .notice {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        margin-top: 24px;
+        padding: 15px 17px;
+        border: 1px solid rgba(201, 108, 47, 0.2);
+        border-radius: 18px;
+        background: rgba(255, 236, 218, 0.62);
+        color: var(--accent-strong);
+        line-height: 1.45;
+      }
+      .notice strong { flex: 0 0 auto; }
+
+      .filters {
+        display: grid;
+        grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(140px, 1fr));
+        gap: 12px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.68);
+      }
+
+      label { display: grid; gap: 7px; color: var(--muted); font-size: 12px; font-weight: 750; }
+      input, select { width: 100%; min-height: 46px; padding: 0 13px; border: 1px solid var(--line); border-radius: 14px; color: var(--ink); background: #fffdf9; }
+      input:focus, select:focus, button:focus-visible, a:focus-visible { outline: 3px solid rgba(201, 108, 47, 0.24); outline-offset: 2px; }
+
+      .results-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 24px 2px 14px; }
+      .results-bar strong { font-size: 18px; }
+      .results-bar span { color: var(--muted); font-size: 14px; }
+
+      .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+      .card { display: grid; grid-template-rows: 230px auto; overflow: hidden; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); box-shadow: 0 15px 38px rgba(70, 45, 24, 0.07); }
+      .card-media { display: grid; place-items: center; padding: 18px; background: radial-gradient(circle at top, white, rgba(226, 215, 203, 0.62)); }
+      .card-media img { width: 100%; height: 196px; object-fit: contain; }
+      .card-body { display: grid; align-content: start; gap: 13px; padding: 19px; }
+      .card-brand { margin: 0; color: var(--accent); font-size: 12px; font-weight: 850; letter-spacing: 0.11em; text-transform: uppercase; }
+      .card h2 { margin: 0; font-size: 21px; line-height: 1.1; letter-spacing: -0.025em; }
+      .tags { display: flex; flex-wrap: wrap; gap: 7px; }
+      .tag { padding: 7px 9px; border-radius: 10px; background: rgba(29, 26, 22, 0.055); color: var(--muted); font-size: 12px; }
+      .specs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+      .specs div { padding: 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.72); }
+      .specs dt { color: var(--muted); font-size: 11px; }
+      .specs dd { margin: 3px 0 0; font-weight: 800; }
+
+      .compare-button { min-height: 43px; border: 1px solid rgba(201, 108, 47, 0.25); border-radius: 13px; color: var(--accent-strong); background: rgba(255, 235, 217, 0.72); font-weight: 800; cursor: pointer; }
+      .compare-button[aria-pressed="true"] { color: white; border-color: var(--accent); background: linear-gradient(135deg, var(--accent), var(--accent-strong)); }
+
+      .compare-panel { display: none; margin: 28px 0 10px; padding: 22px; border-radius: 24px; color: #fff8f1; background: linear-gradient(135deg, #281b13, #75401f); box-shadow: 0 22px 50px rgba(39, 23, 12, 0.2); }
+      .compare-panel.is-visible { display: block; }
+      .compare-head { display: flex; justify-content: space-between; gap: 18px; align-items: center; }
+      .compare-head h2 { margin: 0; font-size: 24px; }
+      .clear-button { border: 0; color: #fff1e5; background: transparent; cursor: pointer; text-decoration: underline; }
+      .compare-table-wrap { margin-top: 18px; overflow-x: auto; }
+      table { width: 100%; min-width: 660px; border-collapse: collapse; }
+      th, td { padding: 12px; border: 1px solid rgba(255,255,255,.14); text-align: left; }
+      th { color: #ffd7bb; font-size: 12px; text-transform: uppercase; }
+
+      .empty { grid-column: 1 / -1; padding: 42px; border: 1px dashed var(--line); border-radius: 22px; color: var(--muted); text-align: center; }
+      .error { padding: 28px; border-radius: 20px; color: #7b241c; background: #fde9e7; }
+      footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+      @media (max-width: 900px) {
+        .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+
+      @media (max-width: 600px) {
+        .shell { width: 100%; margin: 0; border: 0; border-radius: 0; }
+        header { align-items: flex-start; }
+        .home-link { padding-top: 9px; }
+        .brand span { display: none; }
+        .hero { padding-top: 38px; }
+        .notice { display: grid; }
+        .filters, .grid { grid-template-columns: 1fr; }
+        .filters { padding: 14px; }
+        .card { grid-template-rows: 220px auto; }
+        .results-bar { align-items: flex-start; flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <a class="brand" href="../" aria-label="PadelCompare — главная">
+          <img src="../brand/padelcompare-logo.png" alt="" width="58" height="54" />
+          <span>PadelCompare</span>
+        </a>
+        <a class="home-link" href="../">← На главную</a>
+      </header>
+
+      <main>
+        <section class="hero">
+          <p class="eyebrow">Каталог PadelCompare</p>
+          <h1>Ракетки для сравнения.</h1>
+          <p class="hero-copy">Ищите модель по бренду, стилю и уровню. Выберите до четырёх ракеток — характеристики появятся в одной таблице.</p>
+          <div class="notice"><strong>Статус данных:</strong><span>характеристики доступны как релизный snapshot. Цены, наличие и ссылки магазинов временно скрыты до повторной проверки.</span></div>
+        </section>
+
+        <section class="filters" aria-label="Фильтры каталога">
+          <label>Поиск<input id="search" type="search" placeholder="Nox, Metalbone, control…" /></label>
+          <label>Бренд<select id="brand"><option value="">Все бренды</option></select></label>
+          <label>Стиль<select id="style"><option value="">Любой стиль</option><option value="balanced">Баланс</option><option value="control">Контроль</option><option value="power">Мощность</option></select></label>
+          <label>Уровень<select id="level"><option value="">Любой уровень</option><option value="intermediate">Средний</option><option value="advanced">Продвинутый</option></select></label>
+        </section>
+
+        <section id="compare" class="compare-panel" aria-live="polite">
+          <div class="compare-head"><h2>Сравнение</h2><button id="clear" class="clear-button" type="button">Очистить</button></div>
+          <div id="compare-table" class="compare-table-wrap"></div>
+        </section>
+
+        <div class="results-bar"><strong id="result-count">Загрузка каталога…</strong><span>Можно выбрать до 4 моделей</span></div>
+        <section id="catalog" class="grid" aria-live="polite"></section>
+      </main>
+
+      <footer>PadelCompare · статический каталог для GitHub Pages · без неподтверждённых магазинных предложений</footer>
+    </div>
+
+    <script>
+      const basePath = location.pathname.startsWith("/padelcompare-cis/") ? "/padelcompare-cis" : "";
+      const catalogNode = document.querySelector("#catalog");
+      const resultCount = document.querySelector("#result-count");
+      const search = document.querySelector("#search");
+      const brand = document.querySelector("#brand");
+      const style = document.querySelector("#style");
+      const level = document.querySelector("#level");
+      const comparePanel = document.querySelector("#compare");
+      const compareTable = document.querySelector("#compare-table");
+      const selected = new Set();
+      let rackets = [];
+
+      const escapeHtml = (value) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
+      const label = (value) => ({ round: "круглая", tear: "капля", diamond: "алмаз", balanced: "баланс", control: "контроль", power: "мощность", intermediate: "средний", advanced: "продвинутый", low: "низкий", medium: "средний", high: "высокий" })[value] || value;
+      const imageUrl = (racket) => `${basePath}${racket.imageUrl.startsWith("/rackets/") ? racket.imageUrl : "/rackets/" + racket.imageUrl}`;
+
+      function renderCompare() {
+        const items = rackets.filter((racket) => selected.has(racket.id));
+        comparePanel.classList.toggle("is-visible", items.length > 0);
+        if (!items.length) { compareTable.innerHTML = ""; return; }
+        const row = (name, getter) => `<tr><th>${name}</th>${items.map((item) => `<td>${escapeHtml(getter(item))}</td>`).join("")}</tr>`;
+        compareTable.innerHTML = `<table><thead><tr><th>Параметр</th>${items.map((item) => `<th>${escapeHtml(item.brand)}<br>${escapeHtml(item.model)}</th>`).join("")}</tr></thead><tbody>${row("Форма", (r) => label(r.shape))}${row("Стиль", (r) => label(r.playStyle))}${row("Уровень", (r) => label(r.skillLevel))}${row("Вес", (r) => `${r.weight} г`)}${row("Баланс", (r) => label(r.balance))}${row("Жёсткость", (r) => label(r.hardness))}${row("Материал", (r) => r.faceMaterial)}</tbody></table>`;
+      }
+
+      function toggleCompare(id) {
+        if (selected.has(id)) selected.delete(id);
+        else if (selected.size < 4) selected.add(id);
+        else { alert("Для сравнения можно выбрать не больше четырёх моделей."); return; }
+        renderCatalog();
+        renderCompare();
+      }
+
+      function filteredRackets() {
+        const query = search.value.trim().toLocaleLowerCase("ru");
+        return rackets.filter((racket) => {
+          const matchesQuery = !query || `${racket.brand} ${racket.model} ${racket.fullName}`.toLocaleLowerCase("ru").includes(query);
+          return matchesQuery && (!brand.value || racket.brand === brand.value) && (!style.value || racket.playStyle === style.value) && (!level.value || racket.skillLevel === level.value);
+        });
+      }
+
+      function renderCatalog() {
+        const visible = filteredRackets();
+        resultCount.textContent = `${visible.length} ${visible.length === 1 ? "модель" : "моделей"}`;
+        if (!visible.length) { catalogNode.innerHTML = '<div class="empty">Ничего не найдено. Попробуйте изменить фильтры.</div>'; return; }
+        catalogNode.innerHTML = visible.map((racket) => `<article class="card">
+          <div class="card-media"><img src="${escapeHtml(encodeURI(imageUrl(racket)))}" alt="${escapeHtml(racket.fullName)}" loading="lazy" /></div>
+          <div class="card-body">
+            <p class="card-brand">${escapeHtml(racket.brand)} · ${escapeHtml(racket.season)}</p>
+            <h2>${escapeHtml(racket.model)}</h2>
+            <div class="tags"><span class="tag">${escapeHtml(label(racket.shape))}</span><span class="tag">${escapeHtml(label(racket.playStyle))}</span><span class="tag">${escapeHtml(label(racket.skillLevel))}</span></div>
+            <dl class="specs"><div><dt>Вес</dt><dd>${escapeHtml(racket.weight)} г</dd></div><div><dt>Баланс</dt><dd>${escapeHtml(label(racket.balance))}</dd></div><div><dt>Жёсткость</dt><dd>${escapeHtml(label(racket.hardness))}</dd></div><div><dt>Sweet spot</dt><dd>${escapeHtml(label(racket.sweetSpot))}</dd></div></dl>
+            <button class="compare-button" type="button" data-compare="${escapeHtml(racket.id)}" aria-pressed="${selected.has(racket.id)}">${selected.has(racket.id) ? "В сравнении ✓" : "Добавить к сравнению"}</button>
+          </div>
+        </article>`).join("");
+      }
+
+      catalogNode.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-compare]");
+        if (button) toggleCompare(button.dataset.compare);
+      });
+      [search, brand, style, level].forEach((control) => control.addEventListener("input", renderCatalog));
+      document.querySelector("#clear").addEventListener("click", () => { selected.clear(); renderCatalog(); renderCompare(); });
+
+      fetch(`${basePath}/data/catalog.json`)
+        .then((response) => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
+        .then((data) => {
+          rackets = data;
+          [...new Set(rackets.map((racket) => racket.brand))].sort().forEach((name) => brand.add(new Option(name, name)));
+          renderCatalog();
+        })
+        .catch(() => {
+          resultCount.textContent = "Каталог временно недоступен";
+          catalogNode.innerHTML = '<div class="error">Не удалось загрузить данные. Обновите страницу через минуту.</div>';
+        });
+    </script>
+  </body>
+</html>

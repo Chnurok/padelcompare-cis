@@ -5,8 +5,7 @@ Buyer-facing padel racket decision product for Russian-speaking users.
 ## Demo
 
 - Product repo: <https://github.com/Chnurok/padelcompare-cis>
-- Live preview: <http://185.205.246.169:8087/>
-- GitHub Pages branded entrypoint: <https://chnurok.github.io/padelcompare-cis/> (responsive product landing with links to the live catalog and Android page)
+- Public GitHub Pages site: <https://chnurok.github.io/padelcompare-cis/> (responsive landing plus a static searchable catalog and client-side comparison)
 - Domain-ready config: set `SITE_URL` before production launch
 
 ## What the product already does
@@ -127,5 +126,5 @@ npm test
 
 - `systemd` runs `next start` on `127.0.0.1:3301`
 - `nginx` exposes that preview on `:8087`
-- GitHub Pages is kept only as a redirect entrypoint so there is one canonical product version
+- GitHub Pages publishes the static product landing and reference catalog; the full Next.js app, APIs, admin, imports, analytics, and live offer updates require a server deployment
 - the self-hosted environment must provide `DATABASE_URL`, `SITE_URL`, `ADMIN_USERNAME`, and `ADMIN_PASSWORD`; analytics storage is opt-in via `ANALYTICS_ENABLED=true`

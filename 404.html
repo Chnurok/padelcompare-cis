@@ -3,21 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PadelCompare CIS Redirect</title>
-    <meta
-      http-equiv="refresh"
-      content="0; url=http://185.205.246.169:8087/"
-    />
+    <title>PadelCompare — переход в каталог</title>
+    <meta name="robots" content="noindex" />
     <script>
-      (function redirectNotFoundRoute() {
-        var target = new URL("http://185.205.246.169:8087/");
-        var path = window.location.pathname.replace(/^\/padelcompare-cis/, "") || "/";
-        target.pathname = path;
-        target.search = window.location.search;
-        target.hash = window.location.hash;
-        window.location.replace(target.toString());
-      })();
+      window.location.replace("/padelcompare-cis/catalog/");
     </script>
   </head>
-  <body></body>
+  <body>
+    <p><a href="/padelcompare-cis/catalog/">Открыть каталог PadelCompare</a></p>
+  </body>
 </html>

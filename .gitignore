@@ -3,6 +3,7 @@ node_modules/
 .env
 .env*.local
 .artifacts/
+_site/
 *.tsbuildinfo
 dev.db
 !prisma/dev.db
