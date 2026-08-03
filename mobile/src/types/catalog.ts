@@ -43,6 +43,6 @@ export type CatalogRacket = {
 export type FinderProfile = {
   budget: "under_280" | "under_330" | "premium";
   priority: "control" | "power" | "comfort" | "balanced";
-  level: "intermediate" | "advanced";
+  level: "beginner" | "intermediate" | "advanced";
   feel: "soft" | "medium" | "hard";
 };

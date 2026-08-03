@@ -43,6 +43,19 @@ test("finder returns a unique ranked shortlist", () => {
   assert.ok(results.some((racket) => racket.currentPrice <= 280));
 });
 
+test("beginner finder avoids advanced rackets in the first shortlist", () => {
+  const profile: FinderProfile = {
+    budget: "under_280",
+    priority: "comfort",
+    level: "beginner",
+    feel: "soft"
+  };
+  const results = findRecommendations(catalog, profile, 5);
+
+  assert.equal(results.length, 5);
+  assert.ok(results.every((racket) => racket.skillLevel === "intermediate"));
+});
+
 test("deal rail only includes genuine price reductions", () => {
   for (const item of topDeals(catalog)) {
     assert.ok(item.discount > 0);

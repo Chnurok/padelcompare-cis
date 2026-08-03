@@ -1,12 +1,12 @@
 import type { CatalogRacket } from "@/lib/catalog/catalog-db";
 
 export const RATING_ROWS = [
-  { key: "power", label: "Power" },
-  { key: "control", label: "Control" },
-  { key: "comfort", label: "Comfort" },
-  { key: "maneuverability", label: "Maneuverability" },
-  { key: "forgiveness", label: "Forgiveness" },
-  { key: "spin", label: "Spin" }
+  { key: "power", label: "Мощность" },
+  { key: "control", label: "Контроль" },
+  { key: "comfort", label: "Комфорт" },
+  { key: "maneuverability", label: "Манёвренность" },
+  { key: "forgiveness", label: "Прощение ошибок" },
+  { key: "spin", label: "Вращение" }
 ] as const;
 
 export type RatingKey = (typeof RATING_ROWS)[number]["key"];
@@ -25,7 +25,7 @@ export type RecommendationPreset = {
 export type QuizProfile = {
   budget: "under_280" | "under_330" | "premium";
   priority: "control" | "power" | "comfort" | "balanced";
-  level: "intermediate" | "advanced";
+  level: "beginner" | "intermediate" | "advanced";
   feel: "soft" | "medium" | "hard";
 };
 
@@ -84,11 +84,11 @@ function clampScore(value: number) {
 }
 
 export function scoreLabel(score: number) {
-  if (score >= 92) return "Elite";
-  if (score >= 88) return "Excellent";
-  if (score >= 83) return "Very good";
-  if (score >= 77) return "Good";
-  return "Solid";
+  if (score >= 92) return "Топовый";
+  if (score >= 88) return "Отличный";
+  if (score >= 83) return "Очень хороший";
+  if (score >= 77) return "Хороший";
+  return "Надёжный";
 }
 
 export function getMetricScore(racket: CatalogRacket, key: RatingKey) {
@@ -177,38 +177,38 @@ export function getTopMetric(racket: CatalogRacket) {
 
 export function getPlayerFitLabel(racket: CatalogRacket) {
   if (racket.playStyle === "power" || racket.balance === "high") {
-    return "Для игрока, который хочет first-strike pressure и мощное завершение.";
+    return "Для игрока, который хочет давить первым ударом и мощно завершать розыгрыш.";
   }
 
   if (racket.playStyle === "control" || racket.shape === "round") {
-    return "Для игрока, который строит розыгрыш через стабильность, защиту и placement.";
+    return "Для игрока, который строит розыгрыш через стабильность, защиту и точность.";
   }
 
   if (racket.hardness === "soft" || racket.sweetSpot === "large") {
-    return "Для игрока, которому нужен более дружелюбный feel и запас по комфорту.";
+    return "Для игрока, которому нужен более дружелюбный контакт и запас по комфорту.";
   }
 
-  return "Для all-court игрока, которому нужен баланс между обороной, переходом и атакой.";
+  return "Для универсального игрока, которому нужен баланс между обороной, переходом и атакой.";
 }
 
 export function getTradeoffNote(racket: CatalogRacket) {
   if (racket.hardness === "hard" && racket.weight >= 365) {
-    return "Trade-off: плотный feel и меньше бесплатного комфорта на медленной защите.";
+    return "Компромисс: плотный контакт и меньше бесплатного комфорта в медленной защите.";
   }
 
   if (racket.playStyle === "power" && racket.shape === "diamond") {
-    return "Trade-off: в защите и на медленных мячах будет требовательнее, чем round/control модели.";
+    return "Компромисс: в защите и на медленных мячах требовательнее круглых контрольных моделей.";
   }
 
   if (racket.playStyle === "control" || racket.shape === "round") {
-    return "Trade-off: меньше free power на finish shots, чем у attacking alternatives.";
+    return "Компромисс: меньше лёгкой мощности в завершающих ударах, чем у атакующих альтернатив.";
   }
 
   if (racket.hardness === "soft") {
-    return "Trade-off: feel комфортный, но при максимальном ускорении меньше плотности и stability.";
+    return "Компромисс: контакт комфортный, но при максимальном ускорении меньше плотности и стабильности.";
   }
 
-  return "Trade-off: универсальность хорошая, но по одной конкретной оси есть более специализированные модели.";
+  return "Компромисс: универсальность хорошая, но по отдельным качествам есть более специализированные модели.";
 }
 
 export function getCompareEdgeHighlights(racket: CatalogRacket, peers: CatalogRacket[]) {
@@ -227,10 +227,10 @@ export function getCompareEdgeHighlights(racket: CatalogRacket, peers: CatalogRa
     .sort((left, right) => right.delta - left.delta)
     .filter((item) => item.delta > 0)
     .slice(0, 2)
-    .map((item) => `${item.label} ${item.score} (+${item.delta} vs shortlist avg)`);
+    .map((item) => `${item.label} ${item.score} (+${item.delta} к среднему в сравнении)`);
 
   if (racket.currentPrice === Math.min(...peers.map((item) => item.currentPrice))) {
-    edges.push(`Лучшая цена в shortlist · EUR ${racket.currentPrice}`);
+    edges.push(`Лучшая цена в подборке · EUR ${racket.currentPrice}`);
   }
 
   return edges.slice(0, 3);
@@ -277,7 +277,16 @@ export function getPresetRecommendations(
 export function getQuizRecommendationScore(racket: CatalogRacket, profile: QuizProfile) {
   let score = getAverageScore(racket);
 
-  if (profile.level === racket.skillLevel) score += 6;
+  if (profile.level === "beginner") {
+    score += racket.skillLevel === "intermediate" ? 6 : -8;
+    score +=
+      (getMetricScore(racket, "forgiveness") +
+        getMetricScore(racket, "comfort") +
+        getMetricScore(racket, "maneuverability")) *
+      0.05;
+  } else if (profile.level === racket.skillLevel) {
+    score += 6;
+  }
   if (profile.feel === racket.hardness) score += 5;
 
   if (profile.priority === "control") score += getMetricScore(racket, "control") * 0.18;
@@ -320,38 +329,50 @@ export function getQuizRecommendationReason(racket: CatalogRacket, profile: Quiz
   const reasons: string[] = [];
 
   if (profile.priority === "control" && (racket.playStyle === "control" || racket.shape === "round")) {
-    reasons.push("control-first profile");
+    reasons.push("акцент на контроль");
   }
 
   if (profile.priority === "power" && (racket.playStyle === "power" || racket.balance === "high")) {
-    reasons.push("attacking bias");
+    reasons.push("для атакующей игры");
   }
 
   if (profile.priority === "comfort" && (racket.hardness === "soft" || racket.sweetSpot === "large")) {
-    reasons.push("more forgiving feel");
+    reasons.push("более комфортный контакт");
   }
 
-  if (profile.level === racket.skillLevel) {
-    reasons.push(`${racket.skillLevel} fit`);
+  if (profile.priority === "balanced" && racket.playStyle === "balanced") {
+    reasons.push("сбалансированный профиль");
+  }
+
+  if (profile.level === "beginner" && racket.skillLevel === "intermediate") {
+    reasons.push("подходит для первого шага");
+  } else if (profile.level === racket.skillLevel) {
+    reasons.push(profile.level === "advanced" ? "для продвинутого уровня" : "для среднего уровня");
   }
 
   if (profile.feel === racket.hardness) {
-    reasons.push(`${racket.hardness} feel match`);
+    reasons.push(
+      {
+        soft: "мягкое ощущение",
+        medium: "среднее ощущение",
+        hard: "жёсткое ощущение"
+      }[racket.hardness] ?? "подходящее ощущение"
+    );
   }
 
   if (profile.budget === "under_280" && racket.currentPrice <= 280) {
-    reasons.push("inside budget");
+    reasons.push("внутри бюджета");
   }
 
   if (profile.budget === "under_330" && racket.currentPrice <= 330) {
-    reasons.push("strong value band");
+    reasons.push("выгодная цена");
   }
 
   if (profile.budget === "premium" && racket.currentPrice >= 300) {
-    reasons.push("premium tier candidate");
+    reasons.push("премиум-класс");
   }
 
-  return reasons.slice(0, 3).join(" · ") || "balanced match for your profile";
+  return reasons.slice(0, 3).join(" · ") || "сбалансированное совпадение с профилем";
 }
 
 export function getSimilarityScore(base: CatalogRacket, candidate: CatalogRacket) {

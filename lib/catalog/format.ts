@@ -22,6 +22,7 @@ export function formatPlayStyle(value: string) {
 export function formatSkillLevel(value: string) {
   return (
     {
+      beginner: "новичок",
       intermediate: "средний",
       advanced: "продвинутый"
     }[value] ?? value

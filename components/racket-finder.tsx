@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 
 import { trackEvent } from "@/lib/analytics";
 import type { CatalogRacket, CatalogStats } from "@/lib/catalog/catalog-db";
-import { formatBalance, formatPlayStyle, formatShape, formatSkillLevel } from "@/lib/catalog/format";
+import { formatBalance, formatHardness, formatPlayStyle, formatShape, formatSkillLevel } from "@/lib/catalog/format";
 import { getRacketImageAlt } from "@/lib/catalog/racket-media";
 import { buildCompareHref } from "@/lib/catalog/links";
 import {
@@ -32,7 +32,10 @@ function buildProfileHeadline(profile: QuizProfile) {
       premium: "премиум-бюджет"
     }[profile.budget] ?? profile.budget;
 
-  return `${formatSkillLevel(profile.level)} уровень · приоритет ${formatPlayStyle(profile.priority)} · ощущение ${profile.feel} · ${budget}`;
+  const feel = { soft: "мягкое", medium: "среднее", hard: "жёсткое" }[profile.feel];
+  const priority = { balanced: "баланс", control: "контроль", power: "мощность", comfort: "комфорт" }[profile.priority];
+
+  return `${formatSkillLevel(profile.level)} · приоритет ${priority} · ощущение ${feel} · ${budget}`;
 }
 
 function buildExplanation(racket: CatalogRacket, profile: QuizProfile) {
@@ -159,12 +162,15 @@ export function RacketFinder({ rackets, stats }: Props) {
     <>
       <section className="hero-card investor-hero finder-hero">
         <div className="investor-copy">
-          <p className="eyebrow">Racket finder</p>
-          <h1>Объяснимый подбор, а не магический “top 3”.</h1>
+          <p className="eyebrow">Подбор ракетки</p>
+          <h1>Подбор с объяснением, а не магический «топ-3».</h1>
           <p className="hero-text">
-            Finder превращает предпочтения по бюджету, стилю, уровню и feel в shortlist с логикой выбора
-            и быстрыми переходами в compare.
+            Учитываем бюджет, стиль, уровень и ощущения, затем показываем причины выбора и сразу даём
+            сравнить лучшие варианты.
           </p>
+          <div className="hero-actions">
+            <Link href="/methodology" className="button">Как считаются рекомендации</Link>
+          </div>
         </div>
 
         <div className="investor-proof">
@@ -178,7 +184,7 @@ export function RacketFinder({ rackets, stats }: Props) {
           </div>
           <div className="proof-card">
             <span>Главная цель</span>
-            <strong>shortlist с объяснением</strong>
+            <strong>объяснимый выбор</strong>
           </div>
         </div>
       </section>
@@ -186,9 +192,9 @@ export function RacketFinder({ rackets, stats }: Props) {
       <section className="workspace-grid">
         <aside className="filters-panel">
           <div>
-            <p className="eyebrow">Profile</p>
+            <p className="eyebrow">Профиль игрока</p>
             <h2>Настрой под себя</h2>
-            <p className="panel-text">Несколько параметров дают уже достаточно точный первый shortlist.</p>
+            <p className="panel-text">Несколько параметров дают достаточно точную первую подборку.</p>
           </div>
 
           <label className="field">
@@ -213,6 +219,7 @@ export function RacketFinder({ rackets, stats }: Props) {
           <label className="field">
             <span>Уровень</span>
             <select value={profile.level} onChange={(event) => update("level", event.target.value as QuizProfile["level"])}>
+              <option value="beginner">Новичок</option>
               <option value="intermediate">Средний</option>
               <option value="advanced">Продвинутый</option>
             </select>
@@ -259,7 +266,7 @@ export function RacketFinder({ rackets, stats }: Props) {
                   </Link>
                   {alternatives[0] ? (
                     <Link href={buildCompareHref([best.id, alternatives[0].id, alternatives[1]?.id]) ?? "/compare"} className="button">
-                      Сравнить shortlist
+                      Сравнить подборку
                     </Link>
                   ) : null}
                 </div>
@@ -309,7 +316,7 @@ export function RacketFinder({ rackets, stats }: Props) {
                   </h3>
                 </div>
                 <p className="racket-meta">
-                  {racket.shape} · {racket.playStyle} · {racket.hardness}
+                  {formatShape(racket.shape)} · {racket.playStyle === "balanced" ? "баланс" : formatPlayStyle(racket.playStyle)} · {formatHardness(racket.hardness)}
                 </p>
                 <p className="racket-copy">{getQuizRecommendationReason(racket, profile)}</p>
                 <div className="racket-pills">
@@ -334,10 +341,10 @@ export function RacketFinder({ rackets, stats }: Props) {
           <section className="card investor-cta-card" id="personal-fitting">
             <div className="investor-cta-copy">
               <p className="eyebrow">Персональный подбор</p>
-              <h2>Оставь контакт и мы сохраним shortlist для ручного follow-up</h2>
+              <h2>Оставь контакт — сохраним подборку для консультации</h2>
               <p>
-                Это уже не просто “оставить лид”. Мы сохраняем твой профиль, лучший матч и shortlist,
-                чтобы потом можно было продолжить подбор вручную под магазин, бренд или совет от человека.
+                Сохраним профиль игрока и лучшие совпадения, чтобы продолжить подбор с учётом магазина,
+                бренда или совета специалиста.
               </p>
             </div>
 
@@ -363,7 +370,7 @@ export function RacketFinder({ rackets, stats }: Props) {
               </label>
               <label className="field">
                 <span>Комментарий</span>
-                <input name="notes" placeholder="Хочу помощь с shortlist / нужен совет по feel" />
+                <input name="notes" placeholder="Нужна помощь с подборкой или совет по ощущениям" />
               </label>
               <label className="field">
                 <span>Текущая ракетка</span>
@@ -390,7 +397,7 @@ export function RacketFinder({ rackets, stats }: Props) {
               </button>
               <p className="form-state">
                 {leadState === "sent"
-                  ? "Запрос сохранён вместе с профилем и текущим shortlist."
+                  ? "Запрос сохранён вместе с профилем и текущей подборкой."
                   : leadState === "error"
                   ? "Нужны имя, контакт и валидная лучшая рекомендация."
                   : "В заявку уйдут профиль игрока, лучшая рекомендация и топ-подборка из подбора."}

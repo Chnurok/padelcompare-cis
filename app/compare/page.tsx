@@ -94,17 +94,17 @@ function buildDecisionAngles(rackets: CatalogRacket[]): DecisionAngle[] {
     {
       title: "Самый безопасный выбор",
       winner: forgivingLeader.fullName,
-      note: `${getMetricScore(forgivingLeader, "forgiveness")} forgiveness · ${getPlayerFitLabel(forgivingLeader)}`
+      note: `${getMetricScore(forgivingLeader, "forgiveness")} по прощению ошибок · ${getPlayerFitLabel(forgivingLeader)}`
     },
     {
-      title: "Лучший comfort / easy transition",
+      title: "Самый комфортный переход",
       winner: comfortLeader.fullName,
-      note: `${getMetricScore(comfortLeader, "comfort")} comfort · ${getTradeoffNote(comfortLeader)}`
+      note: `${getMetricScore(comfortLeader, "comfort")} по комфорту · ${getTradeoffNote(comfortLeader)}`
     },
     {
-      title: "Лучший value-for-money",
+      title: "Лучшее соотношение цены и качества",
       winner: valueLeader.fullName,
-      note: `Value score ${getValueScore(valueLeader)} · EUR ${valueLeader.currentPrice}`
+      note: `Индекс ценности ${getValueScore(valueLeader)} · EUR ${valueLeader.currentPrice}`
     }
   ];
 }
@@ -123,17 +123,17 @@ function buildInsights(rackets: CatalogRacket[]): InsightCard[] {
     {
       title: "Лучший общий выбор",
       value: overallLeader.fullName,
-      note: `${getAverageScore(overallLeader)} overall score · ${overallLeader.verdict}`
+      note: `${getAverageScore(overallLeader)} общий балл · ${overallLeader.verdict}`
     },
     {
       title: "Лучший для контроля",
       value: controlLeader.fullName,
-      note: `${scoreLabel(getMetricScore(controlLeader, "control"))} control profile`
+      note: `${scoreLabel(getMetricScore(controlLeader, "control"))} профиль контроля`
     },
     {
       title: "Лучший для атаки",
       value: powerLeader.fullName,
-      note: `${scoreLabel(getMetricScore(powerLeader, "power"))} attacking profile`
+      note: `${scoreLabel(getMetricScore(powerLeader, "power"))} атакующий профиль`
     },
     {
       title: "Лучший по цене",
@@ -151,7 +151,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     title: ids.length >= 2 ? "Сравнение ракеток | PadelCompare CIS" : "Сравнение | PadelCompare CIS",
     description:
       ids.length >= 2
-        ? "Сравнивай характеристики, профиль и trade-offs нескольких padel-ракеток на одном экране."
+        ? "Сравнивай характеристики, игровой профиль и компромиссы нескольких padel-ракеток на одном экране."
         : "Выбери минимум две модели, чтобы открыть полноценное сравнение padel-ракеток."
   };
 }
@@ -182,10 +182,10 @@ export default async function ComparePage({ searchParams }: PageProps) {
       <section className="hero-card compare-hero">
         <div>
           <p className="eyebrow">Сравнение</p>
-          <h1>Сравнивай shortlist как экран приложения, а не как сухую таблицу.</h1>
+          <h1>Сравнивай модели как в приложении, а не в сухой таблице.</h1>
           <p className="hero-text">
-            Этот экран должен работать как финальная decision surface для будущего iPhone-клиента:
-            крупные карточки, быстрые лидеры и понятные trade-offs.
+            Крупные карточки, быстрые лидеры и понятные компромиссы помогают принять финальное решение
+            без расшифровки десятков характеристик.
           </p>
         </div>
         <Link href="/" className="button button-primary">
@@ -204,7 +204,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
             <h2>Нужна ещё одна модель</h2>
             <p>
               Сейчас выбрана только <strong>{rackets[0].fullName}</strong>. Добавь ещё хотя бы одну ракетку
-              из каталога или со страницы деталей, чтобы открыть полноценный compare.
+              из каталога или со страницы деталей, чтобы открыть полноценное сравнение.
             </p>
             <div className="hero-actions">
               <Link href={`/rackets/${rackets[0].id}`} className="button">
@@ -351,7 +351,8 @@ export default async function ComparePage({ searchParams }: PageProps) {
                 <p>Ниже оставил и сухие характеристики, чтобы экран был не только красивым, но и полезным.</p>
               </div>
 
-              <table className="compare-table">
+              <div className="specs-table-scroll" role="region" aria-label="Прокручиваемая таблица характеристик">
+                <table className="compare-table">
                 <thead>
                   <tr>
                     <th>Поле</th>
@@ -401,7 +402,8 @@ export default async function ComparePage({ searchParams }: PageProps) {
                     ))}
                   </tr>
                 </tbody>
-              </table>
+                </table>
+              </div>
             </section>
           </div>
         )}

@@ -113,7 +113,11 @@ function formatQuizSummary(quiz: QuizProfile) {
       premium: "премиум-бюджет"
     }[quiz.budget] ?? quiz.budget;
 
-  return `${quiz.level} уровень, приоритет ${quiz.priority}, feel ${quiz.feel}, ${budget}`;
+  const level = { beginner: "новичок", intermediate: "средний уровень", advanced: "продвинутый уровень" }[quiz.level];
+  const priority = { balanced: "баланс", control: "контроль", power: "мощность", comfort: "комфорт" }[quiz.priority];
+  const feel = { soft: "мягкое", medium: "среднее", hard: "жёсткое" }[quiz.feel];
+
+  return `${level}, приоритет ${priority}, ощущение ${feel}, ${budget}`;
 }
 
 export function CatalogExperience({
@@ -373,7 +377,7 @@ export function CatalogExperience({
         <div className="section-head">
           <div>
             <p className="eyebrow">Быстрый старт</p>
-            <h2>Быстрый shortlist под твой профиль</h2>
+            <h2>Быстрая подборка под твой профиль</h2>
             <p className="panel-text">Выбираешь профиль и сразу видишь 3 лучших варианта.</p>
           </div>
           <Link href="/finder" className="button button-primary">
@@ -425,6 +429,7 @@ export function CatalogExperience({
                   value={quiz.level}
                   onChange={(event) => updateQuiz("level", event.target.value as QuizProfile["level"])}
                 >
+                  <option value="beginner">Новичок</option>
                   <option value="intermediate">Средний</option>
                   <option value="advanced">Продвинутый</option>
                 </select>

@@ -92,6 +92,7 @@ export default function FinderScreen() {
           value={profile.level}
           onChange={(value) => update("level", value)}
           choices={[
+            { value: "beginner", label: "Новичок" },
             { value: "intermediate", label: "Средний" },
             { value: "advanced", label: "Продвинутый" }
           ]}

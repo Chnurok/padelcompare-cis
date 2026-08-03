@@ -870,12 +870,18 @@ h2 {
 .compare-table-card {
   margin-top: 28px;
   padding: 20px;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .compare-layout {
   display: grid;
   gap: 18px;
+  width: 100%;
+  min-width: 0;
+}
+
+.compare-layout > * {
+  min-width: 0;
 }
 
 .insights-grid {
@@ -1162,6 +1168,13 @@ h2 {
   width: 100%;
   border-collapse: collapse;
   min-width: 760px;
+}
+
+.specs-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 .compare-table th,
@@ -1512,6 +1525,12 @@ h2 {
 
   .compare-racket-copy h2 {
     font-size: 28px;
+  }
+
+  .compare-table-card .insights-grid,
+  .compare-table-card .compare-cards-grid {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

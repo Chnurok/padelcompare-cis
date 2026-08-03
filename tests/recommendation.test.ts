@@ -7,6 +7,7 @@ import {
   getCompareEdgeHighlights,
   getPlayerFitLabel,
   getPresetRecommendations,
+  getQuizRecommendationReason,
   getQuizRecommendations,
   getTradeoffNote,
   getValueScore,
@@ -62,6 +63,20 @@ test("quiz recommendations respect control-oriented intermediate profile", () =>
   assert.ok(results.some((item) => item.playStyle === "control" || item.shape === "round"));
 });
 
+test("beginner profile prioritizes forgiving intermediate rackets", () => {
+  const profile = {
+    budget: "under_280" as const,
+    priority: "comfort" as const,
+    level: "beginner" as const,
+    feel: "soft" as const
+  };
+  const results = getQuizRecommendations(catalog, profile, 5);
+
+  assert.equal(results.length, 5);
+  assert.ok(results.every((item) => item.skillLevel === "intermediate"));
+  assert.match(getQuizRecommendationReason(results[0], profile), /первого шага|комфорт/i);
+});
+
 test("value score rewards cheaper strong rackets", () => {
   const cheaper = catalog.find((item) => item.currentPrice <= 280);
   const expensive = catalog.find((item) => item.currentPrice >= 340);
@@ -84,5 +99,5 @@ test("fit and tradeoff notes stay explainable", () => {
   const sample = catalog[0];
 
   assert.match(getPlayerFitLabel(sample), /игрок/i);
-  assert.match(getTradeoffNote(sample), /Trade-off/i);
+  assert.match(getTradeoffNote(sample), /Компромисс/i);
 });

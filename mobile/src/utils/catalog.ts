@@ -13,6 +13,7 @@ export const labels = {
     comfort: "Комфорт"
   },
   level: {
+    beginner: "Новичок",
     intermediate: "Средний",
     advanced: "Продвинутый"
   },
@@ -115,7 +116,16 @@ export function averageScore(racket: CatalogRacket) {
 
 export function finderScore(racket: CatalogRacket, profile: FinderProfile) {
   let score = averageScore(racket);
-  if (profile.level === racket.skillLevel) score += 6;
+  if (profile.level === "beginner") {
+    score += racket.skillLevel === "intermediate" ? 6 : -8;
+    score +=
+      (metricScore(racket, "forgiveness") +
+        metricScore(racket, "comfort") +
+        metricScore(racket, "maneuverability")) *
+      0.05;
+  } else if (profile.level === racket.skillLevel) {
+    score += 6;
+  }
   if (profile.feel === racket.hardness) score += 5;
 
   const priority =
@@ -152,7 +162,11 @@ export function findRecommendations(
 
 export function explainFit(racket: CatalogRacket, profile: FinderProfile) {
   const reasons: string[] = [];
-  if (racket.skillLevel === profile.level) reasons.push("подходит по уровню");
+  if (profile.level === "beginner" && racket.skillLevel === "intermediate") {
+    reasons.push("подходит для первого шага");
+  } else if (racket.skillLevel === profile.level) {
+    reasons.push("подходит по уровню");
+  }
   if (racket.hardness === profile.feel) reasons.push("нужное ощущение");
   if (
     profile.priority === racket.playStyle ||
